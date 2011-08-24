@@ -417,7 +417,7 @@ class MainWindow(wx.Frame):
         self.taskreg_browser.Bind(wx.EVT_SET_FOCUS, self.defocus, self.taskreg_browser)
 
     def defocus(self, event):
-        print "defocus"
+        #print "defocus"
         self.page_widget.SetFocus()
 
     def _setup_menu(self):
@@ -646,7 +646,7 @@ class MainWindow(wx.Frame):
             i = dg.GetSelection()
             if i != -1:
                 self._use_mode(self.modes[i])
-        print "work"
+        #print "work"
         self.page_widget.SetFocus()
 
     def on_splitter_sash_changed(self, event):
@@ -662,7 +662,7 @@ class MainWindow(wx.Frame):
 
     def on_char(self, event):
         key_code = event.GetKeyCode()
-        print key_code
+        #print key_code
         if key_code == ord('-'):
             self.on_zoom_out(event)
         elif key_code == ord('+'):
@@ -691,7 +691,7 @@ class MainWindow(wx.Frame):
 
     def error_box(self, message, caption = _('Error')):
         wx.MessageBox(message = message, caption = caption, style = wx.OK | wx.ICON_ERROR, parent = self)
-        print "error"
+        #print "error"
         self.page_widget.SetFocus()
 
     def on_exit(self, event):
@@ -711,7 +711,7 @@ class MainWindow(wx.Frame):
                 self.do_open(dialog.GetPath())
         finally:
             dialog.Destroy()
-        print "open"
+        #print "open"
         self.page_widget.SetFocus()
 
     def on_close(self, event):
