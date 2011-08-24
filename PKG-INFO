@@ -1,0 +1,19 @@
+Metadata-Version: 1.0
+Name: djvusmooth
+Version: 0.2.10
+Summary: graphical editor for DjVu
+Home-page: http://jwilk.net/software/djvusmooth
+Author: Jakub Wilk
+Author-email: jwilk@jwilk.net
+License: GNU GPL 2
+Description: *djvusmooth* is a graphical editor for `DjVu <http://djvu.org>`_ documents.
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: License :: OSI Approved :: GNU General Public License (GPL)
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Topic :: Text Processing
+Classifier: Topic :: Multimedia :: Graphics

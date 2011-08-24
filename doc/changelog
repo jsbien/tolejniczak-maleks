@@ -1,0 +1,142 @@
+djvusmooth (0.2.10) unstable; urgency=low
+
+  * Let the setup.py script build and install manual pages. Thanks to Kyrill
+    Detinov and Markus Baertschi for bug reports.
+  * Fix the code that was supposed to disable the GUI while an external editor
+    is running. Thanks to Mike Thiery for the bug report.
+  * Fix the manual page: djvusmooth uses XDG_CONFIG_HOME rather than
+    XDG_DATA_HOME.
+
+ -- Jakub Wilk <jwilk@jwilk.net>  Fri, 18 Feb 2011 12:13:43 +0100
+
+djvusmooth (0.2.9) unstable; urgency=low
+
+  * Improve support for non-POSIX systems:
+    + Windows: guess location of DjVuLibre DLLs and tools (requires
+      python-djvulibre ≥ 0.3.3).
+    + Windows: use the “Application Data” folder to store configuration files
+      (unless the XDG_CONFIG_HOME environment variable is set).
+    + Don't read configuration from ~/.DjVuSmooth (which is deprecated
+      location anyway).
+    + Don't rely on atomic renames when saving configuration files.
+  * Reset the SIGCHLD signal to SIG_IGN on start. Thanks to Heinrich
+    Schwietering for the bug report.
+    http://bugs.debian.org/596232
+  * Fix support for external editors that use the overwrite-by-rename
+    technique. Thanks to Markus Baertschi for the bug report.
+
+ -- Jakub Wilk <jwilk@jwilk.net>  Wed, 19 Jan 2011 21:07:53 +0100
+
+djvusmooth (0.2.8) unstable; urgency=low
+
+  * Update the Russian translation, thanks to Kyrill Detinov.
+  * Handle directories with non-ASCII characters.
+    http://bugs.debian.org/595002
+  * Fix editing line/arrow annotations.
+    http://bugs.debian.org/595012
+
+ -- Jakub Wilk <jwilk@jwilk.net>  Tue, 31 Aug 2010 15:15:01 +0200
+
+djvusmooth (0.2.7) unstable; urgency=low
+
+  * Add Russian translation, contributed by Kyrill Detinov.
+  * Handle non-ASCII metadata keys.
+    Thanks to Aleš Kapica for the bug report.
+
+ -- Jakub Wilk <jwilk@jwilk.net>  Sat, 26 Jun 2010 14:34:19 +0200
+
+djvusmooth (0.2.6) unstable; urgency=low
+
+  * Add keyboard shortcut Ctrl+G for “Go to page…”.
+    Thanks to Kyrill Detinov for the bug report and the patch.
+  * Reopen document after save, so that it's possible to display non-cached
+    pages. Thanks to Kyrill Detinov for the bug report.
+
+ -- Jakub Wilk <jwilk@jwilk.net>  Tue, 15 Jun 2010 21:08:26 +0200
+
+djvusmooth (0.2.5) unstable; urgency=low
+
+  * Fix setup.py to install all the required packages.
+    Thanks to Kyrill Detinov for the bug report.
+
+ -- Jakub Wilk <jwilk@jwilk.net>  Thu, 08 Apr 2010 18:06:50 +0200
+
+djvusmooth (0.2.4) unstable; urgency=low
+
+  * Fix regression in handling sidebar events with wxWidgets 2.8. Thanks to
+    Janusz S. Bień for the bug report.
+
+ -- Jakub Wilk <jwilk@jwilk.net>  Wed, 31 Mar 2010 12:53:04 +0200
+
+djvusmooth (0.2.3) unstable; urgency=low
+
+  * Fix issues with “Overprinted annotation properties” dialog:
+    + Allow to turn off the “allow visible” property.
+      Thanks to Janusz S. Bień for the bug report.
+      http://bugs.debian.org/574362
+    + Disable the “allow visible” checkbox if a hyperlink has no border.
+      http://bugs.debian.org/574338
+    + Display real border width instead of hard-coded 1.
+    + Use the term “width” rather than “thickness” consistently.
+  * Document that using shadow border thinner than 3 pixels is not portable.
+    http://bugs.debian.org/574361
+
+ -- Jakub Wilk <jwilk@jwilk.net>  Wed, 17 Mar 2010 21:59:58 +0100
+
+djvusmooth (0.2.2) unstable; urgency=low
+
+  * Fix crashes in the ‘Saving document’ and ‘Go to page’ dialogs.
+  * Fix compatibility with wxWidgets 2.8.
+  * Give a more helpful error messages if djvused is not available.
+
+ -- Jakub Wilk <jwilk@jwilk.net>  Fri, 22 Jan 2010 19:36:03 +0100
+
+djvusmooth (0.2.1) unstable; urgency=low
+
+  * Don't crash on non-ASCII file names.
+    Thanks to Jean-Christophe Heger for the bug report.
+
+ -- Jakub Wilk <jwilk@jwilk.net>  Mon, 11 Jan 2010 18:27:28 +0100
+
+djvusmooth (0.2.0) unstable; urgency=low
+
+  * Remember last visited directory.
+    Thanks to Mateusz Turcza for providing a patch.
+  * Follow the XDG Base Directory Specification.
+  * Add Polish translation, contributed by Mateusz Turcza.
+  * Fix a typo in variable name that was causing random crashes.
+  * Provide a manual page.
+
+ -- Jakub Wilk <jwilk@jwilk.net>  Fri, 20 Nov 2009 22:45:08 +0100
+
+djvusmooth (0.1.4) unstable; urgency=low
+
+  * Fix some issues with external editing.
+
+ -- Jakub Wilk <jwilk@jwilk.net>  Mon, 02 Mar 2009 23:36:21 +0100
+
+djvusmooth (0.1.3) unstable; urgency=low
+
+  * Don't assume UTF-8 locale and UTF-8-encoded text in DjVu files.
+
+ -- Jakub Wilk <jwilk@jwilk.net>  Mon, 07 Jul 2008 01:12:34 +0200
+
+djvusmooth (0.1.2) unstable; urgency=low
+
+  * Fix bookmarking current page when there are no bookmarks.
+  * Fix flattening text.
+
+ -- Jakub Wilk <jwilk@jwilk.net>  Tue, 20 May 2008 12:49:30 +0200
+
+djvusmooth (0.1.1) unstable; urgency=low
+
+  * Don't require pkg-config nor develoment files of DjVuLibre.
+
+ -- Jakub Wilk <jwilk@jwilk.net>  Wed, 14 May 2008 11:22:49 +0200
+
+djvusmooth (0.1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Jakub Wilk <jwilk@jwilk.net>  Tue, 06 May 2008 23:28:58 +0200
+

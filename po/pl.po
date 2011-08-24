@@ -1,0 +1,527 @@
+# Polish translation of djvusmooth messages
+# Copyright © 2009 Mateusz Turcza
+# This file is distributed under the same license as the djvusmooth package.
+msgid ""
+msgstr ""
+"Project-Id-Version: djvusmooth 0.2.10\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-08-13 21:37+0200\n"
+"PO-Revision-Date: 2009-05-31 14:45+CEST\n"
+"Last-Translator: Mateusz Turcza <mturcza@mimuw.edu.pl>\n"
+"Language-Team: none\n"
+"Language: pl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "&About"
+msgstr "&O programie"
+
+msgid "&Close"
+msgstr "&Zamknij"
+
+msgid "&File"
+msgstr "&Plik"
+
+msgid "&First page"
+msgstr "Pi&erwsza strona"
+
+msgid "&Go"
+msgstr "&Idź"
+
+msgid "&Go to page…"
+msgstr "I&dź do strony…"
+
+msgid "&Help"
+msgstr "Pomo&c"
+
+msgid "&Last page"
+msgstr "&Ostatnia strona"
+
+msgid "&New hyperlink…"
+msgstr "&Nowe hiperłącze…"
+
+msgid "&Next page"
+msgstr "&Następna strona"
+
+msgid "&Open"
+msgstr "&Otwórz"
+
+msgid "&Previous page"
+msgstr "&Poprzednia strona"
+
+msgid "&Properties…"
+msgstr "&Właściwości…"
+
+msgid "&Quit"
+msgstr "Za&kończ"
+
+msgid "&Remove"
+msgstr "&Usuń"
+
+msgid "&Settings"
+msgstr "&Ustawienia"
+
+msgid "&Stretch"
+msgstr "&Rozciągnij"
+
+msgid "&View"
+msgstr "&Widok"
+
+msgid "&Work mode"
+msgstr "&Tryb pracy"
+
+msgid "&Zoom"
+msgstr "&Powiększenie"
+
+msgid "About…"
+msgstr "O programie…"
+
+msgid "Always visible"
+msgstr "Zawsze widoczny"
+
+msgid ""
+"An unhandled exception occurred. Ideally, this should not happen. Please "
+"report the bug to the author.\n"
+"\n"
+msgstr ""
+"Wystąpił nieoczekiwany błąd. Jeśli ta sytuacja się powtórzy, powiadom autora "
+"programu.\n"
+"\n"
+
+msgid "Arrow"
+msgstr "Strzałka"
+
+msgid "Author"
+msgstr "Autor"
+
+msgid "Background color"
+msgstr "Kolor tła"
+
+msgid "Border"
+msgstr "Obramowanie"
+
+msgid "Browsing mode"
+msgstr "Tryb wertowania"
+
+msgid "Choose work mode"
+msgstr "Wybierz tryb pracy"
+
+msgid "Close the document"
+msgstr "Zamknij dokument"
+
+msgid "Comment"
+msgstr "Komentarz"
+
+msgid "Decrease the magnification"
+msgstr "Zmniejsz powiększenie"
+
+msgid "Default mode"
+msgstr "Tryb zwykły"
+
+msgid "Edit metadata"
+msgstr "Edytuj metadane"
+
+msgid "Error"
+msgstr "Błąd"
+
+msgid "Etched in"
+msgstr "Wklęsły"
+
+msgid "Etched out"
+msgstr "Wypukły"
+
+msgid "Fit &page"
+msgstr "D&opasuj do okna"
+
+msgid "Fit &width"
+msgstr "Dopasuj &szerokość"
+
+msgid "Flatten text"
+msgstr "Spłaszcz strukturę tekstu"
+
+msgid "Go to page"
+msgstr "Idź do strony"
+
+msgid "Highlight color"
+msgstr "Kolor podświetlenia"
+
+msgid "Highlight color and opacity"
+msgstr "Kolor i przezroczystość podświetlenia"
+
+msgid "Increase the magnification"
+msgstr "Zwiększ powiększenie"
+
+msgid "Jump to first document page"
+msgstr "Przejdź do pierwszej strony dokumentu"
+
+msgid "Jump to last document page"
+msgstr "Przejdź do ostatniej strony dokumentu"
+
+msgid "Jump to next document page"
+msgstr "Przejdź do następnej strony dokumentu"
+
+msgid "Jump to page…"
+msgstr "Przejdź do strony…"
+
+msgid "Jump to previous document page"
+msgstr "Przejdź do poprzedniej strony dokumentu"
+
+msgid "License"
+msgstr "Licencja"
+
+msgid "Line"
+msgstr "Linia"
+
+msgid "Line color"
+msgstr "Kolor linii"
+
+msgid "Line width"
+msgstr "Szerokość linii"
+
+msgid "Line-specific properties"
+msgstr "Właściwości linii"
+
+#, python-format
+msgid "Magnify %d%%"
+msgstr "Powiększ do %d%%"
+
+msgid "Main properties"
+msgstr "Właściwości"
+
+msgid "More information about this program"
+msgstr "Więcej informacji o tym programie"
+
+msgid "None"
+msgstr "Brak"
+
+msgid "One &to one"
+msgstr "&Jeden do jednego"
+
+msgid "Opacity"
+msgstr "Przezroczystość"
+
+msgid "Open a DjVu document"
+msgstr "Otwórz dokument DjVu"
+
+msgid "Open directory with lexicographic data"
+msgstr ""
+
+msgid "Oval"
+msgstr "Elipsa"
+
+msgid "Overprinted annotation (hyperlink) properties"
+msgstr "Właściwości adnotacji (hiperłącza)"
+
+#, python-format
+msgid "Page %(pageno)d of %(npages)d"
+msgstr "Strona %(pageno)d z %(npages)d"
+
+msgid "Polygon"
+msgstr "Wielokąt"
+
+msgid "Pushpin"
+msgstr "Pinezka"
+
+msgid "Quit the application"
+msgstr "Zamknij aplikację"
+
+msgid "Rectangle"
+msgstr "Prostokąt"
+
+msgid "Remove details"
+msgstr "Usuń szczegóły"
+
+msgid "Scope"
+msgstr "Zakres"
+
+msgid "Set full resolution magnification."
+msgstr "Dopasuj powiększenie do pełnej rozdzielczości."
+
+msgid "Set magnification to fit page"
+msgstr "Dopasuj powiększenie do całej strony"
+
+msgid "Set magnification to fit page width"
+msgstr "Dopasuj powiększenie do całej szerokości strony"
+
+msgid "Set work mode"
+msgstr "Ustaw tryb pracy"
+
+msgid "Shadow in"
+msgstr "Cień wewnątrz"
+
+msgid "Shadow out"
+msgstr "Cień na zewnątrz"
+
+msgid "Shape"
+msgstr "Kształt"
+
+msgid "Show &sidebar"
+msgstr "Pokaż panel &boczny"
+
+msgid "Show/hide the sidebar"
+msgstr "Pokaż/ukryj panel boczny"
+
+msgid "Solid color"
+msgstr "Jednolity kolor"
+
+msgid "Stretch the image to the window size"
+msgstr "Rozciągnij obraz do rozmiarów okna"
+
+msgid "Target frame"
+msgstr "Ramka docelowa"
+
+msgid "Task Register"
+msgstr "Wykaz zadaniowy"
+
+msgid "Text"
+msgstr "Tekst"
+
+msgid "Text color"
+msgstr "Kolor tekstu"
+
+msgid "Text-specific properties"
+msgstr "Właściwości tekstu"
+
+msgid "URI"
+msgstr "URI"
+
+#, python-format
+msgid "Unhandled exception: %s"
+msgstr "Nieobsłużony wyjątek: %s"
+
+msgid "Width"
+msgstr "Grubość"
+
+msgid "Work mode"
+msgstr "Tryb pracy"
+
+msgid "XOR"
+msgstr "XOR"
+
+msgid "Zoom &in"
+msgstr "Pow&iększ"
+
+msgid "Zoom &out"
+msgstr "P&omniejsz"
+
+msgid "all"
+msgstr "wszystko"
+
+msgid "all pages"
+msgstr "wszystkie strony"
+
+msgid "bookmarks"
+msgstr "zakładki"
+
+msgid "char"
+msgstr "znak"
+
+msgid "characters"
+msgstr "znaki"
+
+msgid "column"
+msgstr "łam"
+
+msgid "columns"
+msgstr "łamy"
+
+msgid "current page"
+msgstr "bieżąca strona"
+
+msgid "key"
+msgstr "klucz"
+
+msgid "line"
+msgstr "linia"
+
+msgid "lines"
+msgstr "linie"
+
+msgid "page"
+msgstr "strona"
+
+msgid "para"
+msgstr "akapit"
+
+msgid "paragraphs"
+msgstr "akapity"
+
+msgid "region"
+msgstr "region"
+
+msgid "regions"
+msgstr "regiony"
+
+msgid "value"
+msgstr "wartość"
+
+msgid "word"
+msgstr "słowo"
+
+msgid "words"
+msgstr "słowa"
+
+#~ msgid "&Background"
+#~ msgstr "&Tło"
+
+#~ msgid "&Bookmark this page"
+#~ msgstr "Dodaj stronę do z&akładek"
+
+#~ msgid "&Color"
+#~ msgstr "&Kolor"
+
+#~ msgid "&Edit"
+#~ msgstr "&Edycja"
+
+#~ msgid "&External editor"
+#~ msgstr "&Zewnętrzny edytor"
+
+#~ msgid "&Flatten"
+#~ msgstr "&Spłaszcz strukturę tekstu"
+
+#~ msgid "&Foreground"
+#~ msgstr "&Pierwszy plan"
+
+#~ msgid "&Hyperlinks"
+#~ msgstr "&Hiperłącza"
+
+#~ msgid "&Image"
+#~ msgstr "O&braz"
+
+#~ msgid "&Metadata"
+#~ msgstr "&Metadane"
+
+#~ msgid "&Non-raster data"
+#~ msgstr "Dane &nierastrowe"
+
+#~ msgid "&None"
+#~ msgstr "&Brak"
+
+#~ msgid "&Outline"
+#~ msgstr "&Konspekt"
+
+#~ msgid "&Refresh"
+#~ msgstr "&Odśwież"
+
+#~ msgid "&Save"
+#~ msgstr "Za&pisz"
+
+#~ msgid "&Stencil"
+#~ msgstr "&Szablon"
+
+#~ msgid "&Text"
+#~ msgstr "&Tekst"
+
+#~ msgid "(no title)"
+#~ msgstr "(brak tytułu)"
+
+#~ msgid "Add the current to document outline"
+#~ msgstr "Dodaj do konspektu dokumentu"
+
+#~ msgid "Cannot edit text with character zones."
+#~ msgstr "Nie można edytować tekstu ze strefami znakowymi."
+
+#~ msgid "Display everything"
+#~ msgstr "Pokaż wszystko"
+
+#~ msgid "Display only the background layer"
+#~ msgstr "Pokaż tylko tło"
+
+#~ msgid "Display only the document bitonal stencil"
+#~ msgstr "Pokaż tylko dwubarwny szablon dokumentu"
+
+#~ msgid "Display only the foreground layer"
+#~ msgstr "Pokaż tylko pierwszy plan"
+
+#~ msgid "Display overprinted annotations"
+#~ msgstr "Pokazuj obwódki wokół hiperłącz"
+
+#~ msgid "Display the text layer"
+#~ msgstr "Pokaż warstwę tekstową"
+
+#~ msgid "DjVu files (*.djvu, *.djv)|*.djvu;*.djv|All files|*"
+#~ msgstr "Pliki DjVu (*.djvu, *.djv)|*.djvu;*.djv|Wszystkie pliki|*"
+
+#~ msgid "Do you want to save your changes?"
+#~ msgstr "Czy chcesz zapisać zmiany?"
+
+#~ msgid "Document metadata"
+#~ msgstr "Metadane dokumentu"
+
+#~ msgid "Don't display non-raster data"
+#~ msgstr "Nie pokazuj danych nierastrowych"
+
+#~ msgid "Edit document outline in an external editor"
+#~ msgstr "Edytuj konspekt dokumentu w zewnętrznym edytorze"
+
+#~ msgid "Edit page text in an external editor"
+#~ msgstr "Edytuj tekst strony w zewnętrznym edytorze"
+
+#~ msgid "Edit the document or page metadata"
+#~ msgstr "Edytuj metadane dokumentu lub strony"
+
+#~ msgid "Enter path to your favourite text editor."
+#~ msgstr "Podaj ścieżkę do edytora tekstowego."
+
+#~ msgid ""
+#~ "External edit failed:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Zewnętrzna edycja nie powiodła się:\n"
+#~ "%s"
+
+#~ msgid "External editor…"
+#~ msgstr "Zewnętrzny edytor…"
+
+#~ msgid "Hyperlinks"
+#~ msgstr "Hiperłącza"
+
+#~ msgid "Link: %s"
+#~ msgstr "Łącze: %s"
+
+#~ msgid "Neither display the foreground layer nor the background layer"
+#~ msgstr "Nie pokazuj pierwszego planu ani tła"
+
+#~ msgid "No text layer to edit."
+#~ msgstr "Brak warstwy tekstowej do edycji."
+
+#~ msgid "Number of lines changed."
+#~ msgstr "Liczba linii uległa zmianie."
+
+#~ msgid "Outline"
+#~ msgstr "Konspekt"
+
+#~ msgid "Page %d metadata"
+#~ msgstr "Metadane strony %d"
+
+#~ msgid "Refresh the window"
+#~ msgstr "Odśwież okno"
+
+#~ msgid "Remove details from page text"
+#~ msgstr "Usuń szczegóły z tekstu"
+
+#~ msgid "Remove document outline"
+#~ msgstr "Usuń konspekt dokumentu"
+
+#~ msgid "Save the document"
+#~ msgstr "Zapisz dokument"
+
+#~ msgid "Saving document"
+#~ msgstr "Zapisywanie dokumentu"
+
+#~ msgid ""
+#~ "Saving document failed:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Zapisanie dokumentu nie powiodło się:\n"
+#~ "%s"
+
+#~ msgid "Saving the document, please wait…"
+#~ msgstr "Zapisywanie dokumentu, proszę czekać…"
+
+#~ msgid "Setup an external editor"
+#~ msgstr "Ustawienia zewnętrznego edytora"
+
+#~ msgid "[Text layer]"
+#~ msgstr "[Warstwa tekstowa]"
