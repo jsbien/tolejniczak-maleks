@@ -340,7 +340,7 @@ class MainWindow(wx.Frame):
         #self._page_text_callback = PageTextCallback(self)
         #self._page_annotations_callback = PageAnnotationsCallback(self)
         #self._outline_callback = OutlineCallback(self)
-        self.status_bar = self.CreateStatusBar(2, style = wx.ST_SIZEGRIP)
+        self.status_bar = self.CreateStatusBar(3, style = wx.ST_SIZEGRIP)
         self.splitter = wx.SplitterWindow(self, style = wx.SP_LIVE_UPDATE)
         self.splitter.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_splitter_sash_changed)
         
@@ -604,11 +604,11 @@ class MainWindow(wx.Frame):
         mode.addMenuShortcut(self.on_set_work_mode, "Ctrl-M")
         self.modes.append(mode)
         li = []
-        #self._install_shortcut(li, wx.ACCEL_NORMAL, wx.WXK_PAGEDOWN, self.on_next_fiche)
-        #self._install_shortcut(li, wx.ACCEL_NORMAL, wx.WXK_PAGEUP, self.on_prev_fiche)
-        #self._install_shortcut(li, wx.ACCEL_CTRL, ord('.'), self.on_next_binary)
-        #self._install_shortcut(li, wx.ACCEL_CTRL, ord(','), self.on_prev_binary)
-        #self._install_shortcut(li, wx.ACCEL_CTRL, ord('B'), self.on_stop_binary)
+        self._install_shortcut(li, wx.ACCEL_NORMAL, wx.WXK_PAGEDOWN, self.on_next_fiche)
+        self._install_shortcut(li, wx.ACCEL_NORMAL, wx.WXK_PAGEUP, self.on_prev_fiche)
+        self._install_shortcut(li, wx.ACCEL_CTRL, ord('.'), self.on_next_binary)
+        self._install_shortcut(li, wx.ACCEL_CTRL, ord(','), self.on_prev_binary)
+        self._install_shortcut(li, wx.ACCEL_CTRL, ord('B'), self.on_stop_binary)
         mode = Mode(_('Browsing mode'), accel=wx.AcceleratorTable(li))        
         mode.addMenuShortcut(self.on_open, "Ctrl+O")
         mode.addMenuShortcut(self.on_close, "Ctrl+W")
@@ -630,11 +630,20 @@ class MainWindow(wx.Frame):
             else:
                 item.SetText(item.GetLabel())
         self.SetAcceleratorTable(mode.getAcceleratorTable())
+
+    def stop_binary_search(self):
+        self.taskreg_browser.stopBinarySearch()
+        self._enable_page_change()
+        self.SetStatusText("", 2)
+    
+    def _start_binary_search(self):
+        self._disable_page_change()
+        self.taskreg_browser.startBinarySearch()
+        self.SetStatusText("Binary search", 2)
     
     def _dispose_modes(self):
         if self.mode == _('Browsing mode') and self.taskreg_browser.binarySearchActive():
-            self.taskreg_browser.stopBinarySearch()
-            self._enable_page_change()
+            self.stop_binary_search()
 
     def on_set_work_mode(self, event):
         self._dispose_modes()
@@ -885,24 +894,26 @@ class MainWindow(wx.Frame):
     
     def on_next_binary(self, event):
         if self.mode == _('Browsing mode'):
-            if not self.taskreg_browser.binarySearchActive():
-                self._disable_page_change()
-                self.taskreg_browser.startBinarySearch()
-            else:
+            #if not self.taskreg_browser.binarySearchActive():
+            #    self._start_binary_search()
+            #else:
+            if self.taskreg_browser.binarySearchActive():
                 self.taskreg_browser.nextBinary()
 
     def on_prev_binary(self, event):
         if self.mode == _('Browsing mode'):
-            if not self.taskreg_browser.binarySearchActive():
-                self._disable_page_change()
-                self.taskreg_browser.startBinarySearch()
-            else:
+            #if not self.taskreg_browser.binarySearchActive():
+            #    self._start_binary_search()
+            #else:
+            if self.taskreg_browser.binarySearchActive():
                 self.taskreg_browser.prevBinary()
 
     def on_stop_binary(self, event):
         if self.mode == _('Browsing mode'):
-            self.taskreg_browser.stopBinarySearch()
-            self._enable_page_change()
+            if not self.taskreg_browser.binarySearchActive():
+                self._start_binary_search()
+            else:
+                self.stop_binary_search()
 
     def on_goto_page(self, event):
         dialog = dialogs.NumberEntryDialog(

@@ -53,7 +53,7 @@ class RegisterBrowser(wx.ListCtrl):
 			i += 1
 			idd = self.InsertItem(item)
 			#self.SetStringItem(idd, 0, element.getLabel())
-			self.__items.append(item)
+			self.__items.append(idd)
 			self.__item2element.setdefault(idd, element.getId())
 			self.__element2item.setdefault(element.getId(), idd)
 
@@ -74,10 +74,8 @@ class RegisterBrowser(wx.ListCtrl):
 	
 	def __unselect(self, item):
 		self.__selected = None
-		#item = self.GetItem(itemId)
 		mask = item.GetMask()
 		state = item.GetState()
-		#self.SetItemState(itemId, state & (~wx.LIST_STATE_SELECTED), mask | wx.LIST_MASK_STATE)
 		self.SetItemState(item.GetId(), state & (~wx.LIST_STATE_SELECTED), mask | wx.LIST_MASK_STATE)
 	
 	def __select(self, itemId, veto=False):
@@ -91,10 +89,10 @@ class RegisterBrowser(wx.ListCtrl):
 		self.SetItemState(itemId, state | wx.LIST_STATE_SELECTED, mask | wx.LIST_MASK_STATE)
 		if self.__binary: # TODO: NOTE bo onSelect uzywamy w trybie binarnym tylko do blokowania
 				# zaznaczen przez klikniecie myszki
-			self.__selected = item.GetText()
+			self.__selected = item
 			#print item.GetText(), self.GetItem(self.__selected).GetText()
 			for l in self.__listeners:
-				l.on_goto_fiche(item.GetText())
+				l.on_reg_select(self.__item2element[itemId])
 		if veto:
 			self.__veto = False
 
@@ -149,42 +147,41 @@ class RegisterBrowser(wx.ListCtrl):
 	def stopBinarySearch(self):
 		self.__binary = False
 		self.Enable(True)
-		self.find("")
 		
 	def __selectCenter(self):
 		# TODO: D co jak lenn == 0?
 		lenn = self.__right - self.__left + 1
+		if self.__left == self.__right == self.__center:
+			for l in self.__listeners:
+				l.stop_binary_search()
+			return
 		self.__center = self.__left
-		if lenn > 2:
-			self.__center += lenn // 2
+		self.__center += lenn // 2
 		if self.__selected != None:
-			self.__unselect(self.FindItem(-1, self.__selected))
-		self.__select(self.__items[self.__center].GetId())
+			self.__unselect(self.__selected)
+		#print self.__center
+		self.__select(self.__items[self.__center])
+		if self.__left == self.__right == self.__center:
+			for l in self.__listeners:
+				l.stop_binary_search()
 
 	def startBinarySearch(self):
-		self.find("")
 		self.__binary = True
 		self.Enable(False)
 		self.__left = 0
 		self.__right = len(self.__items) - 1
 		self.__selectCenter()
-
-	def __limit(self):
-		wx.ListCtrl.DeleteAllItems(self)
-		for i in range(0, len(self.__items)):
-			if i >= self.__left and i <= self.__right:
-				self.InsertItem(self.__items[i])
-			if self.__items[i].GetText() == self.__selected:
-				self.__select(self.__items[i].GetId(), veto=True)
-		#print self.__selected, self.GetItem(self.__selected).GetText()
+		#print self.__left, self.__center, self.__right
 
 	def nextBinary(self):
 		self.__left = self.__center
 		self.__selectCenter()
-		self.__limit()
+		#print self.__left, self.__center, self.__right
 
 	def prevBinary(self):
-		self.__right = self.__center
+		if self.__left == self.__right:
+			return
+		self.__right = self.__center - 1
 		self.__selectCenter()
-		self.__limit()
+		#print self.__left, self.__center, self.__right
 
