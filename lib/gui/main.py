@@ -43,7 +43,7 @@ from djvusmooth.gui.page import PageWidget, PercentZoom, OneToOneZoom, StretchZo
 #from djvusmooth.gui.text_browser import TextBrowser
 #from djvusmooth.gui.outline_browser import OutlineBrowser
 #from djvusmooth.gui.maparea_browser import MapAreaBrowser
-from djvusmooth.gui.taskreg_browser import TaskRegisterBrowser
+#from djvusmooth.gui.taskreg_browser import TaskRegisterBrowser
 from djvusmooth.gui.reg_browser import RegisterBrowser
 from djvusmooth.gui.toppanel import TopPanel
 from djvusmooth.gui import dialogs
@@ -355,11 +355,13 @@ class MainWindow(wx.Frame):
         #self.outline_browser = OutlineBrowser(self.sidebar)
         #self.maparea_browser = MapAreaBrowser(self.sidebar)
         #self.taskreg_browser = TaskRegisterBrowser(self.sidebar)
-        self.taskreg_browser = RegisterBrowser(self.sidebar)
+        self.taskreg_browser = RegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
+        self.strucreg_browser = RegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
         #self.sidebar.AddPage(self.outline_browser, _('Outline'))
         #self.sidebar.AddPage(self.maparea_browser, _('Hyperlinks'))
         #self.sidebar.AddPage(self.text_browser, _('Text'))
         self.sidebar.AddPage(self.taskreg_browser, _('Task Register'))
+        self.sidebar.AddPage(self.strucreg_browser, _('Structure Register'))
         self.sidebar.Bind(
             wx.EVT_CHOICEBOOK_PAGE_CHANGED,
             #self.on_sidebar_page_changed
@@ -367,10 +369,11 @@ class MainWindow(wx.Frame):
                 #self.on_display_no_nonraster,
                 #self.on_display_maparea,
                 #self.on_display_text)
-                self.on_display_taskreg
+                self.on_display_taskreg,
+                self.on_display_strucreg
             )
         )
-        for widget in [self.taskreg_browser]:
+        for widget in [self.taskreg_browser, self.strucreg_browser]:
             widget.addListener(self)
         
         self.main_panel = wx.Panel(self.splitter)
@@ -414,11 +417,13 @@ class MainWindow(wx.Frame):
         self.do_open(None)
         self.Bind(wx.EVT_CLOSE, self.on_exit)
         
-        self.taskreg_browser.Bind(wx.EVT_SET_FOCUS, self.defocus, self.taskreg_browser)
+        self.notify = True
+        
+        #self.taskreg_browser.Bind(wx.EVT_SET_FOCUS, self.defocus, self.taskreg_browser)
 
-    def defocus(self, event):
-        #print "defocus"
-        self.page_widget.SetFocus()
+    #def defocus(self, event):
+    #    #print "defocus"
+    #    self.page_widget.SetFocus()
 
     def _setup_menu(self):
         menu_bar = wx.MenuBar()
@@ -590,6 +595,11 @@ class MainWindow(wx.Frame):
     def _setup_modes(self):
         li = []
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('I'), self.on_edit_accept)
+        #self._install_shortcut(li, wx.ACCEL_NORMAL, wx.WXK_PAGEDOWN, self.on_next_fiche)
+        #self._install_shortcut(li, wx.ACCEL_NORMAL, wx.WXK_PAGEUP, self.on_prev_fiche)
+        self._install_shortcut(li, wx.ACCEL_CTRL, ord('.'), self.on_next_binary)
+        self._install_shortcut(li, wx.ACCEL_CTRL, ord(','), self.on_prev_binary)
+        self._install_shortcut(li, wx.ACCEL_CTRL, ord('B'), self.on_stop_binary)
         mode = Mode(_('Default mode'), accel=wx.AcceleratorTable(li))
         mode.addMenuShortcut(self.on_open, "Ctrl+O")
         mode.addMenuShortcut(self.on_close, "Ctrl+W")
@@ -603,23 +613,18 @@ class MainWindow(wx.Frame):
         mode.addMenuShortcut(self.on_about, "F1")
         mode.addMenuShortcut(self.on_set_work_mode, "Ctrl-M")
         self.modes.append(mode)
-        li = []
-        self._install_shortcut(li, wx.ACCEL_NORMAL, wx.WXK_PAGEDOWN, self.on_next_fiche)
-        self._install_shortcut(li, wx.ACCEL_NORMAL, wx.WXK_PAGEUP, self.on_prev_fiche)
-        self._install_shortcut(li, wx.ACCEL_CTRL, ord('.'), self.on_next_binary)
-        self._install_shortcut(li, wx.ACCEL_CTRL, ord(','), self.on_prev_binary)
-        self._install_shortcut(li, wx.ACCEL_CTRL, ord('B'), self.on_stop_binary)
-        mode = Mode(_('Browsing mode'), accel=wx.AcceleratorTable(li))        
-        mode.addMenuShortcut(self.on_open, "Ctrl+O")
-        mode.addMenuShortcut(self.on_close, "Ctrl+W")
-        mode.addMenuShortcut(self.on_exit, "Ctrl+Q")
-        mode.addMenuShortcut(self.on_first_page, "Ctrl-Home")
-        mode.addMenuShortcut(self.on_last_page, "Ctrl-End")
-        mode.addMenuShortcut(self.on_goto_page, "Ctrl-G")
-        mode.addMenuShortcut(self.on_show_sidebar, "F9")
-        mode.addMenuShortcut(self.on_about, "F1")
-        mode.addMenuShortcut(self.on_set_work_mode, "Ctrl-M")
-        self.modes.append(mode)
+        #li = []
+        #mode = Mode(_('Browsing mode'), accel=wx.AcceleratorTable(li))        
+        #mode.addMenuShortcut(self.on_open, "Ctrl+O")
+        #mode.addMenuShortcut(self.on_close, "Ctrl+W")
+        #mode.addMenuShortcut(self.on_exit, "Ctrl+Q")
+        #mode.addMenuShortcut(self.on_first_page, "Ctrl-Home")
+        #mode.addMenuShortcut(self.on_last_page, "Ctrl-End")
+        #mode.addMenuShortcut(self.on_goto_page, "Ctrl-G")
+        #mode.addMenuShortcut(self.on_show_sidebar, "F9")
+        #mode.addMenuShortcut(self.on_about, "F1")
+        #mode.addMenuShortcut(self.on_set_work_mode, "Ctrl-M")
+        #self.modes.append(mode)
     
     def _use_mode(self, mode):
         self.mode = mode.getName()
@@ -632,18 +637,19 @@ class MainWindow(wx.Frame):
         self.SetAcceleratorTable(mode.getAcceleratorTable())
 
     def stop_binary_search(self):
-        self.taskreg_browser.stopBinarySearch()
+        self.active_register.stopBinarySearch()
         self._enable_page_change()
         self.SetStatusText("", 2)
     
     def _start_binary_search(self):
         self._disable_page_change()
-        self.taskreg_browser.startBinarySearch()
+        self.active_register.startBinarySearch()
         self.SetStatusText("Binary search", 2)
     
     def _dispose_modes(self):
-        if self.mode == _('Browsing mode') and self.taskreg_browser.binarySearchActive():
-            self.stop_binary_search()
+        #if self.mode == _('Browsing mode') and self.taskreg_browser.binarySearchActive():
+        #    self.stop_binary_search()
+        pass
 
     def on_set_work_mode(self, event):
         self._dispose_modes()
@@ -802,7 +808,16 @@ class MainWindow(wx.Frame):
         self.active_register.find(self.register_search.GetValue())
    
     def on_display_taskreg(self, event):
+        if self.active_register.binarySearchActive():
+            self.stop_binary_search()
         self.active_register = self.taskreg_browser
+        if self.ficheId != None: self.active_register.select(self.ficheId)
+
+    def on_display_strucreg(self, event):
+        if self.active_register.binarySearchActive():
+            self.stop_binary_search()
+        self.active_register = self.strucreg_browser
+        if self.ficheId != None: self.active_register.select(self.ficheId)
 
     #def on_display_everything(self, event):
     #    self.page_widget.render_mode = djvu.decode.RENDER_COLOR
@@ -875,45 +890,45 @@ class MainWindow(wx.Frame):
     def on_previous_page(self, event):
         self.page_no -= 1
     
-    #def on_goto_fiche(self, ficheId):
-    def on_reg_select(self, elementId):
-        #self.page_no = self.index.getFicheNoById(ficheId)
+    def on_reg_select(self, elementId, notify=True):
+        self.notify = notify
         self.page_no = self.index.getFicheNoById(elementId)
+        self.notify = True
 
     # TODO: D dac jednego globalnego handlera eventow z akceleratora:
 
-    def on_next_fiche(self, event):
-        #print event
-        if self.mode == _('Browsing mode'):
-            self.taskreg_browser.selectNextElement()
+    #def on_next_fiche(self, event):
+    #    #print event
+    #    if self.mode == _('Browsing mode'):
+    #        self.taskreg_browser.selectNextElement()
     
-    def on_prev_fiche(self, event):
-        #print event
-        if self.mode == _('Browsing mode'):
-            self.taskreg_browser.selectPrevElement()
+    #def on_prev_fiche(self, event):
+    #    #print event
+    #    if self.mode == _('Browsing mode'):
+    #        self.taskreg_browser.selectPrevElement()
     
     def on_next_binary(self, event):
-        if self.mode == _('Browsing mode'):
-            #if not self.taskreg_browser.binarySearchActive():
-            #    self._start_binary_search()
-            #else:
-            if self.taskreg_browser.binarySearchActive():
-                self.taskreg_browser.nextBinary()
+    #    #if self.mode == _('Browsing mode'):
+    #        #if not self.taskreg_browser.binarySearchActive():
+    #        #    self._start_binary_search()
+    #        #else:
+        if self.active_register.binarySearchActive():
+            self.active_register.nextBinary()
 
     def on_prev_binary(self, event):
-        if self.mode == _('Browsing mode'):
-            #if not self.taskreg_browser.binarySearchActive():
-            #    self._start_binary_search()
-            #else:
-            if self.taskreg_browser.binarySearchActive():
-                self.taskreg_browser.prevBinary()
+    #    if self.mode == _('Browsing mode'):
+    #        #if not self.taskreg_browser.binarySearchActive():
+    #        #    self._start_binary_search()
+    #        #else:
+         if self.active_register.binarySearchActive():
+             self.active_register.prevBinary()
 
     def on_stop_binary(self, event):
-        if self.mode == _('Browsing mode'):
-            if not self.taskreg_browser.binarySearchActive():
-                self._start_binary_search()
-            else:
-                self.stop_binary_search()
+    #    if self.mode == _('Browsing mode'):
+        if not self.active_register.binarySearchActive():
+            self._start_binary_search()
+        else:
+            self.stop_binary_search()
 
     def on_goto_page(self, event):
         dialog = dialogs.NumberEntryDialog(
@@ -1178,9 +1193,16 @@ class MainWindow(wx.Frame):
         if self.taskRegister != None:
             self.taskreg_browser.setRegister(self.taskRegister)
             self.taskreg_browser.select(self.ficheId)
+        self.strucreg_browser.DeleteAllItems()
+        if self.taskRegister != None:
+            self.strucreg_browser.setRegister(self.taskRegister)
+            #self.strucreg_browser.select(self.ficheId)
+        #if self.index != None:
+        #    self.strucreg_browser.setRegister(self.index)
 
     def update_registers(self):
-        self.taskreg_browser.select(self.ficheId)
+        if self.notify:
+            self.active_register.select(self.ficheId)
 
     def update_title(self):
         if self.path is None:

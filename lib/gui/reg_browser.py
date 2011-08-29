@@ -13,16 +13,17 @@
 # TODO: C usuwanie cyklicznosci
 
 import wx
-from djvusmooth.i18n import _
+#from djvusmooth.i18n import _
 
-class RegisterBrowser(wx.ListCtrl):
+class RegisterBrowser(wx.ListView):
 	
 	def __init__(self, *args, **kwargs):
-		wx.ListCtrl.__init__(self, *args, **kwargs)
+		wx.ListView.__init__(self, *args, **kwargs)
 		#col = wx.ListItem()
 		#col.SetId(0)
 		#col.SetText(_('Fiche identifiers'))
 		#self.InsertColumnItem(0, col)
+		self.InsertColumn(0, '', width=wx.LIST_AUTOSIZE)
 		self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onSelect, self)
 		self.__listeners = []
 		self.__veto = False
@@ -34,6 +35,7 @@ class RegisterBrowser(wx.ListCtrl):
 		self.__center = 0
 		self.__item2element = {}
 		self.__element2item = {}
+		self.__programmaticSelect = False
 	
 	def addListener(self, lsn):
 		self.__listeners.append(lsn)
@@ -47,94 +49,89 @@ class RegisterBrowser(wx.ListCtrl):
 	def setRegister(self, reg):
 		i = 0
 		for element in reg:
-			item = wx.ListItem()
-			item.SetText(element.getLabel())
-			item.SetId(i)
+			self.InsertStringItem(i, element.getLabel())
+			self.__items.append(i)
+			self.__item2element.setdefault(i, element.getId())
+			self.__element2item.setdefault(element.getId(), i)
 			i += 1
-			idd = self.InsertItem(item)
-			#self.SetStringItem(idd, 0, element.getLabel())
-			self.__items.append(idd)
-			self.__item2element.setdefault(idd, element.getId())
-			self.__element2item.setdefault(element.getId(), idd)
 
 	def __getElementId(self, item):
-		return self.__item2element[item]
+		return self.__item2element[item.GetId()]
 	
 	def onSelect(self, event):
-		if self.__binary:
-			return
+		if self.__binary and (not self.__programmaticSelect):
+			self.stopBinarySearch()
+			for l in self.__listeners:
+				l.stop_binary_search()
 		if not self.__veto:
     	# TODO: D uwaga! to wywoluje zmiane strony a w konsekwencji TaskRegisterBrowser.select
 			itemId = event.GetIndex() # TODO: NOTE http://wxpython-users.1045709.n5.nabble.com/wx-ListCtrl-Item-Information-on-Double-Click-td3394264.html
-			item = self.GetItem(itemId)
-			self.__selected = item
+			self.__selected = itemId
 			elementId = self.__item2element[itemId]
 			for l in self.__listeners:
 				l.on_reg_select(elementId)
 	
-	def __unselect(self, item):
+	def __unselect(self, itemId):
 		self.__selected = None
-		mask = item.GetMask()
-		state = item.GetState()
-		self.SetItemState(item.GetId(), state & (~wx.LIST_STATE_SELECTED), mask | wx.LIST_MASK_STATE)
+		self.Select(itemId, on=False)
 	
 	def __select(self, itemId, veto=False):
 		self.EnsureVisible(itemId)
-		item = self.GetItem(itemId)
-		mask = item.GetMask()
-		state = item.GetState()
 		if veto:
 			self.__veto = True
-			self.__selected = item # TODO: NOTE bo nie bedzie ustawione w onSelect
-		self.SetItemState(itemId, state | wx.LIST_STATE_SELECTED, mask | wx.LIST_MASK_STATE)
-		if self.__binary: # TODO: NOTE bo onSelect uzywamy w trybie binarnym tylko do blokowania
-				# zaznaczen przez klikniecie myszki
-			self.__selected = item
-			#print item.GetText(), self.GetItem(self.__selected).GetText()
+			self.__selected = itemId # TODO: NOTE bo nie bedzie ustawione w onSelect
+		self.Select(itemId)
+		if self.__binary: # TODO: NOTE bo onSelect uzywamy w trybie binarnym tylko do wychodzenia
+				# z trybu binarnego
+			self.__selected = itemId
 			for l in self.__listeners:
-				l.on_reg_select(self.__item2element[itemId])
+				l.on_reg_select(self.__item2element[itemId], notify=False)
 		if veto:
 			self.__veto = False
 
 	def select(self, elementId):
 		if self.__binary:
-			return
+			self.stopBinarySearch()
+			for l in self.__listeners:
+				l.stop_binary_search()
 		if self.__selected != None:
 			self.__unselect(self.__selected)
 		itemId = self.__element2item.get(elementId)
 		if itemId != None:
 			self.__select(itemId, veto=True)
 
-	def selectNextElement(self):
-		if self.__binary:
-			return
-		if self.__selected != None:
-			itemId = self.GetNextItem(self.__selected.GetId())
-			if itemId != -1:
-				self.__unselect(self.__selected)
-				self.__select(itemId)
+	#def selectNextElement(self):
+	#	#if self.__binary:
+	#	#	return
+	#	if self.__selected != None:
+	#		itemId = self.GetNextItem(self.__selected.GetId())
+	#		if itemId != -1:
+	#			self.__unselect(self.__selected)
+	#			self.__select(itemId)
 
-	def selectPrevElement(self):
-		if self.__binary:
-			return
-		if self.__selected == None:
-			return
-		itemId = -1
-		prev = -1
-		while True:
-			itemId = self.GetNextItem(itemId)
-			if itemId == self.__selected.GetId():
-				if prev != -1:
-					self.__unselect(self.__selected)
-					self.__select(prev)
-					return
-			prev = itemId
-			if itemId == -1:
-				break
+	#def selectPrevElement(self):
+	#	#if self.__binary:
+	#	#	return
+	#	if self.__selected == None:
+	#		return
+	#	itemId = -1
+	#	prev = -1
+	#	while True:
+	#		itemId = self.GetNextItem(itemId)
+	#		if itemId == self.__selected.GetId():
+	#			if prev != -1:
+	#				self.__unselect(self.__selected)
+	#				self.__select(prev)
+	#				return
+	#		prev = itemId
+	#		if itemId == -1:
+	#			break
 
 	def find(self, text):
 		if self.__binary:
-			return
+			self.stopBinarySearch()
+			for l in self.__listeners:
+				l.stop_binary_search()
 		itemId = self.FindItem(-1, text, partial=True)
 		if itemId != -1:
 			if self.__selected != None:
@@ -146,7 +143,6 @@ class RegisterBrowser(wx.ListCtrl):
 
 	def stopBinarySearch(self):
 		self.__binary = False
-		self.Enable(True)
 		
 	def __selectCenter(self):
 		# TODO: D co jak lenn == 0?
@@ -159,29 +155,26 @@ class RegisterBrowser(wx.ListCtrl):
 		self.__center += lenn // 2
 		if self.__selected != None:
 			self.__unselect(self.__selected)
-		#print self.__center
-		self.__select(self.__items[self.__center])
+		self.__programmaticSelect = True
+		self.__select(self.__items[self.__center], veto=True)
+		self.__programmaticSelect = False
 		if self.__left == self.__right == self.__center:
 			for l in self.__listeners:
 				l.stop_binary_search()
 
 	def startBinarySearch(self):
 		self.__binary = True
-		self.Enable(False)
 		self.__left = 0
 		self.__right = len(self.__items) - 1
 		self.__selectCenter()
-		#print self.__left, self.__center, self.__right
 
 	def nextBinary(self):
 		self.__left = self.__center
 		self.__selectCenter()
-		#print self.__left, self.__center, self.__right
 
 	def prevBinary(self):
 		if self.__left == self.__right:
 			return
 		self.__right = self.__center - 1
 		self.__selectCenter()
-		#print self.__left, self.__center, self.__right
 
