@@ -56,6 +56,7 @@ from djvusmooth.gui import dialogs
 from djvusmooth import config
 from djvusmooth.maleks.fiche import StructureIndex, Configuration
 from djvusmooth.gui.mode import Mode
+from djvusmooth.db.db import DBController
 
 from djvusmooth import __version__, __author__
 
@@ -343,6 +344,11 @@ class MainWindow(wx.Frame):
         self.status_bar = self.CreateStatusBar(3, style = wx.ST_SIZEGRIP)
         self.splitter = wx.SplitterWindow(self, style = wx.SP_LIVE_UPDATE)
         self.splitter.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_splitter_sash_changed)
+
+        self.dBController = DBController(self._config)
+        if not self.dBController.valid():
+            self.error_box(_('Wrong database configuration'))
+            self.dBController = None
         
         self.sidepanel = wx.Panel(self.splitter, wx.ID_ANY)
         self.sizer = wx.BoxSizer(wx.VERTICAL)
@@ -379,6 +385,7 @@ class MainWindow(wx.Frame):
         self.main_panel = wx.Panel(self.splitter)
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
         self.top_panel = TopPanel(self.main_panel)
+        self.top_panel.toolbar.addListener(self)
         #self.top_panel = wx.TextCtrl(self.main_panel, wx.ID_ANY)
         
         #self.scrolled_panel = ScrolledPanel(self.splitter)
@@ -590,7 +597,12 @@ class MainWindow(wx.Frame):
         return li
 
     def on_edit_accept(self, event):
-        pass
+        if self.top_panel.getEditPanelContent() == '':
+            self.error_box(_('Empty edit panel'))
+            return
+        if self.dBController != None:
+            self.dBController.addFicheToEntriesIndex(self.ficheId, self.top_panel.getEditPanelContent())
+        #pass
 
     def _setup_modes(self):
         li = []
@@ -1151,6 +1163,7 @@ class MainWindow(wx.Frame):
         self.update_title()
         self.update_page_widget(new_document = True, new_page = True)
         self.initialize_registers()
+        self.update_panels()
         #self.dirty = False
         return True
 
@@ -1166,6 +1179,7 @@ class MainWindow(wx.Frame):
         self.update_title()
         self.update_page_widget(new_document = True, new_page = True)
         self.update_registers()
+        self.update_panels()
         return True
 
     def update_page_widget(self, new_document = False, new_page = False):
@@ -1208,6 +1222,15 @@ class MainWindow(wx.Frame):
     def update_registers(self):
         if self.notify:
             self.active_register.select(self.ficheId)
+
+    def update_panels(self):
+        if self.ficheId != None: # TODO: NOTE jest otwarty jakis dokument
+            if self.dBController != None:
+                hypothesis = self.dBController.getHyphotesisForFiche(self.ficheId)
+                if hypothesis != None:
+                    self.top_panel.setHypothesis(hypothesis)
+                else:
+                    self.top_panel.setHypothesis("")
 
     def update_title(self):
         if self.path is None:

@@ -1,11 +1,12 @@
 # Polish translation of djvusmooth messages
 # Copyright © 2009 Mateusz Turcza
+# Copyright © 2011 Tomasz Olejniczak
 # This file is distributed under the same license as the djvusmooth package.
 msgid ""
 msgstr ""
 "Project-Id-Version: djvusmooth 0.2.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-13 21:37+0200\n"
+"POT-Creation-Date: 2011-08-29 19:40+0200\n"
 "PO-Revision-Date: 2009-05-31 14:45+CEST\n"
 "Last-Translator: Mateusz Turcza <mturcza@mimuw.edu.pl>\n"
 "Language-Team: none\n"
@@ -101,9 +102,6 @@ msgstr "Kolor tła"
 msgid "Border"
 msgstr "Obramowanie"
 
-msgid "Browsing mode"
-msgstr "Tryb wertowania"
-
 msgid "Choose work mode"
 msgstr "Wybierz tryb pracy"
 
@@ -121,6 +119,9 @@ msgstr "Tryb zwykły"
 
 msgid "Edit metadata"
 msgstr "Edytuj metadane"
+
+msgid "Empty edit panel"
+msgstr "Pusty panel edycji"
 
 msgid "Error"
 msgstr "Błąd"
@@ -299,6 +300,9 @@ msgstr "Grubość"
 msgid "Work mode"
 msgstr "Tryb pracy"
 
+msgid "Wrong database configuration"
+msgstr "Niepoprawna konfiguracja bazy danych"
+
 msgid "XOR"
 msgstr "XOR"
 
@@ -364,6 +368,9 @@ msgstr "słowo"
 
 msgid "words"
 msgstr "słowa"
+
+#~ msgid "Browsing mode"
+#~ msgstr "Tryb wertowania"
 
 #~ msgid "&Background"
 #~ msgstr "&Tło"

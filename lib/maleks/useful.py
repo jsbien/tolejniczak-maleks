@@ -19,12 +19,8 @@ def repeat(string, num):
 class Notifier(object):
 
 	def __init__(self):
-		self.__listeners = []
+		self._listeners = []
 
 	def addListener(self, li):
-		self.__listeners.append(li)
-
-	def _notify(self, method):
-		#for l in self.__listeners:
-		pass
+		self._listeners.append(li)
 

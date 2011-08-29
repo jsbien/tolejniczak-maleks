@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: djvusmooth 0.2.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-13 21:37+0200\n"
+"POT-Creation-Date: 2011-08-29 19:40+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -101,9 +101,6 @@ msgstr ""
 msgid "Border"
 msgstr ""
 
-msgid "Browsing mode"
-msgstr ""
-
 msgid "Choose work mode"
 msgstr ""
 
@@ -120,6 +117,9 @@ msgid "Default mode"
 msgstr ""
 
 msgid "Edit metadata"
+msgstr ""
+
+msgid "Empty edit panel"
 msgstr ""
 
 msgid "Error"
@@ -268,6 +268,9 @@ msgstr ""
 msgid "Stretch the image to the window size"
 msgstr ""
 
+msgid "Structure Register"
+msgstr ""
+
 msgid "Target frame"
 msgstr ""
 
@@ -294,6 +297,9 @@ msgid "Width"
 msgstr ""
 
 msgid "Work mode"
+msgstr ""
+
+msgid "Wrong database configuration"
 msgstr ""
 
 msgid "XOR"

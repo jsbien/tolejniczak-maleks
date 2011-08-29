@@ -10,15 +10,15 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 # General Public License for more details.
 
-#from djvusmooth.maleks.useful import Listener
+from djvusmooth.maleks.useful import Notifier
 import wx
 from djvusmooth.gui import __RESOURCES_PATH__
 
-#class TopPanelToolbar(wx.Panel, Listener):
-class TopPanelToolbar(wx.Panel):
+class TopPanelToolbar(wx.Panel, Notifier):
 
 	def __init__(self, *args, **kwargs):
 		wx.Panel.__init__(self, *args, **kwargs)
+		Notifier.__init__(self)
 		self.__sizer = wx.BoxSizer(wx.HORIZONTAL)
 		self.__editPanelAcceptButton = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(__RESOURCES_PATH__ + "/edins.png"))
 		self.__sizer.Add(self.__editPanelAcceptButton, 0, wx.ALIGN_CENTER | wx.EXPAND)
@@ -26,8 +26,8 @@ class TopPanelToolbar(wx.Panel):
 		self.Bind(wx.EVT_BUTTON, self.__onEditAccept, self.__editPanelAcceptButton)
 
 	def __onEditAccept(self, event):
-		pass
-		
+		for l in self._listeners:
+			l.on_edit_accept(event)
 
 class TopPanel(wx.Panel):
 
@@ -43,4 +43,11 @@ class TopPanel(wx.Panel):
 		self.__sizer.Add(self.__hintPanel, 2, wx.ALIGN_CENTER | wx.EXPAND)
 		self.__sizer.Add(self.toolbar, 3, wx.ALIGN_CENTER | wx.EXPAND)
 		self.SetSizer(self.__sizer)
+
+	def getEditPanelContent(self):
+		return self.__editPanel.GetValue()
+
+	def setHypothesis(self, content):
+		self.__hypothesisPanel.SetValue(content)
+		self.__editPanel.SetValue(content)
 

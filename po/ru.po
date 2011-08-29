@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: djvusmooth 0.2.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-13 21:37+0200\n"
+"POT-Creation-Date: 2011-08-29 19:40+0200\n"
 "PO-Revision-Date: 2010-06-26 18:05+0300\n"
 "Last-Translator: Kyrill Detinov <lazy.kent.suse@gmail.com>\n"
 "Language-Team: openSUSE Translation Team\n"
@@ -103,9 +103,6 @@ msgstr "Цвет фона"
 msgid "Border"
 msgstr "Рамка"
 
-msgid "Browsing mode"
-msgstr ""
-
 msgid "Choose work mode"
 msgstr ""
 
@@ -123,6 +120,9 @@ msgstr ""
 
 msgid "Edit metadata"
 msgstr "Изменить метаданные"
+
+msgid "Empty edit panel"
+msgstr ""
 
 msgid "Error"
 msgstr "Ошибка"
@@ -270,6 +270,9 @@ msgstr "Сплошная заливка"
 msgid "Stretch the image to the window size"
 msgstr "Масштабировать страницу по размеру окна"
 
+msgid "Structure Register"
+msgstr ""
+
 msgid "Target frame"
 msgstr "Цель фрейма"
 
@@ -296,6 +299,9 @@ msgid "Width"
 msgstr "Ширина"
 
 msgid "Work mode"
+msgstr ""
+
+msgid "Wrong database configuration"
 msgstr ""
 
 msgid "XOR"
