@@ -47,6 +47,12 @@ class StructureNode(object):
 		self.__children = []
 		self.__parent = None
 
+	def getId(self):
+		return self.getPath()
+
+	def getLabel(self):
+		return self.__name
+
 	def getParent(self):
 		return self.__parent
 	
@@ -115,8 +121,10 @@ class StructureIndex(object):
 		self.__ficheNo = 0
 		self.__fiches = []
 		self.__ficheDict = {}
+		self.__nodeDict = {}
 		self.__tree = StructureNode("Main index root", abspath)
 		curNode = self.__tree
+		self.__nodeDict.setdefault(curNode.getId(), curNode)
 		f = open(abspath + "/index.ind")
 		for line in f:
 			if line == "\n":
@@ -127,6 +135,7 @@ class StructureIndex(object):
 				sel = StructureNode(els[0], els[1])
 				curNode.add(sel)
 				curNode = sel
+				self.__nodeDict.setdefault(sel.getId(), sel)
 			elif line == "$end":
 				curNode = curNode.getParent()
 			else:
@@ -160,6 +169,9 @@ class StructureIndex(object):
 	
 	def getFicheById(self, ficheId):
 		return self.__ficheDict[ficheId][0]
+
+	def getNodeById(self, nodeId):
+		return self.__nodeDict[nodeId]
 	
 	def getRoot(self):
 		return self.__tree

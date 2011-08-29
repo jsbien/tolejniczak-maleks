@@ -43,8 +43,8 @@ from djvusmooth.gui.page import PageWidget, PercentZoom, OneToOneZoom, StretchZo
 #from djvusmooth.gui.text_browser import TextBrowser
 #from djvusmooth.gui.outline_browser import OutlineBrowser
 #from djvusmooth.gui.maparea_browser import MapAreaBrowser
-#from djvusmooth.gui.taskreg_browser import TaskRegisterBrowser
 from djvusmooth.gui.reg_browser import RegisterBrowser
+from djvusmooth.gui.struc_browser import StructureRegisterBrowser
 from djvusmooth.gui.toppanel import TopPanel
 from djvusmooth.gui import dialogs
 #from djvusmooth.text import mangle as text_mangle
@@ -356,7 +356,7 @@ class MainWindow(wx.Frame):
         #self.maparea_browser = MapAreaBrowser(self.sidebar)
         #self.taskreg_browser = TaskRegisterBrowser(self.sidebar)
         self.taskreg_browser = RegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
-        self.strucreg_browser = RegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
+        self.strucreg_browser = StructureRegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
         #self.sidebar.AddPage(self.outline_browser, _('Outline'))
         #self.sidebar.AddPage(self.maparea_browser, _('Hyperlinks'))
         #self.sidebar.AddPage(self.text_browser, _('Text'))
@@ -895,6 +895,9 @@ class MainWindow(wx.Frame):
         self.page_no = self.index.getFicheNoById(elementId)
         self.notify = True
 
+    def request_selection(self):
+        return self.ficheId
+
     # TODO: D dac jednego globalnego handlera eventow z akceleratora:
 
     #def on_next_fiche(self, event):
@@ -1117,6 +1120,8 @@ class MainWindow(wx.Frame):
         #        dialog.Destroy()
         self.path = path
         self.reset()
+        self.taskreg_browser.reset()
+        self.strucreg_browser.reset()
         self.page_no = 0
         #def clear_models():
         #    self.metadata_model = self.text_model = self.outline_model = self.annotations_model = None
@@ -1194,11 +1199,11 @@ class MainWindow(wx.Frame):
             self.taskreg_browser.setRegister(self.taskRegister)
             self.taskreg_browser.select(self.ficheId)
         self.strucreg_browser.DeleteAllItems()
-        if self.taskRegister != None:
-            self.strucreg_browser.setRegister(self.taskRegister)
-            #self.strucreg_browser.select(self.ficheId)
-        #if self.index != None:
-        #    self.strucreg_browser.setRegister(self.index)
+        #if self.taskRegister != None:
+        #    #self.strucreg_browser.setRegister(self.taskRegister)
+        #    self.strucreg_browser.select(self.ficheId)
+        if self.index != None:
+            self.strucreg_browser.setRegister(self.index)
 
     def update_registers(self):
         if self.notify:

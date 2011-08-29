@@ -268,6 +268,9 @@ msgstr "Jednolity kolor"
 msgid "Stretch the image to the window size"
 msgstr "Rozciągnij obraz do rozmiarów okna"
 
+msgid "Structure Register"
+msgstr "Wykaz struktury"
+
 msgid "Target frame"
 msgstr "Ramka docelowa"
 
