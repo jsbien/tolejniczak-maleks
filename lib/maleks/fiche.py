@@ -11,7 +11,8 @@
 # General Public License for more details.
 
 import os
-from useful import repeat
+from djvusmooth.maleks.registers import TaskRegister
+from djvusmooth.maleks.useful import repeat
 
 # TODO: C usuwanie cyklicznosci przy niszczeniu obiektow
 
@@ -32,9 +33,15 @@ class Fiche(object):
 	
 	def setParent(self, parent):
 		self.__parent = parent
-	
+
+	def getParent(self):
+		return self.__parent
+
 	def getDjVuPath(self):
 		return self.__parent.getPath() + "/" + self.__djVuPath
+
+	def getDescriptivePath(self):
+		return self.__parent.getDescriptivePath() + "/" + self.__id
 
 	def __str__(self):
 		return self.__id + ": " + self.__djVuPath
@@ -71,9 +78,21 @@ class StructureNode(object):
 			return self.__path
 		else:
 			return self.__parent.getPath() + "/" + self.__path
+
+	def getDescriptivePath(self):
+		if self.__parent == None:
+			return "/" + self.__name
+		else:
+			return self.__parent.getDescriptivePath() + "/" + self.__name
 	
 	def __str__(self):
 		return self.__path + ": " + self.__name
+
+	def firstFiche(self):
+		if isinstance(self.__children[0], Fiche):
+			return self.__children[0]
+		else:
+			return self.__children[0].firstFiche()
 
 class Configuration(object):
 
@@ -90,6 +109,7 @@ class Configuration(object):
 			self.__dict.setdefault(k, v)
 		f.close()
 	
+	# TODO: A co jak wogole nie ma zadnego wykazu zadaniowego?
 	def getDefaultTaskRegister(self, index):
 		# TODO: C komunikat o bledzie - nie ma takiego pliku
 		path = self.__dict.get("default_task_register")
@@ -99,21 +119,6 @@ class Configuration(object):
 		else:
 			return path
 
-class TaskRegister(object):
-
-	def __init__(self, abspath, index):
-		self.__ids = []
-		f = open(abspath)
-		for line in f:
-			if line == "\n":
-				continue
-			line = line.strip()
-			self.__ids.append(index.getFicheById(line))
-		f.close()
-	
-	def __getitem__(self, ind):
-		return self.__ids[ind]
-
 class StructureIndex(object):
 
 	def __init__(self, abspath):
@@ -122,7 +127,7 @@ class StructureIndex(object):
 		self.__fiches = []
 		self.__ficheDict = {}
 		self.__nodeDict = {}
-		self.__tree = StructureNode("Main index root", abspath)
+		self.__tree = StructureNode(abspath.split("/")[-1], abspath)
 		curNode = self.__tree
 		self.__nodeDict.setdefault(curNode.getId(), curNode)
 		f = open(abspath + "/index.ind")
@@ -175,6 +180,18 @@ class StructureIndex(object):
 	
 	def getRoot(self):
 		return self.__tree
+
+	def findNextFiche(self, ficheParent):
+		parent = self.__nodeDict[ficheParent.getId()]
+		while True:
+			if parent.getParent() == None:
+				return None
+			gparent = parent.getParent()
+			i = gparent.getChildren().index(parent)
+			if len(gparent.getChildren()) - 1 > i:
+				return gparent.getChildren()[i + 1].firstFiche()
+			parent = gparent
+		return None
 
 #si = StructureIndex("/home/to/fajny")
 #def traverse(el, level=0):

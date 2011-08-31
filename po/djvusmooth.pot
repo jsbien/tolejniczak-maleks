@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: djvusmooth 0.2.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-29 19:40+0200\n"
+"POT-Creation-Date: 2011-08-31 21:35+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -122,6 +122,9 @@ msgstr ""
 msgid "Empty edit panel"
 msgstr ""
 
+msgid "Empty hint panel"
+msgstr ""
+
 msgid "Error"
 msgstr ""
 
@@ -129,6 +132,12 @@ msgid "Etched in"
 msgstr ""
 
 msgid "Etched out"
+msgstr ""
+
+msgid "Fiche already indexed"
+msgstr ""
+
+msgid "Fiche already indexed in entry prefix index"
 msgstr ""
 
 msgid "Fit &page"
@@ -344,6 +353,9 @@ msgstr ""
 msgid "lines"
 msgstr ""
 
+msgid "new"
+msgstr ""
+
 msgid "page"
 msgstr ""
 
@@ -357,6 +369,9 @@ msgid "region"
 msgstr ""
 
 msgid "regions"
+msgstr ""
+
+msgid "user hint"
 msgstr ""
 
 msgid "value"

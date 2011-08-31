@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: djvusmooth 0.2.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-29 19:40+0200\n"
+"POT-Creation-Date: 2011-08-31 21:35+0200\n"
 "PO-Revision-Date: 2010-06-26 18:05+0300\n"
 "Last-Translator: Kyrill Detinov <lazy.kent.suse@gmail.com>\n"
 "Language-Team: openSUSE Translation Team\n"
@@ -124,6 +124,9 @@ msgstr "Изменить метаданные"
 msgid "Empty edit panel"
 msgstr ""
 
+msgid "Empty hint panel"
+msgstr ""
+
 msgid "Error"
 msgstr "Ошибка"
 
@@ -132,6 +135,12 @@ msgstr "Вогнутая"
 
 msgid "Etched out"
 msgstr "Выпуклая"
+
+msgid "Fiche already indexed"
+msgstr ""
+
+msgid "Fiche already indexed in entry prefix index"
+msgstr ""
 
 msgid "Fit &page"
 msgstr "Страница &целиком"
@@ -346,6 +355,9 @@ msgstr "строка"
 msgid "lines"
 msgstr "строки"
 
+msgid "new"
+msgstr ""
+
 msgid "page"
 msgstr "страница"
 
@@ -360,6 +372,9 @@ msgstr "область"
 
 msgid "regions"
 msgstr "области"
+
+msgid "user hint"
+msgstr ""
 
 msgid "value"
 msgstr "значение"

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: djvusmooth 0.2.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-08-29 19:40+0200\n"
+"POT-Creation-Date: 2011-08-31 21:35+0200\n"
 "PO-Revision-Date: 2009-05-31 14:45+CEST\n"
 "Last-Translator: Mateusz Turcza <mturcza@mimuw.edu.pl>\n"
 "Language-Team: none\n"
@@ -123,6 +123,9 @@ msgstr "Edytuj metadane"
 msgid "Empty edit panel"
 msgstr "Pusty panel edycji"
 
+msgid "Empty hint panel"
+msgstr "Pusty panel podpowiedzi"
+
 msgid "Error"
 msgstr "Błąd"
 
@@ -131,6 +134,12 @@ msgstr "Wklęsły"
 
 msgid "Etched out"
 msgstr "Wypukły"
+
+msgid "Fiche already indexed"
+msgstr "Fiszka została już zaindeksowana"
+
+msgid "Fiche already indexed in entry prefix index"
+msgstr "Fiszka została już zaindeksowana w indeksie prefiksów hasłowych"
 
 msgid "Fit &page"
 msgstr "D&opasuj do okna"
@@ -206,7 +215,7 @@ msgid "Open a DjVu document"
 msgstr "Otwórz dokument DjVu"
 
 msgid "Open directory with lexicographic data"
-msgstr ""
+msgstr "Otwórz katalog z danymi leksykograficznymi"
 
 msgid "Oval"
 msgstr "Elipsa"
@@ -345,6 +354,9 @@ msgstr "linia"
 msgid "lines"
 msgstr "linie"
 
+msgid "new"
+msgstr "nowa"
+
 msgid "page"
 msgstr "strona"
 
@@ -359,6 +371,9 @@ msgstr "region"
 
 msgid "regions"
 msgstr "regiony"
+
+msgid "user hint"
+msgstr "użytkownika"
 
 msgid "value"
 msgstr "wartość"

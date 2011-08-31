@@ -11,6 +11,8 @@
 # General Public License for more details.
 
 import MySQLdb
+import _mysql_exceptions
+from djvusmooth.i18n import _
 
 class DBController(object):
 
@@ -34,10 +36,25 @@ class DBController(object):
 
 	def addFicheToEntriesIndex(self, ficheId, entry):
 		cursor = self.__openDBWithCursor()
-		cursor.execute("insert into actual_entries values (%s, %s, null)", (ficheId, entry))
-		cursor.execute("insert into original_entries values (%s, %s, null)", (ficheId, entry))
+		try:
+			cursor.execute("insert into actual_entries values (%s, %s, null)", (ficheId, entry))
+			cursor.execute("insert into original_entries values (%s, %s, null)", (ficheId, entry))
+		except _mysql_exceptions.IntegrityError:
+			self.__closeDBAndCursor(cursor)
+			return _('Fiche already indexed')
 		#print cursor.rowcount
 		self.__closeDBAndCursor(cursor)
+		return None
+
+	def addFicheToPrefixesIndex(self, ficheId, entry):
+		cursor = self.__openDBWithCursor()
+		try:
+			cursor.execute("insert into entry_prefixes values (%s, %s, null)", (ficheId, entry))
+		except _mysql_exceptions.IntegrityError:
+			self.__closeDBAndCursor(cursor)
+			return _('Fiche already indexed in entry prefix index')
+		self.__closeDBAndCursor(cursor)
+		return None
 
 	def getHyphotesisForFiche(self, ficheId):
 		cursor = self.__openDBWithCursor()

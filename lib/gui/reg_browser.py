@@ -31,7 +31,7 @@ class RegisterBrowser(wx.ListView):
 	def reset(self):
 		self.DeleteAllItems()
 		self.__veto = False
-		self.__selected = None
+		self._selected = None
 		#self._items = []
 		self.__binary = False
 		self.__left = 0
@@ -42,6 +42,9 @@ class RegisterBrowser(wx.ListView):
 		self.__programmaticSelect = False
 
 	def binaryAvailable(self):
+		return True
+
+	def allowsNextFiche(self):
 		return True
 	
 	def addListener(self, lsn):
@@ -73,7 +76,7 @@ class RegisterBrowser(wx.ListView):
 		if not self.__veto:
     	# TODO: D uwaga! to wywoluje zmiane strony a w konsekwencji TaskRegisterBrowser.select
 			itemId = event.GetIndex() # TODO: NOTE http://wxpython-users.1045709.n5.nabble.com/wx-ListCtrl-Item-Information-on-Double-Click-td3394264.html
-			self.__selected = itemId
+			self._selected = itemId
 			elementId = self._item2element[itemId]
 			self._element_selected(elementId)
 
@@ -81,19 +84,19 @@ class RegisterBrowser(wx.ListView):
 		for l in self._listeners:
 			l.on_reg_select(elementId, notify=notify)
 	
-	def __unselect(self, itemId):
-		self.__selected = None
+	def _unselect(self, itemId):
+		self._selected = None
 		self.Select(itemId, on=False)
 	
-	def __select(self, itemId, veto=False):
+	def _select(self, itemId, veto=False):
 		self.EnsureVisible(itemId)
 		if veto:
 			self.__veto = True
-			self.__selected = itemId # TODO: NOTE bo nie bedzie ustawione w onSelect
+			self._selected = itemId # TODO: NOTE bo nie bedzie ustawione w onSelect
 		self.Select(itemId)
 		if self.__binary: # TODO: NOTE bo onSelect uzywamy w trybie binarnym tylko do wychodzenia
 				# z trybu binarnego
-			self.__selected = itemId
+			self._selected = itemId
 			self._element_selected(self._item2element[itemId], notify=False)
 		if veto:
 			self.__veto = False
@@ -103,34 +106,45 @@ class RegisterBrowser(wx.ListView):
 			self.stopBinarySearch()
 			for l in self._listeners:
 				l.stop_binary_search()
-		if self.__selected != None:
-			self.__unselect(self.__selected)
+		if self._selected != None:
+			self._unselect(self._selected)
 		itemId = self._element2item.get(elementId)
 		if itemId != None:
-			self.__select(itemId, veto=True)
+			self._select(itemId, veto=True)
 
-	#def selectNextElement(self):
-	#	#if self.__binary:
-	#	#	return
-	#	if self.__selected != None:
-	#		itemId = self.GetNextItem(self.__selected.GetId())
-	#		if itemId != -1:
-	#			self.__unselect(self.__selected)
-	#			self.__select(itemId)
+	def hasSelection(self):
+		return self._selected != None
+
+	def getNextFiche(self):
+		if self.__binary:
+			self.stopBinarySearch()
+			for l in self._listeners:
+				l.stop_binary_search()
+		if self._selected != None:
+			itemId = self.GetNextItem(self._selected)
+			if itemId != -1:
+				self._unselect(self._selected)
+				self._select(itemId, veto=True)
+				self._element_selected(self._item2element[itemId], notify=False)
+			else:
+				self._nextFicheNotFound()
+
+	def _nextFicheNotFound(self):
+		pass
 
 	#def selectPrevElement(self):
 	#	#if self.__binary:
 	#	#	return
-	#	if self.__selected == None:
+	#	if self._selected == None:
 	#		return
 	#	itemId = -1
 	#	prev = -1
 	#	while True:
 	#		itemId = self.GetNextItem(itemId)
-	#		if itemId == self.__selected.GetId():
+	#		if itemId == self._selected.GetId():
 	#			if prev != -1:
-	#				self.__unselect(self.__selected)
-	#				self.__select(prev)
+	#				self._unselect(self._selected)
+	#				self._select(prev)
 	#				return
 	#		prev = itemId
 	#		if itemId == -1:
@@ -143,9 +157,9 @@ class RegisterBrowser(wx.ListView):
 				l.stop_binary_search()
 		itemId = self.FindItem(-1, text, partial=True)
 		if itemId != -1:
-			if self.__selected != None:
-				self.__unselect(self.__selected)
-			self.__select(itemId)
+			if self._selected != None:
+				self._unselect(self._selected)
+			self._select(itemId)
 
 	def binarySearchActive(self):
 		return self.__binary
@@ -162,10 +176,10 @@ class RegisterBrowser(wx.ListView):
 			return
 		self.__center = self.__left
 		self.__center += lenn // 2
-		if self.__selected != None:
-			self.__unselect(self.__selected)
+		if self._selected != None:
+			self._unselect(self._selected)
 		self.__programmaticSelect = True
-		self.__select(self._items[self.__center], veto=True)
+		self._select(self._items[self.__center], veto=True)
 		self.__programmaticSelect = False
 		if self.__left == self.__right == self.__center:
 			for l in self._listeners:

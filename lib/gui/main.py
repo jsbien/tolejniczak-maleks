@@ -46,6 +46,7 @@ from djvusmooth.gui.page import PageWidget, PercentZoom, OneToOneZoom, StretchZo
 from djvusmooth.gui.reg_browser import RegisterBrowser
 from djvusmooth.gui.struc_browser import StructureRegisterBrowser
 from djvusmooth.gui.toppanel import TopPanel
+from djvusmooth.gui.regbar import RegisterToolbar
 from djvusmooth.gui import dialogs
 #from djvusmooth.text import mangle as text_mangle
 #import djvusmooth.models.metadata
@@ -55,6 +56,7 @@ from djvusmooth.gui import dialogs
 #from djvusmooth import external_editor
 from djvusmooth import config
 from djvusmooth.maleks.fiche import StructureIndex, Configuration
+from djvusmooth.maleks.registers import HintRegister
 from djvusmooth.gui.mode import Mode
 from djvusmooth.db.db import DBController
 
@@ -354,6 +356,7 @@ class MainWindow(wx.Frame):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.register_search = wx.TextCtrl(self.sidepanel, wx.ID_ANY)
         self.register_search.Bind(wx.EVT_TEXT, self.register_search_input)
+        self.regbar = RegisterToolbar(self.sidepanel, wx.ID_ANY)
         
         #self.sidebar = wx.Choicebook(self.splitter, wx.ID_ANY)
         self.sidebar = wx.Choicebook(self.sidepanel, wx.ID_ANY)
@@ -363,6 +366,7 @@ class MainWindow(wx.Frame):
         #self.taskreg_browser = TaskRegisterBrowser(self.sidebar)
         self.taskreg_browser = RegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
         self.strucreg_browser = StructureRegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
+        self.regbar.addListener(self.strucreg_browser)
         #self.sidebar.AddPage(self.outline_browser, _('Outline'))
         #self.sidebar.AddPage(self.maparea_browser, _('Hyperlinks'))
         #self.sidebar.AddPage(self.text_browser, _('Text'))
@@ -398,7 +402,8 @@ class MainWindow(wx.Frame):
         self.main_panel.SetSizer(self.main_sizer)
         
         self.sizer.Add(self.register_search, 0, wx.ALIGN_CENTER | wx.EXPAND)
-        self.sizer.Add(self.sidebar, 1, wx.ALIGN_CENTER | wx.EXPAND)
+        self.sizer.Add(self.regbar, 0, wx.ALIGN_LEFT | wx.EXPAND)
+        self.sizer.Add(self.sidebar, 1, wx.ALIGN_CENTER | wx.ALIGN_TOP | wx.EXPAND)
         self.sidepanel.SetSizer(self.sizer)
         
         #self.Bind(wx.EVT_KEY_DOWN, self.on_char)
@@ -420,11 +425,13 @@ class MainWindow(wx.Frame):
         self.modes = []
         self._setup_modes()
         self._use_mode(self.modes[0])
-        #self.dirty = False
+        self.dirty = False
         self.do_open(None)
         self.Bind(wx.EVT_CLOSE, self.on_exit)
         
         self.notify = True
+        self.__closing = False # TODO: NOTE pomocne w zwalczaniu segmentation fault przy wyjsciu z aplikacji
+        self._disable_page_change()
         
         #self.taskreg_browser.Bind(wx.EVT_SET_FOCUS, self.defocus, self.taskreg_browser)
 
@@ -577,11 +584,12 @@ class MainWindow(wx.Frame):
     #        dialog.Destroy()
     
     def _disable_page_change(self):
-        self.menu_items[self.on_first_page].Enable(False)
-        self.menu_items[self.on_previous_page].Enable(False)
-        self.menu_items[self.on_next_page].Enable(False)
-        self.menu_items[self.on_last_page].Enable(False)
-        self.menu_items[self.on_goto_page].Enable(False)
+        if not self.__closing:
+            self.menu_items[self.on_first_page].Enable(False)
+            self.menu_items[self.on_previous_page].Enable(False)
+            self.menu_items[self.on_next_page].Enable(False)
+            self.menu_items[self.on_last_page].Enable(False)
+            self.menu_items[self.on_goto_page].Enable(False)
 
     def _enable_page_change(self):
         self.menu_items[self.on_first_page].Enable(True)
@@ -596,17 +604,55 @@ class MainWindow(wx.Frame):
         li.append((accel, key, idd))
         return li
 
+    # TODO: A rozne przypadki bledow:
+
     def on_edit_accept(self, event):
         if self.top_panel.getEditPanelContent() == '':
             self.error_box(_('Empty edit panel'))
             return
         if self.dBController != None:
-            self.dBController.addFicheToEntriesIndex(self.ficheId, self.top_panel.getEditPanelContent())
+            msg = self.dBController.addFicheToEntriesIndex(self.ficheId, self.top_panel.getEditPanelContent())
+            if msg != None:
+                self.error_box(msg)
+                return
+        self.hintRegister.addHint(self.top_panel.getEditPanelContent())
+        self.dirty = True # TODO: NOTE bo mozemy musiec np. zapisac do pliku dodana powyzej podpowiedz
+        if self.active_register.allowsNextFiche() and self.active_register.hasSelection():
+            self.active_register.getNextFiche()
         #pass
+
+    def on_edit_prefix_accept(self, event):
+        if self.top_panel.getEditPanelContent() == '':
+            self.error_box(_('Empty edit panel'))
+            return
+        if self.dBController != None:
+            msg = self.dBController.addFicheToPrefixesIndex(self.ficheId, self.top_panel.getEditPanelContent())
+            if msg != None:
+                self.error_box(msg)
+                return
+
+    def on_structure_element_selected(self, element):
+        self.regbar.setPath(element.getDescriptivePath())
+
+    def on_hint_accept(self, event):
+        if self.top_panel.getHint() == '':
+            self.error_box(_('Empty hint panel'))
+            return
+        if self.dBController != None:
+            msg = self.dBController.addFicheToEntriesIndex(self.ficheId, self.top_panel.getHint())
+            if msg != None:
+                self.error_box(msg)
+                return
+        if self.active_register.allowsNextFiche() and self.active_register.hasSelection():
+            self.active_register.getNextFiche()
+        
+    # TODO: A flage __fileOpen i sprawdzanie we wszystkich istotnych metodach
 
     def _setup_modes(self):
         li = []
-        self._install_shortcut(li, wx.ACCEL_CTRL, ord('I'), self.on_edit_accept)
+        self._install_shortcut(li, wx.ACCEL_CTRL, ord('E'), self.on_edit_accept)
+        self._install_shortcut(li, wx.ACCEL_CTRL, ord('P'), self.on_edit_prefix_accept)
+        self._install_shortcut(li, wx.ACCEL_CTRL, ord('H'), self.on_hint_accept)
         #self._install_shortcut(li, wx.ACCEL_NORMAL, wx.WXK_PAGEDOWN, self.on_next_fiche)
         #self._install_shortcut(li, wx.ACCEL_NORMAL, wx.WXK_PAGEUP, self.on_prev_fiche)
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('.'), self.on_next_binary)
@@ -650,11 +696,13 @@ class MainWindow(wx.Frame):
 
     def stop_binary_search(self):
         self.active_register.stopBinarySearch()
-        self._enable_page_change()
+        if self.active_register in [self.strucreg_browser]:
+            self._enable_page_change()
         self.SetStatusText("", 2)
     
     def _start_binary_search(self):
-        self._disable_page_change()
+        if self.active_register in [self.strucreg_browser]:    
+            self._disable_page_change()
         self.active_register.startBinarySearch()
         self.SetStatusText("Binary search", 2)
     
@@ -722,6 +770,7 @@ class MainWindow(wx.Frame):
         self.page_widget.SetFocus()
 
     def on_exit(self, event):
+        self.__closing = True
         if self.do_open(None):
             x, y = self.GetPosition()
             w, h = self.GetSize()
@@ -818,18 +867,26 @@ class MainWindow(wx.Frame):
 
     def register_search_input(self, event):
         self.active_register.find(self.register_search.GetValue())
-   
-    def on_display_taskreg(self, event):
+    
+    def on_undisplay(self):
         if self.active_register.binarySearchActive():
             self.stop_binary_search()
+        if not self.__closing:
+            if self.active_register == self.strucreg_browser:
+                self.regbar.setPath("")
+   
+    def on_display_taskreg(self, event):
+        self.on_undisplay()
+        self._disable_page_change()           
         self.active_register = self.taskreg_browser
         if self.ficheId != None: self.active_register.select(self.ficheId)
 
     def on_display_strucreg(self, event):
-        if self.active_register.binarySearchActive():
-            self.stop_binary_search()
+        self.on_undisplay()
         self.active_register = self.strucreg_browser
         if self.ficheId != None: self.active_register.select(self.ficheId)
+        self.regbar.setPath(self.active_register.getPath())
+        self._enable_page_change()
 
     #def on_display_everything(self, event):
     #    self.page_widget.render_mode = djvu.decode.RENDER_COLOR
@@ -1113,12 +1170,15 @@ class MainWindow(wx.Frame):
         self.index = None
         self.config = None
         self.taskRegister = None
+        self.hintRegister = None
+        self.top_panel.setHintRegister(None)
         self.ficheId = None
 
     def do_open(self, path):
         if isinstance(path, unicode):
             path = path.encode(system_encoding)
-        #if self.dirty:
+        if self.dirty:
+            self.hintRegister.saveUserHints()
         #    dialog = wx.MessageDialog(self, _('Do you want to save your changes?'), '', wx.YES_NO | wx.YES_DEFAULT | wx.CANCEL | wx.ICON_QUESTION)
         #    try:
         #        rc = dialog.ShowModal()
@@ -1146,9 +1206,13 @@ class MainWindow(wx.Frame):
             try:
                 self.index = StructureIndex(path)
                 self.config = Configuration(path)
+                self.hintRegister = HintRegister(path)
+                self.hintRegister.readUserHints(path)
+                self.top_panel.setHintRegister(self.hintRegister)
                 self.taskRegister = self.config.getDefaultTaskRegister(self.index)
                 self.document = self.context.new_document(djvu.decode.FileURI(self.index.getFiche(0).getDjVuPath()))
-                self.ficheId = self.index.getFiche(0).getId()
+                #self.ficheId = self.index.getFiche(0).getId()
+                self.ficheId = self.taskRegister[0].getId()
                 #self.metadata_model = MetadataModel(self.document)
                 #self.text_model = TextModel(self.document)
                 #self.outline_model = OutlineModel(self.document)
@@ -1158,13 +1222,14 @@ class MainWindow(wx.Frame):
             except djvu.decode.JobFailed:
                 #clear_models()
                 self.reset()
+                # TODO: A czyscic tez inne zmienne (j. w.)
                 # Do *not* display error message here. It will be displayed by `handle_message()`.
         self.page_no = 0 # again, to set status bar text
         self.update_title()
         self.update_page_widget(new_document = True, new_page = True)
         self.initialize_registers()
         self.update_panels()
-        #self.dirty = False
+        self.dirty = False
         return True
 
     def switch_document(self, page_no):

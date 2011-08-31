@@ -27,3 +27,10 @@ create table hypotheses (
 	comment varchar(50)
 );
 
+create table entry_prefixes (
+	fiche varchar(30) not null,
+	prefix varchar(40) not null,
+	comment varchar(50),
+	primary key (fiche, prefix)
+);
+
