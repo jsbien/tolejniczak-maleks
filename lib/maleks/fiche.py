@@ -12,17 +12,18 @@
 
 import os
 from djvusmooth.maleks.registers import TaskRegister
-from djvusmooth.maleks.useful import repeat
+from djvusmooth.maleks.useful import repeat, getElementsByClassName, getBbox, getTextContent
+from xml.dom import minidom
 
 # TODO: C usuwanie cyklicznosci przy niszczeniu obiektow
 
 class Fiche(object):
 
-	def __init__(self, idd, djVuPath):
+	def __init__(self, idd, path):
 		self.__id = idd
-		self.__djVuPath = djVuPath
+		self.__djVuPath = path + ".djvu"
 		self.__metaPath = None
-		self.__hOCRPath = None
+		self.__hOCRPath = path + ".xml"
 		self.__parent = None
 	
 	def getId(self):
@@ -39,12 +40,28 @@ class Fiche(object):
 
 	def getDjVuPath(self):
 		return self.__parent.getPath() + "/" + self.__djVuPath
+		
+	def getHOCRPath(self):
+		return self.__parent.getPath() + "/" + self.__hOCRPath
 
 	def getDescriptivePath(self):
 		return self.__parent.getDescriptivePath() + "/" + self.__id
 
 	def __str__(self):
 		return self.__id + ": " + self.__djVuPath
+
+	def getHOCREntry(self, pct):
+		if os.path.exists(self.getHOCRPath()):
+			doc = minidom.parse(self.getHOCRPath())
+			line = getElementsByClassName(doc, u"ocrx_line")[0]
+			page = getElementsByClassName(doc, u"ocr_page")[0]
+			if line == None or page == None:
+				return None
+			lineBbox = getBbox(line)
+			pageBbox = getBbox(page)
+			if float(lineBbox[3]) / float(pageBbox[3]) < pct:
+				return getTextContent(line)
+		return None
 
 class StructureNode(object):
 
@@ -100,16 +117,19 @@ class Configuration(object):
 		# TODO: C obsluga bledow w pliku
 		self.__dict = {}
 		self.__abspath = abspath
-		f = open(abspath + "/config.cfg")
-		for line in f:
-			if line == "\n":
-				continue
-			line = line.strip()
-			(k, v) = line.split("\t")
-			self.__dict.setdefault(k, v)
-		f.close()
+		if os.path.exists(abspath + "/config.cfg"):
+			f = open(abspath + "/config.cfg")
+			for line in f:
+				if line == "\n":
+					continue
+				line = line.strip()
+				(k, v) = line.split("\t")
+				self.__dict.setdefault(k, v)
+			f.close()
+
+	def get(self, k):
+		return self.__dict.get(k)
 	
-	# TODO: A co jak wogole nie ma zadnego wykazu zadaniowego?
 	def getDefaultTaskRegister(self, index):
 		# TODO: C komunikat o bledzie - nie ma takiego pliku
 		path = self.__dict.get("default_task_register")
@@ -117,13 +137,20 @@ class Configuration(object):
 			tr = TaskRegister(self.__abspath + "/" + path, index)
 			return tr
 		else:
-			return path
+			return TaskRegister(None, None, empty=True)
+
+	def configureDatabase(self, dBController):
+		user = self.__dict.get("dbuser")
+		db = self.__dict.get("db")
+		passwd = self.__dict.get("dbpass")
+		dBController.setPerDocumentConnection(db, user, passwd)
 
 class StructureIndex(object):
 
 	def __init__(self, abspath):
 		# TODO: C obsluga bledow w pliku
 		self.__ficheNo = 0
+		self.__alphabetic = False
 		self.__fiches = []
 		self.__ficheDict = {}
 		self.__nodeDict = {}
@@ -135,7 +162,9 @@ class StructureIndex(object):
 			if line == "\n":
 				continue
 			line = line.strip()
-			if line[0:2] == "$ ":
+			if line == "$alphabetic":
+				self.__alphabetic = True
+			elif line[0:2] == "$ ":
 				els = line[2:].split("\t")
 				sel = StructureNode(els[0], els[1])
 				curNode.add(sel)
@@ -150,7 +179,7 @@ class StructureIndex(object):
 					if els[1] == "$all":
 						for filee in sorted(os.listdir(curNode.getPath())):
 							if len(filee) > 5 and filee[-5:] == ".djvu":
-								fq = Fiche(filee[:-5], filee)
+								fq = Fiche(filee[:-5], filee[:-5])
 								curNode.add(fq)
 								self.__fiches.append(fq)
 								self.__ficheDict.setdefault(fq.getId(), (fq, self.__ficheNo)) # TODO: D wlaczyc numer do fiszki?
@@ -192,6 +221,9 @@ class StructureIndex(object):
 				return gparent.getChildren()[i + 1].firstFiche()
 			parent = gparent
 		return None
+
+	def isAlphabetic(self):
+		return self.__alphabetic
 
 #si = StructureIndex("/home/to/fajny")
 #def traverse(el, level=0):

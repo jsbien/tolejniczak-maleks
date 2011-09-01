@@ -704,7 +704,7 @@ class MainWindow(wx.Frame):
         if self.active_register in [self.strucreg_browser]:    
             self._disable_page_change()
         self.active_register.startBinarySearch()
-        self.SetStatusText("Binary search", 2)
+        self.SetStatusText(_("Binary search"), 2)
     
     def _dispose_modes(self):
         #if self.mode == _('Browsing mode') and self.taskreg_browser.binarySearchActive():
@@ -1195,6 +1195,7 @@ class MainWindow(wx.Frame):
         self.taskreg_browser.reset()
         self.strucreg_browser.reset()
         self.page_no = 0
+        self.dBController.setPerDocumentConnection(None, None, None)
         #def clear_models():
         #    self.metadata_model = self.text_model = self.outline_model = self.annotations_model = None
         #    self.models = ()
@@ -1206,13 +1207,16 @@ class MainWindow(wx.Frame):
             try:
                 self.index = StructureIndex(path)
                 self.config = Configuration(path)
+                self.config.configureDatabase(self.dBController)
                 self.hintRegister = HintRegister(path)
                 self.hintRegister.readUserHints(path)
                 self.top_panel.setHintRegister(self.hintRegister)
                 self.taskRegister = self.config.getDefaultTaskRegister(self.index)
                 self.document = self.context.new_document(djvu.decode.FileURI(self.index.getFiche(0).getDjVuPath()))
-                #self.ficheId = self.index.getFiche(0).getId()
-                self.ficheId = self.taskRegister[0].getId()
+                try:
+                    self.ficheId = self.taskRegister[0].getId()
+                except IndexError:
+                    self.ficheId = self.index.getFiche(0).getId()
                 #self.metadata_model = MetadataModel(self.document)
                 #self.text_model = TextModel(self.document)
                 #self.outline_model = OutlineModel(self.document)
@@ -1281,8 +1285,11 @@ class MainWindow(wx.Frame):
         #if self.taskRegister != None:
         #    #self.strucreg_browser.setRegister(self.taskRegister)
         #    self.strucreg_browser.select(self.ficheId)
+        self.regbar.setPath("")
         if self.index != None:
             self.strucreg_browser.setRegister(self.index)
+            if self.active_register == self.strucreg_browser:
+                self.regbar.setPath(self.strucreg_browser.getPath())
 
     def update_registers(self):
         if self.notify:
@@ -1291,7 +1298,9 @@ class MainWindow(wx.Frame):
     def update_panels(self):
         if self.ficheId != None: # TODO: NOTE jest otwarty jakis dokument
             if self.dBController != None:
-                hypothesis = self.dBController.getHyphotesisForFiche(self.ficheId)
+                hypothesis = self.dBController.getHypothesisForFiche(self.ficheId, self.active_register == self.strucreg_browser and self.index.isAlphabetic())
+                if hypothesis == None:
+                    hypothesis = self.index.getFicheById(self.ficheId).getHOCREntry(float(self.config.get("hocr_cut")))
                 if hypothesis != None:
                     self.top_panel.setHypothesis(hypothesis)
                 else:

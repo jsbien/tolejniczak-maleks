@@ -18,9 +18,17 @@ class DBController(object):
 
 	def __init__(self, config):
 		self.__user = config.read('dbuser', '')
+		self.__globalUser = self.__user
 		self.__passwd = config.read('dbpass', '')
+		self.__globalPasswd = self.__passwd
 		self.__db = config.read('db', '')
+		self.__globalDb = self.__db
 		self.__conn = None
+
+	def setPerDocumentConnection(self, db, user, passwd):
+		self.__user = user if user != None else self.__globalUser
+		self.__passwd = passwd if passwd != None else self.__globalPasswd
+		self.__db = db if db != None else self.__globalDb
 
 	def valid(self):
 		return self.__user != '' and self.__passwd != '' and self.__db != ''
@@ -33,6 +41,11 @@ class DBController(object):
 		cursor.close()
 		self.__conn.commit()
 		self.__conn.close()
+
+	def addFicheToFichesIndex(self, ficheId):
+		cursor = self.__openDBWithCursor()
+		cursor.execute("insert into fiches values (null, %s)", (ficheId))
+		self.__closeDBAndCursor(cursor)
 
 	def addFicheToEntriesIndex(self, ficheId, entry):
 		cursor = self.__openDBWithCursor()
@@ -56,10 +69,19 @@ class DBController(object):
 		self.__closeDBAndCursor(cursor)
 		return None
 
-	def getHyphotesisForFiche(self, ficheId):
+	def getHypothesisForFiche(self, ficheId, alphabetic):
 		cursor = self.__openDBWithCursor()
 		cursor.execute("select entry_hypothesis from hypotheses where fiche = %s", (ficheId))
 		row = cursor.fetchone()
+		if row == None and alphabetic:
+			cursor.execute("select position from fiches where fiche = %s", (ficheId))
+			pos = cursor.fetchone()
+			cursor.execute("select b.entry, c.entry from fiches a, actual_entries b, original_entries c where a.fiche = b.fiche and b.fiche = c.fiche and position < %s order by position desc", (pos[0]))
+			prevEntry = cursor.fetchone()
+			cursor.execute("select b.entry, c.entry from fiches a, actual_entries b, original_entries c where a.fiche = b.fiche and b.fiche = c.fiche and position > %s order by position", (pos))
+			nextEntry = cursor.fetchone()
+			if nextEntry != None and prevEntry != None and nextEntry[0] == prevEntry[0] == nextEntry[1] == prevEntry[1]:
+				row = nextEntry
 		self.__closeDBAndCursor(cursor)
 		if row == None:
 			return None

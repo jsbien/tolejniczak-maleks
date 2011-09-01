@@ -27,15 +27,16 @@ class HintRegister(object):
 		self.__entries = []
 		self.__new = []
 		self.__path = abspath
-		f = open(abspath + "/hint.reg")
-		for line in f:
-			if line == "\n" or line[0] == "#":
-				continue
-			line = line[:-1]
-			els = line.split(",")
-			siglum = self.__computeSiglum(els)
-			self.__entries.append((els[0], els[1], els[2], siglum))
-		f.close()
+		if os.path.exists(abspath + "/hint.reg"):
+			f = open(abspath + "/hint.reg")
+			for line in f:
+				if line == "\n" or line[0] == "#":
+					continue
+				line = line[:-1]
+				els = line.split(",")
+				siglum = self.__computeSiglum(els)
+				self.__entries.append((els[0], els[1], els[2], siglum))
+			f.close()
 
 	def __computeSiglum(self, els):
 		res = ""
@@ -98,15 +99,16 @@ class HintRegister(object):
 
 class TaskRegister(object):
 
-	def __init__(self, abspath, index):
+	def __init__(self, abspath, index, empty=False):
 		self.__ids = []
-		f = open(abspath)
-		for line in f:
-			if line == "\n":
-				continue
-			line = line.strip()
-			self.__ids.append(index.getFicheById(line))
-		f.close()
+		if not empty:
+			f = open(abspath)
+			for line in f:
+				if line == "\n":
+					continue
+				line = line.strip()
+				self.__ids.append(index.getFicheById(line))
+			f.close()
 	
 	def __getitem__(self, ind):
 		return self.__ids[ind]
