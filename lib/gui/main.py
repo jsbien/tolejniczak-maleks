@@ -276,14 +276,16 @@ class ScrolledPanel(wx.lib.scrolledpanel.ScrolledPanel):
 
 class MainWindow(wx.Frame):
 
-    def _menu_item(self, menu, caption, help, method, style = wx.ITEM_NORMAL, icon = None, id = wx.ID_ANY):
-        item = wx.MenuItem(menu, id, caption, help, style)
+    def _menu_item(self, menu, caption, help, method, style = wx.ITEM_NORMAL, icon = None, id = wx.ID_ANY, check=False):
+        item = wx.MenuItem(menu, id, caption, help, style)        
         self.menu_items.setdefault(method, item)
         if icon is not None:
             bitmap = wx.ArtProvider_GetBitmap(icon, wx.ART_MENU, MENU_ICON_SIZE)
             item.SetBitmap(bitmap)
         self.Bind(wx.EVT_MENU, method, item)
         menu.AppendItem(item)
+        if check:
+            item.Check()
         return item
 
     @apply
@@ -357,6 +359,7 @@ class MainWindow(wx.Frame):
         self.register_search = wx.TextCtrl(self.sidepanel, wx.ID_ANY)
         self.register_search.Bind(wx.EVT_TEXT, self.register_search_input)
         self.regbar = RegisterToolbar(self.sidepanel, wx.ID_ANY)
+        self.regbar.addListener(self)      
         
         #self.sidebar = wx.Choicebook(self.splitter, wx.ID_ANY)
         self.sidebar = wx.Choicebook(self.sidepanel, wx.ID_ANY)
@@ -366,7 +369,6 @@ class MainWindow(wx.Frame):
         #self.taskreg_browser = TaskRegisterBrowser(self.sidebar)
         self.taskreg_browser = RegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
         self.strucreg_browser = StructureRegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
-        self.regbar.addListener(self.strucreg_browser)
         #self.sidebar.AddPage(self.outline_browser, _('Outline'))
         #self.sidebar.AddPage(self.maparea_browser, _('Hyperlinks'))
         #self.sidebar.AddPage(self.text_browser, _('Text'))
@@ -433,6 +435,8 @@ class MainWindow(wx.Frame):
         self.__closing = False # TODO: NOTE pomocne w zwalczaniu segmentation fault przy wyjsciu z aplikacji
         self._disable_page_change()
         
+        self.page_widget.zoom = FitPageZoom()
+        
         #self.taskreg_browser.Bind(wx.EVT_SET_FOCUS, self.defocus, self.taskreg_browser)
 
     #def defocus(self, event):
@@ -456,8 +460,11 @@ class MainWindow(wx.Frame):
         #save_menu_item = self._menu_item(menu, _('&Save') + '\tCtrl+S', _('Save the document'), self.on_save, icon=wx.ART_FILE_SAVE)
         #close_menu_item = self._menu_item(menu, _('&Close') + '\tCtrl+W', _('Close the document'), self.on_close, id=wx.ID_CLOSE)
         close_menu_item = self._menu_item(menu, _('&Close'), _('Close the document'), self.on_close, id=wx.ID_CLOSE)
+        menu.AppendSeparator()
+        export_bookmarks_menu_item = self._menu_item(menu, _('&Export bookmarks'), _('Export bookmarks as task register'), self.on_export_bookmarks)
         self.editable_menu_items += close_menu_item,
         #self.saveable_menu_items += save_menu_item,
+        self.editable_menu_items += export_bookmarks_menu_item,
         menu.AppendSeparator()
         #self._menu_item(menu, _('&Quit') + '\tCtrl+Q', _('Quit the application'), self.on_exit, icon=wx.ART_QUIT)
         self._menu_item(menu, _('&Quit'), _('Quit the application'), self.on_exit, icon=wx.ART_QUIT)
@@ -487,14 +494,14 @@ class MainWindow(wx.Frame):
         ]:
             self._menu_item(submenu, caption, help, method, id = id or wx.ID_ANY)
         submenu.AppendSeparator()
-        for caption, help, zoom, id in \
+        for caption, help, zoom, id, check in \
         [
-            (_('Fit &width'),  _('Set magnification to fit page width'),  FitWidthZoom(), None),
-            (_('Fit &page'),   _('Set magnification to fit page'),        FitPageZoom(),  wx.ID_ZOOM_FIT),
-            (_('&Stretch'),    _('Stretch the image to the window size'), StretchZoom(),  None),
-            (_('One &to one'), _('Set full resolution magnification.'),   OneToOneZoom(), wx.ID_ZOOM_100),
+            (_('Fit &width'),  _('Set magnification to fit page width'),  FitWidthZoom(), None, False),
+            (_('Fit &page'),   _('Set magnification to fit page'),        FitPageZoom(),  wx.ID_ZOOM_FIT, True),
+            (_('&Stretch'),    _('Stretch the image to the window size'), StretchZoom(),  None, False),
+            (_('One &to one'), _('Set full resolution magnification.'),   OneToOneZoom(), wx.ID_ZOOM_100, False),
         ]:
-            self._menu_item(submenu, caption, help, self.on_zoom(zoom), style=wx.ITEM_RADIO, id = id or wx.ID_ANY)
+            self._menu_item(submenu, caption, help, self.on_zoom(zoom), style=wx.ITEM_RADIO, id = id or wx.ID_ANY, check=check)
         submenu.AppendSeparator()
         self.zoom_menu_items = {}
         for percent in 300, 200, 150, 100, 75, 50, 25:
@@ -505,21 +512,21 @@ class MainWindow(wx.Frame):
                 self.on_zoom(PercentZoom(percent)),
                 style=wx.ITEM_RADIO
             )
-            if percent == 100:
-                item.Check()
+            #if percent == 100:
+            #    item.Check()
             self.zoom_menu_items[percent] = item
         menu.AppendMenu(wx.ID_ANY, _('&Zoom'), submenu)
-        #submenu = wx.Menu()
-        #for caption, help, method in \
-        #[
-        #    (_('&Color') + '\tAlt+C', _('Display everything'),                                            self.on_display_everything),
-        #    (_('&Stencil'),           _('Display only the document bitonal stencil'),                     self.on_display_stencil),
-        #    (_('&Foreground'),        _('Display only the foreground layer'),                             self.on_display_foreground),
-        #    (_('&Background'),        _('Display only the background layer'),                             self.on_display_background),
-        #    (_('&None') + '\tAlt+N',  _('Neither display the foreground layer nor the background layer'), self.on_display_none)
-        #]:
-        #    self._menu_item(submenu, caption, help, method, style=wx.ITEM_RADIO)
-        #menu.AppendMenu(wx.ID_ANY, _('&Image'), submenu)
+        submenu = wx.Menu()
+        for caption, help, method in \
+        [
+            (_('&Color') + '\tAlt+C', _('Display everything'),                                            self.on_display_everything),
+            (_('&Stencil'),           _('Display only the document bitonal stencil'),                     self.on_display_stencil),
+            (_('&Foreground'),        _('Display only the foreground layer'),                             self.on_display_foreground),
+            (_('&Background'),        _('Display only the background layer'),                             self.on_display_background),
+            (_('&None') + '\tAlt+N',  _('Neither display the foreground layer nor the background layer'), self.on_display_none)
+        ]:
+            self._menu_item(submenu, caption, help, method, style=wx.ITEM_RADIO)
+        menu.AppendMenu(wx.ID_ANY, _('&Image'), submenu)
         #submenu = wx.Menu()
         #_tmp_items = []
         #for caption, help, method in \
@@ -557,7 +564,7 @@ class MainWindow(wx.Frame):
     def _create_settings_menu(self):
         menu = wx.Menu()
         #sidebar_menu_item = self._menu_item(menu, _('Show &sidebar') + '\tF9', _('Show/hide the sidebar'), self.on_show_sidebar, style=wx.ITEM_CHECK)
-        sidebar_menu_item = self._menu_item(menu, _('Show &sidebar'), _('Show/hide the sidebar'), self.on_show_sidebar, style=wx.ITEM_CHECK)
+        sidebar_menu_item = self._menu_item(menu, _('Show &register panel'), _('Show/hide the register panel'), self.on_show_sidebar, style=wx.ITEM_CHECK)
         if self.default_sidebar_shown:
             sidebar_menu_item.Check()
         #self._menu_item(menu, _(u'External editor…'), _('Setup an external editor'), self.on_setup_external_editor)
@@ -610,14 +617,20 @@ class MainWindow(wx.Frame):
         if self.top_panel.getEditPanelContent() == '':
             self.error_box(_('Empty edit panel'))
             return
+        ok = False
         if self.dBController != None:
             msg = self.dBController.addFicheToEntriesIndex(self.ficheId, self.top_panel.getEditPanelContent())
             if msg != None:
                 self.error_box(msg)
                 return
+            else:
+                ok = True
         self.hintRegister.addHint(self.top_panel.getEditPanelContent())
         self.dirty = True # TODO: NOTE bo mozemy musiec np. zapisac do pliku dodana powyzej podpowiedz
         if self.active_register.allowsNextFiche() and self.active_register.hasSelection():
+            if ok:
+                self.lastEntry = self.top_panel.getEditPanelContent()
+                self.wasEditAccept = True
             self.active_register.getNextFiche()
         #pass
 
@@ -638,13 +651,47 @@ class MainWindow(wx.Frame):
         if self.top_panel.getHint() == '':
             self.error_box(_('Empty hint panel'))
             return
+        ok = False
         if self.dBController != None:
             msg = self.dBController.addFicheToEntriesIndex(self.ficheId, self.top_panel.getHint())
             if msg != None:
                 self.error_box(msg)
                 return
+            else:
+                ok = True
         if self.active_register.allowsNextFiche() and self.active_register.hasSelection():
+            if ok:
+                self.lastEntry = self.top_panel.getHint()
+                self.wasEditAccept = True
             self.active_register.getNextFiche()
+
+    def on_up(self, event):
+        if self.active_register == self.strucreg_browser:
+            self.active_register.onUp(event)
+
+    def on_bookmark(self, event):
+        if self.dBController != None:
+            self.dBController.bookmarkFiche(self.ficheId)
+            if self.bookmarksActive:
+                self.taskreg_browser.setRegister(self.dBController.getBookmarksTaskRegister())
+                self.taskreg_browser.select(self.ficheId)
+
+    def on_choose_register(self, event):
+        if self.active_register == self.taskreg_browser:
+            li = [_('Default task register'), _('Bookmarks')]
+            dg = wx.SingleChoiceDialog(self, _('Choose work mode'), _('Work mode'), li)
+            if dg.ShowModal() == wx.ID_OK:
+                i = dg.GetSelection()
+                if i != -1:
+                    if i == 0:
+                        self.bookmarksActive = False
+                        self.taskreg_browser.setRegister(self.taskRegister)
+                        self.taskreg_browser.select(self.ficheId)
+                    elif i == 1 and self.dBController != None:
+                        self.bookmarksActive = True
+                        self.taskreg_browser.setRegister(self.dBController.getBookmarksTaskRegister())
+                        self.taskreg_browser.select(self.ficheId)
+            self.page_widget.SetFocus()
         
     # TODO: A flage __fileOpen i sprawdzanie we wszystkich istotnych metodach
 
@@ -653,8 +700,10 @@ class MainWindow(wx.Frame):
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('E'), self.on_edit_accept)
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('P'), self.on_edit_prefix_accept)
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('H'), self.on_hint_accept)
-        #self._install_shortcut(li, wx.ACCEL_NORMAL, wx.WXK_PAGEDOWN, self.on_next_fiche)
-        #self._install_shortcut(li, wx.ACCEL_NORMAL, wx.WXK_PAGEUP, self.on_prev_fiche)
+        self._install_shortcut(li, wx.ACCEL_CTRL, ord('D'), self.on_bookmark)
+        self._install_shortcut(li, wx.ACCEL_CTRL, ord('R'), self.on_choose_register)
+        #self._install_shortcut(li, wx.ACCEL_NORMAL, wx.WXK_DOWN, self.on_next_fiche)
+        #self._install_shortcut(li, wx.ACCEL_NORMAL, wx.WXK_UP, self.on_prev_fiche)
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('.'), self.on_next_binary)
         self._install_shortcut(li, wx.ACCEL_CTRL, ord(','), self.on_prev_binary)
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('B'), self.on_stop_binary)
@@ -700,7 +749,7 @@ class MainWindow(wx.Frame):
             self._enable_page_change()
         self.SetStatusText("", 2)
     
-    def _start_binary_search(self):
+    def start_binary_search(self):
         if self.active_register in [self.strucreg_browser]:    
             self._disable_page_change()
         self.active_register.startBinarySearch()
@@ -888,20 +937,20 @@ class MainWindow(wx.Frame):
         self.regbar.setPath(self.active_register.getPath())
         self._enable_page_change()
 
-    #def on_display_everything(self, event):
-    #    self.page_widget.render_mode = djvu.decode.RENDER_COLOR
+    def on_display_everything(self, event):
+        self.page_widget.render_mode = djvu.decode.RENDER_COLOR
 
-    #def on_display_foreground(self, event):
-    #    self.page_widget.render_mode = djvu.decode.RENDER_FOREGROUND
+    def on_display_foreground(self, event):
+        self.page_widget.render_mode = djvu.decode.RENDER_FOREGROUND
 
-    #def on_display_background(self, event):
-    #    self.page_widget.render_mode = djvu.decode.RENDER_BACKGROUND
+    def on_display_background(self, event):
+        self.page_widget.render_mode = djvu.decode.RENDER_BACKGROUND
 
-    #def on_display_stencil(self, event):
-    #    self.page_widget.render_mode = djvu.decode.RENDER_BLACK
+    def on_display_stencil(self, event):
+        self.page_widget.render_mode = djvu.decode.RENDER_BLACK
 
-    #def on_display_none(self, event):
-    #    self.page_widget.render_mode = None
+    def on_display_none(self, event):
+        self.page_widget.render_mode = None
 
     #def on_display_text(self, event):
     #    self.page_widget.render_nonraster = RENDER_NONRASTER_TEXT
@@ -982,7 +1031,7 @@ class MainWindow(wx.Frame):
     def on_next_binary(self, event):
     #    #if self.mode == _('Browsing mode'):
     #        #if not self.taskreg_browser.binarySearchActive():
-    #        #    self._start_binary_search()
+    #        #    self.start_binary_search()
     #        #else:
         if self.active_register.binarySearchActive():
             self.active_register.nextBinary()
@@ -990,7 +1039,7 @@ class MainWindow(wx.Frame):
     def on_prev_binary(self, event):
     #    if self.mode == _('Browsing mode'):
     #        #if not self.taskreg_browser.binarySearchActive():
-    #        #    self._start_binary_search()
+    #        #    self.start_binary_search()
     #        #else:
          if self.active_register.binarySearchActive():
              self.active_register.prevBinary()
@@ -998,7 +1047,7 @@ class MainWindow(wx.Frame):
     def on_stop_binary(self, event):
     #    if self.mode == _('Browsing mode'):
         if not self.active_register.binarySearchActive():
-            self._start_binary_search()
+            self.start_binary_search()
         else:
             self.stop_binary_search()
 
@@ -1170,9 +1219,12 @@ class MainWindow(wx.Frame):
         self.index = None
         self.config = None
         self.taskRegister = None
+        self.bookmarksActive = False
         self.hintRegister = None
         self.top_panel.setHintRegister(None)
         self.ficheId = None
+        self.wasEditAccept = False
+        self.lastEntry = None
 
     def do_open(self, path):
         if isinstance(path, unicode):
@@ -1237,6 +1289,10 @@ class MainWindow(wx.Frame):
         return True
 
     def switch_document(self, page_no):
+        if self.wasEditAccept:
+            self.wasEditAccept = False
+        else:
+            self.lastEntry = None
         self.document = None
         try:
             self.document = self.context.new_document(djvu.decode.FileURI(self.index.getFiche(page_no).getDjVuPath()))
@@ -1300,7 +1356,10 @@ class MainWindow(wx.Frame):
             if self.dBController != None:
                 hypothesis = self.dBController.getHypothesisForFiche(self.ficheId, self.active_register == self.strucreg_browser and self.index.isAlphabetic())
                 if hypothesis == None:
-                    hypothesis = self.index.getFicheById(self.ficheId).getHOCREntry(float(self.config.get("hocr_cut")))
+                    if self.lastEntry != None and self.index.isAlphabetic():
+                        hypothesis = self.lastEntry
+                    else:
+                        hypothesis = self.index.getFicheById(self.ficheId).getHOCREntry(float(self.config.get("hocr_cut", default="0.1")))
                 if hypothesis != None:
                     self.top_panel.setHypothesis(hypothesis)
                 else:
@@ -1315,6 +1374,20 @@ class MainWindow(wx.Frame):
                 base_path = base_path.decode(system_encoding, 'replace')
             title = u'%s — %s' % (APPLICATION_NAME, base_path)
         self.SetTitle(title)
+
+    def on_export_bookmarks(self, event):
+        if self.dBController != None:
+            bookmarksTaskRegister = self.dBController.getBookmarksTaskRegister()
+            dialog = wx.FileDialog(self, style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT, message = _('Export bookmarks'))
+            dialog.SetPath(self._config.read('open_dir', ''))
+        try:
+            if dialog.ShowModal() == wx.ID_OK:
+                self._config['open_dir'] = os.path.dirname(dialog.GetPath()) or ''
+                fileToSave = dialog.GetPath()
+                bookmarksTaskRegister.saveToFile(fileToSave)
+        finally:
+            dialog.Destroy()
+        self.page_widget.SetFocus()
 
     def on_about(self, event):
         message = '%(APPLICATION_NAME)s %(__version__)s\n' + _('Author') + ': %(__author__)s\n' + _('License') + ': %(LICENSE)s'

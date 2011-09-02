@@ -549,6 +549,8 @@ class PageWidget(wx.lib.ogl.ShapeCanvas):
                     #page_text.register_callback(text_callback)
                     #page_annotations = page.annotations
                     #page_annotations.register_callback(maparea_callback)
+                if page_job == None: # TODO: NOTE uwaga, czy to moze cos popsuc?
+                    return
                 real_page_size = (page_job.width, page_job.height)
                 viewport_size = tuple(self.GetParent().GetSize())
                 screen_page_size = self._zoom.get_page_screen_size(page_job, viewport_size)

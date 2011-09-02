@@ -57,6 +57,10 @@ class RegisterBrowser(wx.ListView):
 		self._element2item = {}
 	
 	def setRegister(self, reg):
+		if self.__binary:
+			for l in self._listeners:
+				l.stop_binary_search()
+		self.reset()
 		i = 0
 		for element in reg:
 			self.InsertStringItem(i, element.getLabel())

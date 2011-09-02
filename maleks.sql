@@ -13,7 +13,17 @@
 
 create table fiches (
 	position integer not null auto_increment primary key,
-	fiche varchar(40) not null
+	fiche varchar(40) not null,
+	work varchar(50),
+	bookmark datetime,
+	comment varchar(50)
+);
+
+create table pages (
+	fiche varchar(40) not null primary key,
+	page integer not null,
+	line integer,
+	comment varchar(50)
 );
 
 create table actual_entries (

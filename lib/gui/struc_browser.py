@@ -63,11 +63,14 @@ class StructureRegisterBrowser(RegisterBrowser):
 			self.__element = self.__register.getNodeById(elementId)
 			self.__selectStructureNode(self.__element)
 			if self.__ficheLevel:
-				for l in self._listeners: # TODO: D jeden listener
-					elementId = l.request_selection()
-					if elementId != None:
-						self.select(elementId)
-						time.sleep(0.1) # TODO: NOTE bez tego nie zaznacza w wykazie aktualnie ogladanej fiszki
+				for l in self._listeners:
+					l.start_binary_search()
+				#for l in self._listeners: # TODO: D jeden listener
+				#	elementId = l.request_selection()
+				#	if elementId != None:
+				#		self.select(elementId)
+				#		time.sleep(0.1) # TODO: NOTE bez tego nie zaznacza w wykazie aktualnie ogladanej fiszki
+				time.sleep(0.1)
 
 	def onUp(self, event):
 		if self.__element.getParent() != None:

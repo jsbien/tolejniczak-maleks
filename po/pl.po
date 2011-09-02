@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: djvusmooth 0.2.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-01 20:55+0200\n"
+"POT-Creation-Date: 2011-09-02 19:11+0200\n"
 "PO-Revision-Date: 2009-05-31 14:45+CEST\n"
 "Last-Translator: Mateusz Turcza <mturcza@mimuw.edu.pl>\n"
 "Language-Team: none\n"
@@ -18,14 +18,26 @@ msgstr ""
 msgid "&About"
 msgstr "&O programie"
 
+msgid "&Background"
+msgstr "&Tło"
+
 msgid "&Close"
 msgstr "&Zamknij"
+
+msgid "&Color"
+msgstr "&Kolor"
+
+msgid "&Export bookmarks"
+msgstr "&Eksportuj zakładki"
 
 msgid "&File"
 msgstr "&Plik"
 
 msgid "&First page"
 msgstr "Pi&erwsza strona"
+
+msgid "&Foreground"
+msgstr "&Pierwszy plan"
 
 msgid "&Go"
 msgstr "&Idź"
@@ -36,6 +48,9 @@ msgstr "I&dź do strony…"
 msgid "&Help"
 msgstr "Pomo&c"
 
+msgid "&Image"
+msgstr "O&braz"
+
 msgid "&Last page"
 msgstr "&Ostatnia strona"
 
@@ -44,6 +59,9 @@ msgstr "&Nowe hiperłącze…"
 
 msgid "&Next page"
 msgstr "&Następna strona"
+
+msgid "&None"
+msgstr "&Brak"
 
 msgid "&Open"
 msgstr "&Otwórz"
@@ -62,6 +80,9 @@ msgstr "&Usuń"
 
 msgid "&Settings"
 msgstr "&Ustawienia"
+
+msgid "&Stencil"
+msgstr "&Szablon"
 
 msgid "&Stretch"
 msgstr "&Rozciągnij"
@@ -102,6 +123,9 @@ msgstr "Kolor tła"
 msgid "Binary search"
 msgstr "Przeszukiwanie binarne"
 
+msgid "Bookmarks"
+msgstr "Zakładki"
+
 msgid "Border"
 msgstr "Obramowanie"
 
@@ -120,6 +144,21 @@ msgstr "Zmniejsz powiększenie"
 msgid "Default mode"
 msgstr "Tryb zwykły"
 
+msgid "Default task register"
+msgstr "Domyślny wykaz zadaniowy"
+
+msgid "Display everything"
+msgstr "Pokaż wszystko"
+
+msgid "Display only the background layer"
+msgstr "Pokaż tylko tło"
+
+msgid "Display only the document bitonal stencil"
+msgstr "Pokaż tylko dwubarwny szablon dokumentu"
+
+msgid "Display only the foreground layer"
+msgstr "Pokaż tylko pierwszy plan"
+
 msgid "Edit metadata"
 msgstr "Edytuj metadane"
 
@@ -137,6 +176,12 @@ msgstr "Wklęsły"
 
 msgid "Etched out"
 msgstr "Wypukły"
+
+msgid "Export bookmarks"
+msgstr "Eksportuj zakładki"
+
+msgid "Export bookmarks as task register"
+msgstr "Eskportuj zakładki jako wykaz zadaniowy"
 
 msgid "Fiche already indexed"
 msgstr "Fiszka została już zaindeksowana"
@@ -205,6 +250,9 @@ msgstr "Właściwości"
 msgid "More information about this program"
 msgstr "Więcej informacji o tym programie"
 
+msgid "Neither display the foreground layer nor the background layer"
+msgstr "Nie pokazuj pierwszego planu ani tła"
+
 msgid "None"
 msgstr "Brak"
 
@@ -269,11 +317,11 @@ msgstr "Cień na zewnątrz"
 msgid "Shape"
 msgstr "Kształt"
 
-msgid "Show &sidebar"
-msgstr "Pokaż panel &boczny"
+msgid "Show &register panel"
+msgstr "Pokaż panel &wykazów"
 
-msgid "Show/hide the sidebar"
-msgstr "Pokaż/ukryj panel boczny"
+msgid "Show/hide the register panel"
+msgstr "Pokaż/ukryj panel wykazów"
 
 msgid "Solid color"
 msgstr "Jednolity kolor"
@@ -387,17 +435,15 @@ msgstr "słowo"
 msgid "words"
 msgstr "słowa"
 
+#, fuzzy
+#~ msgid "Save bookmarks"
+#~ msgstr "zakładki"
+
 #~ msgid "Browsing mode"
 #~ msgstr "Tryb wertowania"
 
-#~ msgid "&Background"
-#~ msgstr "&Tło"
-
 #~ msgid "&Bookmark this page"
 #~ msgstr "Dodaj stronę do z&akładek"
-
-#~ msgid "&Color"
-#~ msgstr "&Kolor"
 
 #~ msgid "&Edit"
 #~ msgstr "&Edycja"
@@ -408,23 +454,14 @@ msgstr "słowa"
 #~ msgid "&Flatten"
 #~ msgstr "&Spłaszcz strukturę tekstu"
 
-#~ msgid "&Foreground"
-#~ msgstr "&Pierwszy plan"
-
 #~ msgid "&Hyperlinks"
 #~ msgstr "&Hiperłącza"
-
-#~ msgid "&Image"
-#~ msgstr "O&braz"
 
 #~ msgid "&Metadata"
 #~ msgstr "&Metadane"
 
 #~ msgid "&Non-raster data"
 #~ msgstr "Dane &nierastrowe"
-
-#~ msgid "&None"
-#~ msgstr "&Brak"
 
 #~ msgid "&Outline"
 #~ msgstr "&Konspekt"
@@ -434,9 +471,6 @@ msgstr "słowa"
 
 #~ msgid "&Save"
 #~ msgstr "Za&pisz"
-
-#~ msgid "&Stencil"
-#~ msgstr "&Szablon"
 
 #~ msgid "&Text"
 #~ msgstr "&Tekst"
@@ -449,18 +483,6 @@ msgstr "słowa"
 
 #~ msgid "Cannot edit text with character zones."
 #~ msgstr "Nie można edytować tekstu ze strefami znakowymi."
-
-#~ msgid "Display everything"
-#~ msgstr "Pokaż wszystko"
-
-#~ msgid "Display only the background layer"
-#~ msgstr "Pokaż tylko tło"
-
-#~ msgid "Display only the document bitonal stencil"
-#~ msgstr "Pokaż tylko dwubarwny szablon dokumentu"
-
-#~ msgid "Display only the foreground layer"
-#~ msgstr "Pokaż tylko pierwszy plan"
 
 #~ msgid "Display overprinted annotations"
 #~ msgstr "Pokazuj obwódki wokół hiperłącz"
@@ -507,9 +529,6 @@ msgstr "słowa"
 
 #~ msgid "Link: %s"
 #~ msgstr "Łącze: %s"
-
-#~ msgid "Neither display the foreground layer nor the background layer"
-#~ msgstr "Nie pokazuj pierwszego planu ani tła"
 
 #~ msgid "No text layer to edit."
 #~ msgstr "Brak warstwy tekstowej do edycji."

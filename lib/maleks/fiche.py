@@ -127,8 +127,11 @@ class Configuration(object):
 				self.__dict.setdefault(k, v)
 			f.close()
 
-	def get(self, k):
-		return self.__dict.get(k)
+	def get(self, k, default=None):
+		if self.__dict.get(k) == None:	
+			return default
+		else:
+			return self.__dict.get(k)
 	
 	def getDefaultTaskRegister(self, index):
 		# TODO: C komunikat o bledzie - nie ma takiego pliku

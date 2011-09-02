@@ -13,6 +13,8 @@
 import MySQLdb
 import _mysql_exceptions
 from djvusmooth.i18n import _
+from djvusmooth.maleks.registers import TaskRegister
+from djvusmooth.maleks.fiche import Fiche
 
 class DBController(object):
 
@@ -44,7 +46,12 @@ class DBController(object):
 
 	def addFicheToFichesIndex(self, ficheId):
 		cursor = self.__openDBWithCursor()
-		cursor.execute("insert into fiches values (null, %s)", (ficheId))
+		cursor.execute("insert into fiches values (null, %s, null, null, null)", (ficheId))
+		self.__closeDBAndCursor(cursor)
+
+	def bookmarkFiche(self, ficheId):
+		cursor = self.__openDBWithCursor()
+		cursor.execute("update fiches set bookmark = sysdate() where fiche = %s", (ficheId))
 		self.__closeDBAndCursor(cursor)
 
 	def addFicheToEntriesIndex(self, ficheId, entry):
@@ -87,4 +94,26 @@ class DBController(object):
 			return None
 		else:
 			return row[0]
+
+	def getBookmarksTaskRegister(self):
+		reg = TaskRegister(None, None, empty=True)
+		cursor = self.__openDBWithCursor()
+		cursor.execute("select fiche from fiches where bookmark is not null order by position")
+		row = cursor.fetchone()
+		while row != None:
+			reg.append(Fiche(row[0], row[0]))
+			row = cursor.fetchone()
+		self.__closeDBAndCursor(cursor)
+		return reg
+
+	#def getCommentTaskRegister(self):
+	#	reg = TaskRegister(None, None, emtpy=True)
+	#	cursor = self.__openDBWithCursor()
+	#	cursor.execute("select fiche from fiches where comment is not null and comment <> '' order by position")
+	#	row = cursor.fetchone()
+	#	while row != None:
+	#		reg.append(Fiche(row[0], row[0]))
+	#		row = cursor.fetchone()
+	#	self.__closeDBAndCursor(cursor)
+	#	return reg
 

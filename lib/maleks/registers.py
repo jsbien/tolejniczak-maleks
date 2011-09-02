@@ -109,7 +109,16 @@ class TaskRegister(object):
 				line = line.strip()
 				self.__ids.append(index.getFicheById(line))
 			f.close()
+
+	def append(self, fiche):
+		self.__ids.append(fiche)
 	
 	def __getitem__(self, ind):
 		return self.__ids[ind]
+
+	def saveToFile(self, path):
+		f = open(path, "w")
+		for fiche in self.__ids:
+			f.write(fiche.getId() + "\n")			
+		f.close()
 

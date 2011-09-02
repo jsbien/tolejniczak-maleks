@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: djvusmooth 0.2.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-01 20:55+0200\n"
+"POT-Creation-Date: 2011-09-02 19:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,13 +20,25 @@ msgstr ""
 msgid "&About"
 msgstr ""
 
+msgid "&Background"
+msgstr ""
+
 msgid "&Close"
+msgstr ""
+
+msgid "&Color"
+msgstr ""
+
+msgid "&Export bookmarks"
 msgstr ""
 
 msgid "&File"
 msgstr ""
 
 msgid "&First page"
+msgstr ""
+
+msgid "&Foreground"
 msgstr ""
 
 msgid "&Go"
@@ -38,6 +50,9 @@ msgstr ""
 msgid "&Help"
 msgstr ""
 
+msgid "&Image"
+msgstr ""
+
 msgid "&Last page"
 msgstr ""
 
@@ -45,6 +60,9 @@ msgid "&New hyperlink…"
 msgstr ""
 
 msgid "&Next page"
+msgstr ""
+
+msgid "&None"
 msgstr ""
 
 msgid "&Open"
@@ -63,6 +81,9 @@ msgid "&Remove"
 msgstr ""
 
 msgid "&Settings"
+msgstr ""
+
+msgid "&Stencil"
 msgstr ""
 
 msgid "&Stretch"
@@ -101,6 +122,9 @@ msgstr ""
 msgid "Binary search"
 msgstr ""
 
+msgid "Bookmarks"
+msgstr ""
+
 msgid "Border"
 msgstr ""
 
@@ -119,6 +143,21 @@ msgstr ""
 msgid "Default mode"
 msgstr ""
 
+msgid "Default task register"
+msgstr ""
+
+msgid "Display everything"
+msgstr ""
+
+msgid "Display only the background layer"
+msgstr ""
+
+msgid "Display only the document bitonal stencil"
+msgstr ""
+
+msgid "Display only the foreground layer"
+msgstr ""
+
 msgid "Edit metadata"
 msgstr ""
 
@@ -135,6 +174,12 @@ msgid "Etched in"
 msgstr ""
 
 msgid "Etched out"
+msgstr ""
+
+msgid "Export bookmarks"
+msgstr ""
+
+msgid "Export bookmarks as task register"
 msgstr ""
 
 msgid "Fiche already indexed"
@@ -204,6 +249,9 @@ msgstr ""
 msgid "More information about this program"
 msgstr ""
 
+msgid "Neither display the foreground layer nor the background layer"
+msgstr ""
+
 msgid "None"
 msgstr ""
 
@@ -268,10 +316,10 @@ msgstr ""
 msgid "Shape"
 msgstr ""
 
-msgid "Show &sidebar"
+msgid "Show &register panel"
 msgstr ""
 
-msgid "Show/hide the sidebar"
+msgid "Show/hide the register panel"
 msgstr ""
 
 msgid "Solid color"
