@@ -10,9 +10,9 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 # General Public License for more details.
 
-from djvusmooth.maleks.useful import Notifier
+from maleks.maleks.useful import Notifier
 import wx
-from djvusmooth.gui import __RESOURCES_PATH__
+from maleks.gui import __RESOURCES_PATH__
 
 class TopPanelToolbar(wx.Panel, Notifier):
 

@@ -1,3 +1,3 @@
-__version__ = '0.2.10'
-__author__ = 'Jakub Wilk <jwilk@jwilk.net>'
+__version__ = '0.1.2'
+__author__ = 'Tomasz Olejniczak <tomek.87@poczta.onet.pl>'
 

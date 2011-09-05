@@ -1,3 +1,19 @@
+maleks (0.1.2) unstable; urgency=low
+
+  * Implement structure register.
+  * Implement DB connection.
+  * Implement main panel.
+  * Implement bookmarks.
+
+ -- Tomasz Olejniczak <tomek.87@poczta.onet.pl>  Fri Sep 02 20:49:21 2011 +0200
+
+maleks (0.1.1) unstable; urgency=low
+
+  * Modify djvusmooth to display fiches in DjVu format.
+  * Implement task register.
+
+ -- Tomasz Olejniczak <tomek.87@poczta.onet.pl>  Thu Aug 25 15:42:58 2011 +0200
+
 djvusmooth (0.2.10) unstable; urgency=low
 
   * Let the setup.py script build and install manual pages. Thanks to Kyrill

@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <!DOCTYPE refentry PUBLIC '-//OASIS//DTD DocBook XML V4.5//EN' 'http://www.docbook.org/xml/4.5/docbookx.dtd' 
 [
-    <!ENTITY p 'djvusmooth'>
-    <!ENTITY version '0.2.10'>
+    <!ENTITY p 'maleks'>
+    <!ENTITY version '0.1.2'>
 ]>
 
 <refentry>
@@ -11,10 +11,10 @@
     <title>&p; manual</title>
     <productname>&p;</productname>
     <author>
-        <firstname>Jakub</firstname> <surname>Wilk</surname>
+        <firstname>Tomasz</firstname> <surname>Olejniczak</surname>
         <affiliation>
             <address>
-                <email>jwilk@jwilk.net</email>
+                <email>tomek.87@poczta.onet.pl</email>
             </address>
         </affiliation>
     </author>
@@ -23,6 +23,10 @@
         <year>2010</year>
         <year>2011</year>
         <holder>Jakub Wilk</holder>
+    </copyright>
+    <copyright>
+        <year>2011</year>
+        <holder>Tomasz Olejniczak</holder>
     </copyright>
 </refentryinfo>
 

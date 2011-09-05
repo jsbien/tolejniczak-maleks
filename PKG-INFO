@@ -1,12 +1,12 @@
 Metadata-Version: 1.0
-Name: djvusmooth
-Version: 0.2.10
-Summary: graphical editor for DjVu
-Home-page: http://jwilk.net/software/djvusmooth
-Author: Jakub Wilk
-Author-email: jwilk@jwilk.net
+Name: maleks
+Version: 0.1.2
+Summary: lexicographic data tool
+Home-page: 
+Author: Tomasz Olejniczak
+Author-email: tomek.87@poczta.onet.pl
 License: GNU GPL 2
-Description: *djvusmooth* is a graphical editor for `DjVu <http://djvu.org>`_ documents.
+Description: *maleks* is a tool for managing lexicographic data.
 Platform: UNKNOWN
 Classifier: Development Status :: 4 - Beta
 Classifier: Environment :: Console

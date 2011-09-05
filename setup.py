@@ -13,7 +13,7 @@
 # General Public License for more details.
 
 '''
-*djvusmooth* is a graphical editor for `DjVu <http://djvu.org>`_ documents.
+*maleks* is a tool for managing lexicographic data.
 '''
 
 classifiers = '''
@@ -49,7 +49,7 @@ for root, dirs, files in os.walk('locale'):
             [os.path.join(root, f)]
         ))
 manpages = set()
-data_files = [('share/man/man1', manpages)]
+data_files = [('share/man/man1', manpages)]#, ('share/maleks/res', ['res/binary.png', 'res/chreg.png', 'res/edins.png', 'res/edpre.png', 'res/hins.png', 'res/next.png', 'res/prev.png', 'res/up.png'])]
 
 class build_doc(distutils_build):
 
@@ -79,18 +79,18 @@ class sdist(distutils_sdist):
         return distutils_sdist.run(self)
 
 distutils.core.setup(
-    name = 'djvusmooth',
+    name = 'maleks',
     version = __version__,
     license = 'GNU GPL 2',
-    description = 'graphical editor for DjVu',
+    description = 'lexicographic data tool',
     long_description = __doc__.strip(),
     classifiers = classifiers,
-    url = 'http://jwilk.net/software/djvusmooth',
-    author = 'Jakub Wilk',
-    author_email = 'jwilk@jwilk.net',
-    packages = ['djvusmooth'] + ['djvusmooth.%s' % x for x in 'db gui models text maleks'.split()],
-    package_dir = dict(djvusmooth='lib'),
-    scripts = ['djvusmooth'],
+    url = '',
+    author = 'Tomasz Olejniczak',
+    author_email = 'tomek.87@poczta.onet.pl',
+    packages = ['maleks'] + ['maleks.%s' % x for x in 'db gui models text maleks'.split()],
+    package_dir = dict(maleks='lib'),
+    scripts = ['maleks'],
     data_files = data_files,
     cmdclass = dict(
         sdist=sdist,

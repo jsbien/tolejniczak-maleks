@@ -14,11 +14,11 @@
 import wx
 import wx.lib.mixins.listctrl
 
-import djvusmooth.models.annotations
-from djvusmooth import models
-import djvusmooth.gui.maparea_menu
-from djvusmooth import gui
-from djvusmooth.i18n import _
+import maleks.models.annotations
+from maleks import models
+import maleks.gui.maparea_menu
+from maleks import gui
+from maleks.i18n import _
 
 class PageAnnotationsCallback(models.annotations.PageAnnotationsCallback):
 

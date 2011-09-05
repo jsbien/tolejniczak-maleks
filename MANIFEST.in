@@ -6,5 +6,5 @@ include doc/*.xml
 include po/*.po
 include *.py
 recursive-include lib/ *.py
-include djvusmooth edit-text
+include maleks edit-text
 include update-i18n

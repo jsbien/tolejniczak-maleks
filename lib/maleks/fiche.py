@@ -11,8 +11,8 @@
 # General Public License for more details.
 
 import os
-from djvusmooth.maleks.registers import TaskRegister
-from djvusmooth.maleks.useful import repeat, getElementsByClassName, getBbox, getTextContent
+from maleks.maleks.registers import TaskRegister
+from maleks.maleks.useful import repeat, getElementsByClassName, getBbox, getTextContent
 from xml.dom import minidom
 
 # TODO: C usuwanie cyklicznosci przy niszczeniu obiektow

@@ -17,7 +17,7 @@ import wx.lib.mixins.grid
 
 import djvu.sexpr
 
-from djvusmooth.i18n import _
+from maleks.i18n import _
 
 LABELS = [_('key'), _('value')]
 

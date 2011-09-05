@@ -11,7 +11,7 @@
 # General Public License for more details.
 
 import os
-from djvusmooth.i18n import _
+from maleks.i18n import _
 
 def commonprefix(a, b):
 	pref = u""

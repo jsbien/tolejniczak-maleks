@@ -16,10 +16,10 @@ import wx.lib.colourselect
 
 import djvu.const
 
-import djvusmooth.models.annotations
-from djvusmooth import models
-from djvusmooth.varietes import idict
-from djvusmooth.i18n import _
+import maleks.models.annotations
+from maleks import models
+from maleks.varietes import idict
+from maleks.i18n import _
 
 # See:
 # <http://www.w3.org/TR/html4/present/frames.html#target-info>,

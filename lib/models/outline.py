@@ -24,7 +24,7 @@ import itertools
 import djvu.sexpr
 import djvu.const
 
-from djvusmooth.varietes import not_overridden, wref, fix_uri, indents_to_tree
+from maleks.varietes import not_overridden, wref, fix_uri, indents_to_tree
 
 class Node(object):
 

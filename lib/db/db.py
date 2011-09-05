@@ -12,9 +12,9 @@
 
 import MySQLdb
 import _mysql_exceptions
-from djvusmooth.i18n import _
-from djvusmooth.maleks.registers import TaskRegister
-from djvusmooth.maleks.fiche import Fiche
+from maleks.i18n import _
+from maleks.maleks.registers import TaskRegister
+from maleks.maleks.fiche import Fiche
 
 class DBController(object):
 

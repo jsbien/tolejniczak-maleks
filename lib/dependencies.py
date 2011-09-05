@@ -11,7 +11,7 @@
 # General Public License for more details.
 
 '''
-Checks for djvusmooth dependencies.
+Checks for maleks dependencies.
 '''
 
 WX_VERSIONS = ('2.8-unicode', '2.6-unicode')

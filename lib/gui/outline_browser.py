@@ -13,10 +13,10 @@
 
 import wx
 
-import djvusmooth.models.outline
-from djvusmooth import models
-from djvusmooth.varietes import replace_control_characters
-from djvusmooth.i18n import _
+import maleks.models.outline
+from maleks import models
+from maleks.varietes import replace_control_characters
+from maleks.i18n import _
 
 def get_label_for_node(node):
     return replace_control_characters(' ', node.text)

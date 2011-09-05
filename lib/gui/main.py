@@ -14,7 +14,7 @@
 
 from __future__ import with_statement
 
-APPLICATION_NAME = 'djvusmooth'
+APPLICATION_NAME = 'maleks'
 LICENSE = 'GPL-2'
 
 import sys
@@ -25,7 +25,7 @@ import threading
 import tempfile
 from Queue import Queue, Empty as QueueEmpty
 
-import djvusmooth.dependencies as __dependencies
+import maleks.dependencies as __dependencies
 
 import wx
 import wx.lib.ogl
@@ -36,33 +36,33 @@ import djvu.decode
 import djvu.const
 
 #from djvusmooth.djvused import StreamEditor
-from djvusmooth.gui.page import PageWidget, PercentZoom, OneToOneZoom, StretchZoom, FitWidthZoom, FitPageZoom
+from maleks.gui.page import PageWidget, PercentZoom, OneToOneZoom, StretchZoom, FitWidthZoom, FitPageZoom
 #from djvusmooth.gui.page import RENDER_NONRASTER_TEXT, RENDER_NONRASTER_MAPAREA
 #from djvusmooth.gui.metadata import MetadataDialog
 #from djvusmooth.gui.flatten_text import FlattenTextDialog
 #from djvusmooth.gui.text_browser import TextBrowser
 #from djvusmooth.gui.outline_browser import OutlineBrowser
 #from djvusmooth.gui.maparea_browser import MapAreaBrowser
-from djvusmooth.gui.reg_browser import RegisterBrowser
-from djvusmooth.gui.struc_browser import StructureRegisterBrowser
-from djvusmooth.gui.toppanel import TopPanel
-from djvusmooth.gui.regbar import RegisterToolbar
-from djvusmooth.gui import dialogs
+from maleks.gui.reg_browser import RegisterBrowser
+from maleks.gui.struc_browser import StructureRegisterBrowser
+from maleks.gui.toppanel import TopPanel
+from maleks.gui.regbar import RegisterToolbar
+from maleks.gui import dialogs
 #from djvusmooth.text import mangle as text_mangle
 #import djvusmooth.models.metadata
 #import djvusmooth.models.annotations
 #import djvusmooth.models.text
 #from djvusmooth import models
 #from djvusmooth import external_editor
-from djvusmooth import config
-from djvusmooth.maleks.fiche import StructureIndex, Configuration
-from djvusmooth.maleks.registers import HintRegister
-from djvusmooth.gui.mode import Mode
-from djvusmooth.db.db import DBController
+from maleks import config
+from maleks.maleks.fiche import StructureIndex, Configuration
+from maleks.maleks.registers import HintRegister
+from maleks.gui.mode import Mode
+from maleks.db.db import DBController
 
-from djvusmooth import __version__, __author__
+from maleks import __version__, __author__
 
-from djvusmooth.i18n import _
+from maleks.i18n import _
 
 MENU_ICON_SIZE = (16, 16)
 #DJVU_WILDCARD = _('DjVu files (*.djvu, *.djv)|*.djvu;*.djv|All files|*')
@@ -346,6 +346,9 @@ class MainWindow(wx.Frame):
         #self._page_annotations_callback = PageAnnotationsCallback(self)
         #self._outline_callback = OutlineCallback(self)
         self.status_bar = self.CreateStatusBar(3, style = wx.ST_SIZEGRIP)
+        #self.super_splitter = wx.SplitterWindow(self, style = wx.SP_LIVE_UPDATE)
+        #self.super_splitter.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_super_splitter_sa
+        
         self.splitter = wx.SplitterWindow(self, style = wx.SP_LIVE_UPDATE)
         self.splitter.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_splitter_sash_changed)
 
@@ -1441,10 +1444,10 @@ class Application(wx.App):
         wx.lib.ogl.OGLInitialize()
         self.SetAppName(APPLICATION_NAME)
         if os.name == 'posix':
-            legacy_path = os.path.expanduser('~/.DjVuSmooth')
+            legacy_path = os.path.expanduser('~/.Maleks')
         else:
             legacy_path = None
-        self._config = config.Config('djvusmooth', legacy_path)
+        self._config = config.Config('maleks', legacy_path)
         sys.excepthook = self.except_hook
         return True
 

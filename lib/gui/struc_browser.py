@@ -12,8 +12,8 @@
 
 import wx
 import time
-from djvusmooth.gui.reg_browser import RegisterBrowser
-from djvusmooth.maleks.fiche import Fiche
+from maleks.gui.reg_browser import RegisterBrowser
+from maleks.maleks.fiche import Fiche
 
 class StructureRegisterBrowser(RegisterBrowser):
 

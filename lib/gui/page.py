@@ -18,11 +18,11 @@ from djvu import decode, sexpr
 import djvu.const
 
 #import djvusmooth.gui.maparea_menu
-from djvusmooth import gui
+from maleks import gui
 #import djvusmooth.models.text
 #import djvusmooth.models.annotations
 #from djvusmooth import models
-from djvusmooth.varietes import not_overridden
+from maleks.varietes import not_overridden
 
 PIXEL_FORMAT = decode.PixelFormatRgb()
 PIXEL_FORMAT.rows_top_to_bottom = 1

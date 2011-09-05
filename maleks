@@ -15,8 +15,9 @@ if __name__ != '__main__':
     raise ImportError('This module is not intended for import')
 
 import sys
+import os
 
-from djvusmooth.gui.main import Application
+from maleks.gui.main import Application
 application = Application()
 application.start(sys.argv[1:])
 

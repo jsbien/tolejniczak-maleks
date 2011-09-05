@@ -3,6 +3,6 @@
 import sys
 import lib
 
-sys.modules['djvusmooth'] = lib
+sys.modules['maleks'] = lib
 
 # vim:ts=4 sw=4 et

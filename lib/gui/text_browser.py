@@ -13,10 +13,10 @@
 
 import wx
 
-import djvusmooth.models.text
-from djvusmooth import models
-from djvusmooth.varietes import replace_control_characters
-from djvusmooth.i18n import _
+import maleks.models.text
+from maleks import models
+from maleks.varietes import replace_control_characters
+from maleks.i18n import _
 
 def get_label_for_node(node):
     zone_type = str(node.type)

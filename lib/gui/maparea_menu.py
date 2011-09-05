@@ -13,8 +13,8 @@
 
 import wx
 
-from djvusmooth.gui.maparea_properties import MapareaPropertiesDialog
-from djvusmooth.i18n import _
+from maleks.gui.maparea_properties import MapareaPropertiesDialog
+from maleks.i18n import _
 
 def show_menu(parent, annotations, node, point, origin=None):
     menu = wx.Menu()
