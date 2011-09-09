@@ -49,7 +49,7 @@ for root, dirs, files in os.walk('locale'):
             [os.path.join(root, f)]
         ))
 manpages = set()
-data_files = [('share/man/man1', manpages)]#, ('share/maleks/res', ['res/binary.png', 'res/chreg.png', 'res/edins.png', 'res/edpre.png', 'res/hins.png', 'res/next.png', 'res/prev.png', 'res/up.png'])]
+data_files = [('share/man/man1', manpages), ('share/maleks/res', ['res/binary.png', 'res/chreg.png', 'res/edins.png', 'res/edpre.png', 'res/hins.png', 'res/next.png', 'res/prev.png', 'res/up.png'])]
 
 class build_doc(distutils_build):
 

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-05 16:57+0200\n"
+"POT-Creation-Date: 2011-09-08 23:50+0200\n"
 "PO-Revision-Date: 2009-05-31 14:45+CEST\n"
 "Last-Translator: Tomasz Olejniczak <tomek.87@poczta.onet.pl>\n"
 "Language-Team: none\n"
@@ -99,6 +99,9 @@ msgstr "&Powiększenie"
 msgid "About…"
 msgstr "O programie…"
 
+msgid "Actual entry"
+msgstr "Hasło aktualne"
+
 msgid "Always visible"
 msgstr "Zawsze widoczny"
 
@@ -138,6 +141,10 @@ msgstr "Zamknij dokument"
 msgid "Comment"
 msgstr "Komentarz"
 
+msgid "Comment will not be saved if its corresponding entry is empty"
+msgstr ""
+"Komentarz nie zostanie zapisany jeżeli odpowiadające mu hasło jest puste"
+
 msgid "Decrease the magnification"
 msgstr "Zmniejsz powiększenie"
 
@@ -162,11 +169,17 @@ msgstr "Pokaż tylko pierwszy plan"
 msgid "Edit metadata"
 msgstr "Edytuj metadane"
 
+msgid "Editor initials"
+msgstr "Inicjał redaktora"
+
 msgid "Empty edit panel"
 msgstr "Pusty panel edycji"
 
 msgid "Empty hint panel"
 msgstr "Pusty panel podpowiedzi"
+
+msgid "Entry Indices"
+msgstr "Indeksy haseł"
 
 msgid "Error"
 msgstr "Błąd"
@@ -182,6 +195,9 @@ msgstr "Eksportuj zakładki"
 
 msgid "Export bookmarks as task register"
 msgstr "Eskportuj zakładki jako wykaz zadaniowy"
+
+msgid "Fiche Index"
+msgstr "Indeks fiszek"
 
 msgid "Fiche already indexed"
 msgstr "Fiszka została już zaindeksowana"
@@ -247,6 +263,12 @@ msgstr "Powiększ do %d%%"
 msgid "Main properties"
 msgstr "Właściwości"
 
+msgid "Matrix number"
+msgstr "Numer matrycy"
+
+msgid "Matrix sector symbol"
+msgstr "Symbol sektora matrycy"
+
 msgid "More information about this program"
 msgstr "Więcej informacji o tym programie"
 
@@ -268,6 +290,9 @@ msgstr "Otwórz dokument DjVu"
 msgid "Open directory with lexicographic data"
 msgstr "Otwórz katalog z danymi leksykograficznymi"
 
+msgid "Original entry"
+msgstr "Hasło oryginalne"
+
 msgid "Oval"
 msgstr "Elipsa"
 
@@ -277,6 +302,12 @@ msgstr "Właściwości adnotacji (hiperłącza)"
 #, python-format
 msgid "Page %(pageno)d of %(npages)d"
 msgstr "Strona %(pageno)d z %(npages)d"
+
+msgid "Page number of the first word"
+msgstr "Numer strony dla pierwszego słowa"
+
+msgid "Page number of the last word"
+msgstr "Numer strony dla ostatniego słowa"
 
 msgid "Polygon"
 msgstr "Wielokąt"
@@ -356,6 +387,9 @@ msgstr "Nieobsłużony wyjątek: %s"
 
 msgid "Width"
 msgstr "Grubość"
+
+msgid "Work identificator"
+msgstr "Identyfikator utworu"
 
 msgid "Work mode"
 msgstr "Tryb pracy"

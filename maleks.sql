@@ -15,6 +15,11 @@ create table fiches (
 	position integer not null auto_increment primary key,
 	fiche varchar(40) not null,
 	work varchar(50),
+	firstWordPage integer,
+	lastWordPage integer,
+	matrixNumber integer,
+	matrixSector char(1),
+	editor varchar(10),
 	bookmark datetime,
 	comment varchar(50)
 );
@@ -22,7 +27,12 @@ create table fiches (
 create table pages (
 	fiche varchar(40) not null primary key,
 	page integer not null,
-	line integer,
+	comment varchar(50)
+);
+
+create table lines (
+	fiche varchar(40) not null primary key,
+	line integer not null,
 	comment varchar(50)
 );
 

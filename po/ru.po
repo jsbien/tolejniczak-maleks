@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-05 16:57+0200\n"
+"POT-Creation-Date: 2011-09-08 23:50+0200\n"
 "PO-Revision-Date: 2010-06-26 18:05+0300\n"
 "Last-Translator: Kyrill Detinov <lazy.kent.suse@gmail.com>\n"
 "Language-Team: openSUSE Translation Team\n"
@@ -101,6 +101,9 @@ msgstr "&Масштаб"
 msgid "About…"
 msgstr "О программе…"
 
+msgid "Actual entry"
+msgstr ""
+
 msgid "Always visible"
 msgstr "Всегда показывать"
 
@@ -141,6 +144,9 @@ msgstr "Закрыть документ"
 msgid "Comment"
 msgstr "Примечание"
 
+msgid "Comment will not be saved if its corresponding entry is empty"
+msgstr ""
+
 msgid "Decrease the magnification"
 msgstr "Уменьшить масштаб"
 
@@ -165,10 +171,16 @@ msgstr "Показать только передний план"
 msgid "Edit metadata"
 msgstr "Изменить метаданные"
 
+msgid "Editor initials"
+msgstr ""
+
 msgid "Empty edit panel"
 msgstr ""
 
 msgid "Empty hint panel"
+msgstr ""
+
+msgid "Entry Indices"
 msgstr ""
 
 msgid "Error"
@@ -185,6 +197,9 @@ msgid "Export bookmarks"
 msgstr "закладки"
 
 msgid "Export bookmarks as task register"
+msgstr ""
+
+msgid "Fiche Index"
 msgstr ""
 
 msgid "Fiche already indexed"
@@ -251,6 +266,12 @@ msgstr "Увеличение %d%%"
 msgid "Main properties"
 msgstr "Основные свойства"
 
+msgid "Matrix number"
+msgstr ""
+
+msgid "Matrix sector symbol"
+msgstr ""
+
 msgid "More information about this program"
 msgstr "Больше информации о программе"
 
@@ -272,6 +293,9 @@ msgstr "Открыть DjVu документ"
 msgid "Open directory with lexicographic data"
 msgstr ""
 
+msgid "Original entry"
+msgstr ""
+
 msgid "Oval"
 msgstr "Овал"
 
@@ -281,6 +305,12 @@ msgstr "Вид комментария (ссылки)"
 #, python-format
 msgid "Page %(pageno)d of %(npages)d"
 msgstr "Страница %(pageno)d из %(npages)d"
+
+msgid "Page number of the first word"
+msgstr ""
+
+msgid "Page number of the last word"
+msgstr ""
 
 msgid "Polygon"
 msgstr "Многоугольник"
@@ -361,6 +391,9 @@ msgstr "Непредвиденная ситуация: %s"
 
 msgid "Width"
 msgstr "Ширина"
+
+msgid "Work identificator"
+msgstr ""
 
 msgid "Work mode"
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-05 16:57+0200\n"
+"POT-Creation-Date: 2011-09-08 23:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -101,6 +101,9 @@ msgstr ""
 msgid "About…"
 msgstr ""
 
+msgid "Actual entry"
+msgstr ""
+
 msgid "Always visible"
 msgstr ""
 
@@ -137,6 +140,9 @@ msgstr ""
 msgid "Comment"
 msgstr ""
 
+msgid "Comment will not be saved if its corresponding entry is empty"
+msgstr ""
+
 msgid "Decrease the magnification"
 msgstr ""
 
@@ -161,10 +167,16 @@ msgstr ""
 msgid "Edit metadata"
 msgstr ""
 
+msgid "Editor initials"
+msgstr ""
+
 msgid "Empty edit panel"
 msgstr ""
 
 msgid "Empty hint panel"
+msgstr ""
+
+msgid "Entry Indices"
 msgstr ""
 
 msgid "Error"
@@ -180,6 +192,9 @@ msgid "Export bookmarks"
 msgstr ""
 
 msgid "Export bookmarks as task register"
+msgstr ""
+
+msgid "Fiche Index"
 msgstr ""
 
 msgid "Fiche already indexed"
@@ -246,6 +261,12 @@ msgstr ""
 msgid "Main properties"
 msgstr ""
 
+msgid "Matrix number"
+msgstr ""
+
+msgid "Matrix sector symbol"
+msgstr ""
+
 msgid "More information about this program"
 msgstr ""
 
@@ -267,6 +288,9 @@ msgstr ""
 msgid "Open directory with lexicographic data"
 msgstr ""
 
+msgid "Original entry"
+msgstr ""
+
 msgid "Oval"
 msgstr ""
 
@@ -275,6 +299,12 @@ msgstr ""
 
 #, python-format
 msgid "Page %(pageno)d of %(npages)d"
+msgstr ""
+
+msgid "Page number of the first word"
+msgstr ""
+
+msgid "Page number of the last word"
 msgstr ""
 
 msgid "Polygon"
@@ -354,6 +384,9 @@ msgid "Unhandled exception: %s"
 msgstr ""
 
 msgid "Width"
+msgstr ""
+
+msgid "Work identificator"
 msgstr ""
 
 msgid "Work mode"

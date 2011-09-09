@@ -31,6 +31,7 @@ import wx
 import wx.lib.ogl
 import wx.lib.newevent
 import wx.lib.scrolledpanel
+from wx.lib import splitter
 
 import djvu.decode
 import djvu.const
@@ -48,6 +49,7 @@ from maleks.gui.struc_browser import StructureRegisterBrowser
 from maleks.gui.toppanel import TopPanel
 from maleks.gui.regbar import RegisterToolbar
 from maleks.gui import dialogs
+from maleks.gui.left_panel import EntryIndicesPanel, FicheIndexPanel
 #from djvusmooth.text import mangle as text_mangle
 #import djvusmooth.models.metadata
 #import djvusmooth.models.annotations
@@ -310,11 +312,27 @@ class MainWindow(wx.Frame):
         return property(get, set)
 
     @apply
+    def default_left_splitter_sash():
+        def get(self):
+            return self._config.read_int('main_window_splitter_sash_left', 660)
+        def set(self, value):
+            self._config['main_window_splitter_sash_left'] = value
+        return property(get, set)
+
+    @apply
     def default_sidebar_shown():
         def get(self):
             return self._config.read_bool('main_window_sidebar_shown', True)
         def set(self, value):
             self._config['main_window_sidebar_shown'] = value
+        return property(get, set)
+
+    @apply
+    def default_left_sidebar_shown():
+        def get(self):
+            return self._config.read_bool('main_window_left_sidebar_shown', True)
+        def set(self, value):
+            self._config['main_window_left_sidebar_shown'] = value
         return property(get, set)
 
     #@apply
@@ -346,16 +364,33 @@ class MainWindow(wx.Frame):
         #self._page_annotations_callback = PageAnnotationsCallback(self)
         #self._outline_callback = OutlineCallback(self)
         self.status_bar = self.CreateStatusBar(3, style = wx.ST_SIZEGRIP)
-        #self.super_splitter = wx.SplitterWindow(self, style = wx.SP_LIVE_UPDATE)
-        #self.super_splitter.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_super_splitter_sa
         
-        self.splitter = wx.SplitterWindow(self, style = wx.SP_LIVE_UPDATE)
+        ##self.super_splitter = wx.SplitterWindow(self, style = wx.SP_LIVE_UPDATE)
+        ##self.super_splitter.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_left_splitter_sash_changed)
+        
+        #self.splitter = wx.SplitterWindow(self, style = wx.SP_LIVE_UPDATE)
+        ##self.splitter = wx.SplitterWindow(self.super_splitter)#, style = wx.SP_LIVE_UPDATE)
+        ##self.splitter.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_splitter_sash_changed)
+        
+        self.splitter = splitter.MultiSplitterWindow(self, style = wx.SP_LIVE_UPDATE)
         self.splitter.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_splitter_sash_changed)
+        self.sidebar_shown = False
 
         self.dBController = DBController(self._config)
         if not self.dBController.valid():
             self.error_box(_('Wrong database configuration'))
             self.dBController = None
+
+        ##self.left_sidepanel = wx.Panel(self.super_splitter, wx.ID_ANY)
+        self.left_sidepanel = wx.Panel(self.splitter, wx.ID_ANY)
+        self.left_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.left_sidebar = wx.Choicebook(self.left_sidepanel, wx.ID_ANY)
+        self.entryind_panel = EntryIndicesPanel(self.left_sidebar)
+        self.ficheind_panel = FicheIndexPanel(self.left_sidebar)
+        self.left_sidebar.AddPage(self.entryind_panel, _('Entry Indices'))
+        self.left_sidebar.AddPage(self.ficheind_panel, _('Fiche Index'))
+        self.left_sizer.Add(self.left_sidebar, 1, wx.EXPAND)
+        self.left_sidepanel.SetSizer(self.left_sizer)
         
         self.sidepanel = wx.Panel(self.splitter, wx.ID_ANY)
         self.sizer = wx.BoxSizer(wx.VERTICAL)
@@ -399,7 +434,8 @@ class MainWindow(wx.Frame):
         
         #self.scrolled_panel = ScrolledPanel(self.splitter)
         self.scrolled_panel = ScrolledPanel(self.main_panel)
-        self.splitter.SetSashGravity(0.1)
+        #self.splitter.SetSashGravity(0.2)
+        #self.super_splitter.SetSashGravity(0.9)
         self.active_register = self.taskreg_browser
         
         self.main_sizer.Add(self.top_panel, 0, wx.ALIGN_CENTER | wx.EXPAND)
@@ -413,7 +449,11 @@ class MainWindow(wx.Frame):
         
         #self.Bind(wx.EVT_KEY_DOWN, self.on_char)
         
+        self.splitter.InsertWindow(0, self.main_panel)
+        self.do_show_left_sidebar()
         self.do_show_sidebar()
+        if not self.default_left_sidebar_shown:
+            self.do_hide_left_sidebar()
         if not self.default_sidebar_shown:
             self.do_hide_sidebar()
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -777,7 +817,15 @@ class MainWindow(wx.Frame):
         self.page_widget.SetFocus()
 
     def on_splitter_sash_changed(self, event):
-        self.default_splitter_sash = event.GetSashPosition()
+        #print event.GetSash
+        if event.GetSashIdx() == 0:
+            self.default_splitter_sash = event.GetSashPosition()
+        else:
+            self.default_left_splitter_sash = event.GetSashPosition()
+        #print event.GetSashPosition()
+
+    #def on_left_splitter_sash_changed(self, event):
+    #    self.default_left_splitter_sash = event.GetSashPosition()
         
     #def on_sidebar_page_changed(self, event):
     #    pass
@@ -907,15 +955,39 @@ class MainWindow(wx.Frame):
         else:
             self.do_hide_sidebar()
 
+    def on_show_left_sidebar(self, event):
+        if event.IsChecked():
+            self.do_show_left_sidebar()
+        else:
+            self.do_hide_left_sidebar()
+
     def do_show_sidebar(self):
         #self.splitter.SplitVertically(self.sidebar, self.scrolled_panel, self.default_splitter_sash)
         #self.splitter.SplitVertically(self.sidepanel, self.scrolled_panel, self.default_splitter_sash)
-        self.splitter.SplitVertically(self.sidepanel, self.main_panel, self.default_splitter_sash)
+        #self.splitter.SplitVertically(self.sidepanel, self.main_panel, self.default_splitter_sash)
         self.default_sidebar_shown = True
+        self.sidebar_shown = True
+        self.splitter.InsertWindow(0, self.sidepanel, self.default_splitter_sash)
+
+    def do_show_left_sidebar(self):
+        #self.super_splitter.SplitVertically(self.splitter, self.left_sidepanel, self.default_left_splitter_sash)
+        self.default_left_sidebar_shown = True
+        self.splitter.AppendWindow(self.left_sidepanel)
+        if self.sidebar_shown:
+            self.splitter.SetSashPosition(1, self.default_left_splitter_sash)
+        else:
+            self.splitter.SetSashPosition(0, self.default_left_splitter_sash)
 
     def do_hide_sidebar(self):
-        self.splitter.Unsplit(self.sidebar)
+        #self.splitter.Unsplit(self.sidebar)
+        self.splitter.DetachWindow(self.sidepanel)
         self.default_sidebar_shown = False
+        self.sidebar_shown = False
+
+    def do_hide_left_sidebar(self):
+        #self.super_splitter.Unsplit(self.left_sidebar)
+        self.splitter.DetachWindow(self.sidepanel)
+        self.default_left_sidebar_shown = False
 
     def register_search_input(self, event):
         self.active_register.find(self.register_search.GetValue())
@@ -1272,6 +1344,7 @@ class MainWindow(wx.Frame):
                     self.ficheId = self.taskRegister[0].getId()
                 except IndexError:
                     self.ficheId = self.index.getFiche(0).getId()
+                self.update_indices()
                 #self.metadata_model = MetadataModel(self.document)
                 #self.text_model = TextModel(self.document)
                 #self.outline_model = OutlineModel(self.document)
@@ -1307,6 +1380,7 @@ class MainWindow(wx.Frame):
         self.update_title()
         self.update_page_widget(new_document = True, new_page = True)
         self.update_registers()
+        self.update_indices()
         self.update_panels()
         return True
 
@@ -1353,6 +1427,15 @@ class MainWindow(wx.Frame):
     def update_registers(self):
         if self.notify:
             self.active_register.select(self.ficheId)
+
+    def update_indices(self):
+        if self.dBController != None:
+            if self.entryind_panel.isDirty():
+                self.dBController.setEntriesForFiche(self.entryind_panel.getValue(), self.entryind_panel.getFicheId())
+            if self.ficheind_panel.isDirty():
+                self.dBController.setFiche(self.ficheind_panel.getValue(), self.ficheind_panel.getFicheId())
+            self.entryind_panel.fill(self.dBController.getEntriesForFiche(self.ficheId), self.ficheId)
+            self.ficheind_panel.fill(self.dBController.getFiche(self.ficheId), self.ficheId)
 
     def update_panels(self):
         if self.ficheId != None: # TODO: NOTE jest otwarty jakis dokument

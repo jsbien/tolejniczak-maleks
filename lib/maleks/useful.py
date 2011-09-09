@@ -26,6 +26,11 @@ class Notifier(object):
 	def addListener(self, li):
 		self._listeners.append(li)
 
+def nvl(obj):
+	if obj == None:
+		return ""
+	return str(obj)
+
 # clazz powinna miec typ unicode
 def getElementsByClassName(doc, clazz):
 	els = doc.getElementsByTagName(u"*")

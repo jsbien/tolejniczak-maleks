@@ -17,7 +17,7 @@ import sys
 
 for dir in os.path.join(os.path.dirname(sys.argv[0]), 'locale'), None:
     try:
-        _ = gettext.translation('djvusmooth', dir).ugettext
+        _ = gettext.translation('maleks', dir).ugettext
         break
     except IOError:
         pass
@@ -26,7 +26,7 @@ else:
         return s
 del dir
 
-_ = gettext.translation('djvusmooth', os.path.join(os.path.dirname(sys.argv[0]), 'locale'), languages=['pl']).ugettext
+_ = gettext.translation('maleks', os.path.join(os.path.dirname(sys.argv[0]), 'locale'), languages=['pl']).ugettext
 
 # Some dummy translations:
 if False:

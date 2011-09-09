@@ -18,6 +18,11 @@ from maleks.maleks.fiche import Fiche
 
 class DBController(object):
 
+	def __nvl(self, obj):
+		if obj == "":
+			return None
+		return obj
+
 	def __init__(self, config):
 		self.__user = config.read('dbuser', '')
 		self.__globalUser = self.__user
@@ -94,6 +99,62 @@ class DBController(object):
 			return None
 		else:
 			return row[0]
+
+	def getEntriesForFiche(self, ficheId):
+		actual = ""
+		actualComment = ""
+		original = ""
+		originalComment = ""
+		cursor = self.__openDBWithCursor()
+		cursor.execute("select entry, comment from actual_entries where fiche = %s", (ficheId))
+		row = cursor.fetchone()
+		if row != None:
+			actual = row[0]
+			actualComment = row[1]
+		cursor.execute("select entry, comment from original_entries where fiche = %s", (ficheId))
+		row = cursor.fetchone()
+		if row != None:
+			original = row[0]
+			originalComment = row[1]
+		self.__closeDBAndCursor(cursor)
+		return (actual, actualComment, original, originalComment)
+
+	def setEntriesForFiche(self, (actual, actualComment, original, originalComment), ficheId):
+		cursor = self.__openDBWithCursor()
+		cursor.execute("select entry from actual_entries where fiche = %s", (ficheId))
+		row = cursor.fetchone()
+		hasActual = row != None
+		cursor.execute("select entry from original_entries where fiche = %s", (ficheId))
+		row = cursor.fetchone()
+		hasOriginal = row != None
+		if hasActual:
+			if actual != "":
+				cursor.execute("update actual_entries set entry = %s, comment = %s where fiche = %s", (actual, self.__nvl(actualComment), ficheId))
+			else:
+				cursor.execute("delete from actual_entries where fiche = %s", (ficheId))
+		elif actual != "":
+			cursor.execute("insert into actual_entries values (%s, %s, %s)", (ficheId, actual, self.__nvl(actualComment)))
+		if hasOriginal:
+			if original != "":
+				cursor.execute("update original_entries set entry = %s, comment = %s where fiche = %s", (original, self.__nvl(originalComment), ficheId))
+			else:
+				cursor.execute("delete from original_entries where fiche = %s", (ficheId))
+		elif original != "":
+			cursor.execute("insert into original_entries values (%s, %s, %s)", (ficheId, original, self.__nvl(originalComment)))
+		self.__closeDBAndCursor(cursor)
+
+	def getFiche(self, ficheId):
+		cursor = self.__openDBWithCursor()
+		cursor.execute("select work, firstWordPage, lastWordPage, matrixNumber, matrixSector, editor, comment from fiches where fiche = %s", (ficheId))
+		row = cursor.fetchone()
+		#print row
+		self.__closeDBAndCursor(cursor)
+		return row
+
+	def setFiche(self, values, ficheId):
+		cursor = self.__openDBWithCursor()
+		cursor.execute("update fiches set work = %s, firstWordPage = %s, lastWordPage = %s, matrixNumber = %s, matrixSector = %s, editor = %s, comment = %s where fiche = %s", (self.__nvl(values[0]), self.__nvl(values[1]), self.__nvl(values[2]), self.__nvl(values[3]), self.__nvl(values[4]), self.__nvl(values[5]), self.__nvl(values[6]), ficheId))
+		self.__closeDBAndCursor(cursor)
 
 	def getBookmarksTaskRegister(self):
 		reg = TaskRegister(None, None, empty=True)
