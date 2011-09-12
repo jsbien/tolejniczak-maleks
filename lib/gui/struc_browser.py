@@ -61,6 +61,9 @@ class StructureRegisterBrowser(RegisterBrowser):
 			RegisterBrowser._element_selected(self, elementId, notify=notify)
 		else:
 			self.__element = self.__register.getNodeById(elementId)
+
+	def levelDown(self):
+		if not self.__ficheLevel:
 			self.__selectStructureNode(self.__element)
 			if self.__ficheLevel:
 				for l in self._listeners:

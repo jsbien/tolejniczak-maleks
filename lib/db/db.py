@@ -156,6 +156,125 @@ class DBController(object):
 		cursor.execute("update fiches set work = %s, firstWordPage = %s, lastWordPage = %s, matrixNumber = %s, matrixSector = %s, editor = %s, comment = %s where fiche = %s", (self.__nvl(values[0]), self.__nvl(values[1]), self.__nvl(values[2]), self.__nvl(values[3]), self.__nvl(values[4]), self.__nvl(values[5]), self.__nvl(values[6]), ficheId))
 		self.__closeDBAndCursor(cursor)
 
+	def getPageAndLineForFiche(self, ficheId):
+		page = ""
+		pageComment = ""
+		line = ""
+		lineComment = ""
+		cursor = self.__openDBWithCursor()
+		cursor.execute("select page, comment from pages where fiche = %s", (ficheId))
+		row = cursor.fetchone()
+		if row != None:
+			page = row[0]
+			pageComment = row[1]
+		cursor.execute("select line, comment from linesIndex where fiche = %s", (ficheId))
+		row = cursor.fetchone()
+		if row != None:
+			line = row[0]
+			lineComment = row[1]
+		self.__closeDBAndCursor(cursor)
+		return (page, pageComment, line, lineComment)
+
+	def setPageAndLineForFiche(self, (page, pageComment, line, lineComment), ficheId):
+		cursor = self.__openDBWithCursor()
+		cursor.execute("select page from pages where fiche = %s", (ficheId))
+		row = cursor.fetchone()
+		hasPage = row != None
+		cursor.execute("select line from linesIndex where fiche = %s", (ficheId))
+		row = cursor.fetchone()
+		hasLine = row != None
+		if hasPage:
+			if page != "":
+				cursor.execute("update pages set page = %s, comment = %s where fiche = %s", (page, self.__nvl(pageComment), ficheId))
+			else:
+				cursor.execute("delete from pages where fiche = %s", (ficheId))
+		elif page != "":
+			cursor.execute("insert into pages values (%s, %s, %s)", (ficheId, page, self.__nvl(pageComment)))
+		if hasLine:
+			if line != "":
+				cursor.execute("update linesIndex set line = %s, comment = %s where fiche = %s", (line, self.__nvl(lineComment), ficheId))
+			else:
+				cursor.execute("delete from linesIndex where fiche = %s", (ficheId))
+		elif line != "":
+			cursor.execute("insert into linesIndex values (%s, %s, %s)", (ficheId, line, self.__nvl(lineComment)))
+		self.__closeDBAndCursor(cursor)
+
+	def getSecondaryIndicesForFiche(self, ficheId):
+		res0 = [""]*11
+		res1 = [""]*2
+		cursor = self.__openDBWithCursor()
+		cursor.execute("select * from fiche_entries where fiche = %s", (ficheId))
+		row = cursor.fetchone()
+		if row != None:
+			res0 = list(row)[1:]
+		cursor.execute("select entry, comment from text_entries where fiche = %s", (ficheId))
+		row = cursor.fetchone()
+		if row != None:
+			res1 = list(row)
+		self.__closeDBAndCursor(cursor)
+		return res0 + res1
+
+	def setSecondaryIndicesForFiche(self, (ficheEntry, textEntry, textEntryComment), ficheId):
+		cursor = self.__openDBWithCursor()
+		cursor.execute("select count(*) from fiche_entries where fiche = %s", (ficheId))
+		if cursor.fetchone()[0] > 0:
+			cursor.execute("update fiche_entries set pageNo = %s, lineNo = %s, entryBegin = %s, entryBeginLine = %s, entryBeginWord = %s, entryBeginChar = %s, entryEnd = %s, entryEndLine = %s, entryEndWord = %s, entryEndChar = %s, comment = %s where fiche = %s", tuple([self.__nvl(el) for el in ficheEntry] + [ficheId]))
+		elif ficheEntry != tuple([""]*11):
+			cursor.execute("insert into fiche_entries values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", tuple([ficheId] + [self.__nvl(a) for a in ficheEntry]))
+		cursor.execute("select count(*) from text_entries where fiche = %s", (ficheId))
+		if cursor.fetchone()[0] > 0:
+			if textEntry == "":
+				cursor.execute("delete from text_entries where fiche = %s", (ficheId))
+			else:
+				cursor.execute("update text_entries set entry = %s, comment = %s where fiche = %s", (textEntry, self.__nvl(textEntryComment), ficheId))
+		elif textEntry != "":
+			cursor.execute("insert into text_entries values (%s, %s, %s)", (ficheId, textEntry, self.__nvl(textEntryComment)))
+		self.__closeDBAndCursor(cursor)
+
+	def getEntriesRegister(self):
+		cursor = self.__openDBWithCursor()
+		cursor.execute("select distinct entry from actual_entries order by entry")
+		res = [_("Entry unknown")]
+		row = cursor.fetchone()
+		while row != None:
+			res.append(row[0])
+			row = cursor.fetchone()
+		self.__closeDBAndCursor(cursor)
+		return res
+
+	def getPagesForEntry(self, entry):
+		cursor = self.__openDBWithCursor()
+		cursor.execute("select distinct page from pages p, actual_entries e where p.fiche = e.fiche and entry = %s order by page", (entry))
+		res = [_("Page unknown")]
+		row = cursor.fetchone()
+		while row != None:
+			res.append(str(row[0]))
+			row = cursor.fetchone()
+		self.__closeDBAndCursor(cursor)
+		return res
+
+	def getLinesForPage(self, entry, page):
+		cursor = self.__openDBWithCursor()
+		cursor.execute("select distinct line from linesIndex l, pages p, actual_entries e where p.fiche = l.fiche and p.fiche = e.fiche and page = %s and entry = %s order by line", (page, entry))
+		res = [_("Line unknown")]
+		row = cursor.fetchone()
+		while row != None:
+			res.append(str(row[0]))
+			row = cursor.fetchone()
+		self.__closeDBAndCursor(cursor)
+		return res
+
+	def getFichesForLine(self, entry, page, line):
+		cursor = self.__openDBWithCursor()
+		cursor.execute("select l.fiche from linesIndex l, pages p, actual_entries e where p.fiche = l.fiche and p.fiche = e.fiche and page = %s and entry = %s and line = %s", (page, entry, line))
+		res = []
+		row = cursor.fetchone()
+		while row != None:
+			res.append(row[0])
+			row = cursor.fetchone()
+		self.__closeDBAndCursor(cursor)
+		return res
+
 	def getBookmarksTaskRegister(self):
 		reg = TaskRegister(None, None, empty=True)
 		cursor = self.__openDBWithCursor()

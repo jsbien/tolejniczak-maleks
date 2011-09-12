@@ -46,10 +46,11 @@ from maleks.gui.page import PageWidget, PercentZoom, OneToOneZoom, StretchZoom, 
 #from djvusmooth.gui.maparea_browser import MapAreaBrowser
 from maleks.gui.reg_browser import RegisterBrowser
 from maleks.gui.struc_browser import StructureRegisterBrowser
+from maleks.gui.entry_browser import EntryRegisterBrowser
 from maleks.gui.toppanel import TopPanel
 from maleks.gui.regbar import RegisterToolbar
 from maleks.gui import dialogs
-from maleks.gui.left_panel import EntryIndicesPanel, FicheIndexPanel
+from maleks.gui.left_panel import MainIndicesPanel, SecondaryIndicesPanel
 #from djvusmooth.text import mangle as text_mangle
 #import djvusmooth.models.metadata
 #import djvusmooth.models.annotations
@@ -385,10 +386,10 @@ class MainWindow(wx.Frame):
         self.left_sidepanel = wx.Panel(self.splitter, wx.ID_ANY)
         self.left_sizer = wx.BoxSizer(wx.VERTICAL)
         self.left_sidebar = wx.Choicebook(self.left_sidepanel, wx.ID_ANY)
-        self.entryind_panel = EntryIndicesPanel(self.left_sidebar)
-        self.ficheind_panel = FicheIndexPanel(self.left_sidebar)
-        self.left_sidebar.AddPage(self.entryind_panel, _('Entry Indices'))
-        self.left_sidebar.AddPage(self.ficheind_panel, _('Fiche Index'))
+        self.mainind_panel = MainIndicesPanel(self.left_sidebar)
+        self.secind_panel = SecondaryIndicesPanel(self.left_sidebar)
+        self.left_sidebar.AddPage(self.mainind_panel, _('Main Indices'))
+        self.left_sidebar.AddPage(self.secind_panel, _('Secondary Indices'))
         self.left_sizer.Add(self.left_sidebar, 1, wx.EXPAND)
         self.left_sidepanel.SetSizer(self.left_sizer)
         
@@ -407,11 +408,14 @@ class MainWindow(wx.Frame):
         #self.taskreg_browser = TaskRegisterBrowser(self.sidebar)
         self.taskreg_browser = RegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
         self.strucreg_browser = StructureRegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
+        self.entryreg_browser = EntryRegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
+        self.entryreg_browser.setDBController(self.dBController)
         #self.sidebar.AddPage(self.outline_browser, _('Outline'))
         #self.sidebar.AddPage(self.maparea_browser, _('Hyperlinks'))
         #self.sidebar.AddPage(self.text_browser, _('Text'))
         self.sidebar.AddPage(self.taskreg_browser, _('Task Register'))
         self.sidebar.AddPage(self.strucreg_browser, _('Structure Register'))
+        self.sidebar.AddPage(self.entryreg_browser, _('Entry Register'))
         self.sidebar.Bind(
             wx.EVT_CHOICEBOOK_PAGE_CHANGED,
             #self.on_sidebar_page_changed
@@ -420,10 +424,11 @@ class MainWindow(wx.Frame):
                 #self.on_display_maparea,
                 #self.on_display_text)
                 self.on_display_taskreg,
-                self.on_display_strucreg
+                self.on_display_strucreg, 
+                self.on_display_entryreg
             )
         )
-        for widget in [self.taskreg_browser, self.strucreg_browser]:
+        for widget in [self.taskreg_browser, self.strucreg_browser, self.entryreg_browser]:
             widget.addListener(self)
         
         self.main_panel = wx.Panel(self.splitter)
@@ -709,7 +714,8 @@ class MainWindow(wx.Frame):
             self.active_register.getNextFiche()
 
     def on_up(self, event):
-        if self.active_register == self.strucreg_browser:
+        #print self.active_register == self.entryreg_browser
+        if self.active_register in [self.strucreg_browser, self.entryreg_browser]:
             self.active_register.onUp(event)
 
     def on_bookmark(self, event):
@@ -722,7 +728,7 @@ class MainWindow(wx.Frame):
     def on_choose_register(self, event):
         if self.active_register == self.taskreg_browser:
             li = [_('Default task register'), _('Bookmarks')]
-            dg = wx.SingleChoiceDialog(self, _('Choose work mode'), _('Work mode'), li)
+            dg = wx.SingleChoiceDialog(self, _('Choose task register'), _('Task Register'), li)
             if dg.ShowModal() == wx.ID_OK:
                 i = dg.GetSelection()
                 if i != -1:
@@ -745,6 +751,7 @@ class MainWindow(wx.Frame):
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('H'), self.on_hint_accept)
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('D'), self.on_bookmark)
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('R'), self.on_choose_register)
+        self._install_shortcut(li, wx.ACCEL_CTRL, ord('S'), self.on_level_down)
         #self._install_shortcut(li, wx.ACCEL_NORMAL, wx.WXK_DOWN, self.on_next_fiche)
         #self._install_shortcut(li, wx.ACCEL_NORMAL, wx.WXK_UP, self.on_prev_fiche)
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('.'), self.on_next_binary)
@@ -815,6 +822,10 @@ class MainWindow(wx.Frame):
                 self._use_mode(self.modes[i])
         #print "work"
         self.page_widget.SetFocus()
+
+    def on_level_down(self, event):
+        if self.active_register in [self.entryreg_browser, self.strucreg_browser]:
+            self.active_register.levelDown()
 
     def on_splitter_sash_changed(self, event):
         #print event.GetSash
@@ -1000,17 +1011,25 @@ class MainWindow(wx.Frame):
                 self.regbar.setPath("")
    
     def on_display_taskreg(self, event):
-        self.on_undisplay()
-        self._disable_page_change()           
-        self.active_register = self.taskreg_browser
-        if self.ficheId != None: self.active_register.select(self.ficheId)
+        if not self.__closing:
+            self.on_undisplay()
+            self._disable_page_change()         
+            self.active_register = self.taskreg_browser
+            if self.ficheId != None: self.active_register.select(self.ficheId)
 
     def on_display_strucreg(self, event):
-        self.on_undisplay()
-        self.active_register = self.strucreg_browser
-        if self.ficheId != None: self.active_register.select(self.ficheId)
-        self.regbar.setPath(self.active_register.getPath())
-        self._enable_page_change()
+        if not self.__closing:
+            self.on_undisplay()
+            self.active_register = self.strucreg_browser
+            if self.ficheId != None: self.active_register.select(self.ficheId)
+            self.regbar.setPath(self.active_register.getPath())
+            self._enable_page_change()
+
+    def on_display_entryreg(self, event):
+        if not self.__closing:
+            self.on_undisplay()
+            self.active_register = self.entryreg_browser
+            if self.ficheId != None: self.active_register.select(self.ficheId)
 
     def on_display_everything(self, event):
         self.page_widget.render_mode = djvu.decode.RENDER_COLOR
@@ -1121,7 +1140,7 @@ class MainWindow(wx.Frame):
 
     def on_stop_binary(self, event):
     #    if self.mode == _('Browsing mode'):
-        if not self.active_register.binarySearchActive():
+        if self.active_register.binaryAvailable() and not self.active_register.binarySearchActive():
             self.start_binary_search()
         else:
             self.stop_binary_search()
@@ -1321,6 +1340,7 @@ class MainWindow(wx.Frame):
         self.reset()
         self.taskreg_browser.reset()
         self.strucreg_browser.reset()
+        self.entryreg_browser.reset()
         self.page_no = 0
         self.dBController.setPerDocumentConnection(None, None, None)
         #def clear_models():
@@ -1335,6 +1355,7 @@ class MainWindow(wx.Frame):
                 self.index = StructureIndex(path)
                 self.config = Configuration(path)
                 self.config.configureDatabase(self.dBController)
+                self.entryreg_browser.initialize()
                 self.hintRegister = HintRegister(path)
                 self.hintRegister.readUserHints(path)
                 self.top_panel.setHintRegister(self.hintRegister)
@@ -1428,14 +1449,25 @@ class MainWindow(wx.Frame):
         if self.notify:
             self.active_register.select(self.ficheId)
 
+    # TODO: A zapisywanie wartosci indeksow przy zamykaniu programu
+    # TODO: A czyszczenie indeksow przy zamykaniu/otwieraniu nowego katalogu
+
     def update_indices(self):
         if self.dBController != None:
-            if self.entryind_panel.isDirty():
-                self.dBController.setEntriesForFiche(self.entryind_panel.getValue(), self.entryind_panel.getFicheId())
-            if self.ficheind_panel.isDirty():
-                self.dBController.setFiche(self.ficheind_panel.getValue(), self.ficheind_panel.getFicheId())
-            self.entryind_panel.fill(self.dBController.getEntriesForFiche(self.ficheId), self.ficheId)
-            self.ficheind_panel.fill(self.dBController.getFiche(self.ficheId), self.ficheId)
+            if self.mainind_panel.isDirty():
+                self.dBController.setEntriesForFiche(self.mainind_panel.getEntryIndicesValue(), self.mainind_panel.getFicheId())
+                self.dBController.setFiche(self.mainind_panel.getFicheIndexValue(), self.mainind_panel.getFicheId())
+                self.dBController.setPageAndLineForFiche(self.mainind_panel.getPageAndLineIndicesValue(), self.mainind_panel.getFicheId())
+            if self.secind_panel.isDirty():
+                self.dBController.setSecondaryIndicesForFiche(self.secind_panel.getValues(), self.secind_panel.getFicheId())
+            self.mainind_panel.disableInputEvent()
+            self.mainind_panel.fillEntryIndices(self.dBController.getEntriesForFiche(self.ficheId), self.ficheId)
+            self.mainind_panel.fillFicheIndex(self.dBController.getFiche(self.ficheId), self.ficheId)
+            self.mainind_panel.fillPageAndLineIndices(self.dBController.getPageAndLineForFiche(self.ficheId), self.ficheId)
+            self.mainind_panel.enableInputEvent()
+            self.secind_panel.disableInputEvent()
+            self.secind_panel.fill(self.dBController.getSecondaryIndicesForFiche(self.ficheId), self.ficheId)
+            self.secind_panel.enableInputEvent()
 
     def update_panels(self):
         if self.ficheId != None: # TODO: NOTE jest otwarty jakis dokument

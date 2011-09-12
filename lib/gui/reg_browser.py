@@ -24,6 +24,7 @@ class RegisterBrowser(wx.ListView):
 		#col.SetText(_('Fiche identifiers'))
 		#self.InsertColumnItem(0, col)
 		self.InsertColumn(0, '', width=wx.LIST_AUTOSIZE)
+		#self.InsertColumn(1, '')#, width=wx.LIST_AUTOSIZE)
 		self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onSelect, self)
 		self._listeners = []
 		self.reset()
@@ -64,6 +65,7 @@ class RegisterBrowser(wx.ListView):
 		i = 0
 		for element in reg:
 			self.InsertStringItem(i, element.getLabel())
+			#self.InsertStringItem(i, "*")
 			self._items.append(i)
 			self._item2element.setdefault(i, element.getId())
 			self._element2item.setdefault(element.getId(), i)

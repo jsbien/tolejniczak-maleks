@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-08 23:50+0200\n"
+"POT-Creation-Date: 2011-09-13 00:18+0200\n"
 "PO-Revision-Date: 2009-05-31 14:45+CEST\n"
 "Last-Translator: Tomasz Olejniczak <tomek.87@poczta.onet.pl>\n"
 "Language-Team: none\n"
@@ -132,18 +132,18 @@ msgstr "Zakładki"
 msgid "Border"
 msgstr "Obramowanie"
 
+msgid "Choose task register"
+msgstr "Wybierz wykaz zadaniowy"
+
+#, fuzzy
 msgid "Choose work mode"
-msgstr "Wybierz tryb pracy"
+msgstr "Ustaw tryb pracy"
 
 msgid "Close the document"
 msgstr "Zamknij dokument"
 
 msgid "Comment"
 msgstr "Komentarz"
-
-msgid "Comment will not be saved if its corresponding entry is empty"
-msgstr ""
-"Komentarz nie zostanie zapisany jeżeli odpowiadające mu hasło jest puste"
 
 msgid "Decrease the magnification"
 msgstr "Zmniejsz powiększenie"
@@ -178,8 +178,38 @@ msgstr "Pusty panel edycji"
 msgid "Empty hint panel"
 msgstr "Pusty panel podpowiedzi"
 
-msgid "Entry Indices"
-msgstr "Indeksy haseł"
+msgid "Entry Register"
+msgstr "Wykaz haseł"
+
+msgid "Entry begin"
+msgstr "Początek wyrażenia hasłowego"
+
+msgid "Entry begin (char)"
+msgstr "Początek wyrażenia hasłowego (znak)"
+
+msgid "Entry begin (line)"
+msgstr "Początek wyrażenia hasłowego (wiersz)"
+
+msgid "Entry begin (word)"
+msgstr "Początek wyrażenia hasłowego (słowo)"
+
+msgid "Entry end"
+msgstr "Koniec wyrażenia hasłowego"
+
+msgid "Entry end (char)"
+msgstr "Koniec wyrażenia hasłowego (znak)"
+
+msgid "Entry end (line)"
+msgstr "Koniec wyrażenia hasłowego (wiersz)"
+
+msgid "Entry end (word)"
+msgstr "Koniec wyrażenia hasłowego (słowo)"
+
+msgid "Entry location"
+msgstr "Położenie wyrażenia hasłowego"
+
+msgid "Entry unknown"
+msgstr "Brak hasła"
 
 msgid "Error"
 msgstr "Błąd"
@@ -195,9 +225,6 @@ msgstr "Eksportuj zakładki"
 
 msgid "Export bookmarks as task register"
 msgstr "Eskportuj zakładki jako wykaz zadaniowy"
-
-msgid "Fiche Index"
-msgstr "Indeks fiszek"
 
 msgid "Fiche already indexed"
 msgstr "Fiszka została już zaindeksowana"
@@ -250,6 +277,12 @@ msgstr "Linia"
 msgid "Line color"
 msgstr "Kolor linii"
 
+msgid "Line number"
+msgstr "Numer wiersza"
+
+msgid "Line unknown"
+msgstr "Wiersz nieznany"
+
 msgid "Line width"
 msgstr "Szerokość linii"
 
@@ -259,6 +292,9 @@ msgstr "Właściwości linii"
 #, python-format
 msgid "Magnify %d%%"
 msgstr "Powiększ do %d%%"
+
+msgid "Main Indices"
+msgstr "Indeksy główne"
 
 msgid "Main properties"
 msgstr "Właściwości"
@@ -303,11 +339,17 @@ msgstr "Właściwości adnotacji (hiperłącza)"
 msgid "Page %(pageno)d of %(npages)d"
 msgstr "Strona %(pageno)d z %(npages)d"
 
+msgid "Page number"
+msgstr "Numer strony"
+
 msgid "Page number of the first word"
 msgstr "Numer strony dla pierwszego słowa"
 
 msgid "Page number of the last word"
 msgstr "Numer strony dla ostatniego słowa"
+
+msgid "Page unknown"
+msgstr "Strona nieznana"
 
 msgid "Polygon"
 msgstr "Wielokąt"
@@ -326,6 +368,9 @@ msgstr "Usuń szczegóły"
 
 msgid "Scope"
 msgstr "Zakres"
+
+msgid "Secondary Indices"
+msgstr "Indeksy pomocnicze"
 
 msgid "Set full resolution magnification."
 msgstr "Dopasuj powiększenie do pełnej rozdzielczości."
@@ -468,6 +513,18 @@ msgstr "słowo"
 
 msgid "words"
 msgstr "słowa"
+
+#~ msgid ""
+#~ "Entry comments will not be saved if their corresponding entries are empty"
+#~ msgstr ""
+#~ "Komentarze hasłowe nie zostaną zapisane jeżeli odpowiadające im hasła są "
+#~ "puste"
+
+#~ msgid "Entry Indices"
+#~ msgstr "Indeksy haseł"
+
+#~ msgid "Fiche Index"
+#~ msgstr "Indeks fiszek"
 
 #, fuzzy
 #~ msgid "Save bookmarks"

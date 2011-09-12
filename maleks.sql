@@ -30,7 +30,7 @@ create table pages (
 	comment varchar(50)
 );
 
-create table lines (
+create table linesIndex (
 	fiche varchar(40) not null primary key,
 	line integer not null,
 	comment varchar(50)
@@ -59,5 +59,26 @@ create table entry_prefixes (
 	prefix varchar(40) not null,
 	comment varchar(50),
 	primary key (fiche, prefix)
+);
+
+create table fiche_entries (
+	fiche varchar(40) not null,
+	pageNo integer,
+	lineNo integer,
+	entryBegin varchar(100),
+	entryBeginLine integer,
+	entryBeginWord integer,
+	entryBeginChar integer,
+	entryEnd varchar(100),
+	entryEndLine integer,
+	entryEndWord integer,
+	entryEndChar integer,
+	comment varchar(50)
+);
+
+create table text_entries (
+	fiche varchar(40) not null,
+	entry varchar(100) not null,
+	comment varchar(50)
 );
 

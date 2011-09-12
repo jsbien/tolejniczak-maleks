@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-08 23:50+0200\n"
+"POT-Creation-Date: 2011-09-13 00:18+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -131,6 +131,9 @@ msgstr ""
 msgid "Border"
 msgstr ""
 
+msgid "Choose task register"
+msgstr ""
+
 msgid "Choose work mode"
 msgstr ""
 
@@ -138,9 +141,6 @@ msgid "Close the document"
 msgstr ""
 
 msgid "Comment"
-msgstr ""
-
-msgid "Comment will not be saved if its corresponding entry is empty"
 msgstr ""
 
 msgid "Decrease the magnification"
@@ -176,7 +176,37 @@ msgstr ""
 msgid "Empty hint panel"
 msgstr ""
 
-msgid "Entry Indices"
+msgid "Entry Register"
+msgstr ""
+
+msgid "Entry begin"
+msgstr ""
+
+msgid "Entry begin (char)"
+msgstr ""
+
+msgid "Entry begin (line)"
+msgstr ""
+
+msgid "Entry begin (word)"
+msgstr ""
+
+msgid "Entry end"
+msgstr ""
+
+msgid "Entry end (char)"
+msgstr ""
+
+msgid "Entry end (line)"
+msgstr ""
+
+msgid "Entry end (word)"
+msgstr ""
+
+msgid "Entry location"
+msgstr ""
+
+msgid "Entry unknown"
 msgstr ""
 
 msgid "Error"
@@ -192,9 +222,6 @@ msgid "Export bookmarks"
 msgstr ""
 
 msgid "Export bookmarks as task register"
-msgstr ""
-
-msgid "Fiche Index"
 msgstr ""
 
 msgid "Fiche already indexed"
@@ -248,6 +275,12 @@ msgstr ""
 msgid "Line color"
 msgstr ""
 
+msgid "Line number"
+msgstr ""
+
+msgid "Line unknown"
+msgstr ""
+
 msgid "Line width"
 msgstr ""
 
@@ -256,6 +289,9 @@ msgstr ""
 
 #, python-format
 msgid "Magnify %d%%"
+msgstr ""
+
+msgid "Main Indices"
 msgstr ""
 
 msgid "Main properties"
@@ -301,10 +337,16 @@ msgstr ""
 msgid "Page %(pageno)d of %(npages)d"
 msgstr ""
 
+msgid "Page number"
+msgstr ""
+
 msgid "Page number of the first word"
 msgstr ""
 
 msgid "Page number of the last word"
+msgstr ""
+
+msgid "Page unknown"
 msgstr ""
 
 msgid "Polygon"
@@ -323,6 +365,9 @@ msgid "Remove details"
 msgstr ""
 
 msgid "Scope"
+msgstr ""
+
+msgid "Secondary Indices"
 msgstr ""
 
 msgid "Set full resolution magnification."
