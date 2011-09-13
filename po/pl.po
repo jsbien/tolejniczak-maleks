@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-13 15:57+0200\n"
+"POT-Creation-Date: 2011-09-13 19:34+0200\n"
 "PO-Revision-Date: 2009-05-31 14:45+CEST\n"
 "Last-Translator: Tomasz Olejniczak <tomek.87@poczta.onet.pl>\n"
 "Language-Team: none\n"
@@ -99,6 +99,15 @@ msgstr "&Powiększenie"
 msgid "About…"
 msgstr "O programie…"
 
+msgid "Accept edit panel content"
+msgstr "Akceptacja napisu w panelu edycji"
+
+msgid "Accept edit panel content as prefix"
+msgstr "Akceptacja napisu w panelu edycji jako prefiksu"
+
+msgid "Accept hint panel content"
+msgstr "Akceptacja napisu w panelu podpowiedzi"
+
 msgid "Actual entry"
 msgstr "Hasło aktualne"
 
@@ -126,14 +135,11 @@ msgstr "Kolor tła"
 msgid "Binary search"
 msgstr "Przeszukiwanie binarne"
 
-msgid "Bookmarks"
-msgstr "Zakładki"
+msgid "Bookmark Register"
+msgstr "Wykaz zakładek"
 
 msgid "Border"
 msgstr "Obramowanie"
-
-msgid "Choose task register"
-msgstr "Wybierz wykaz zadaniowy"
 
 #, fuzzy
 msgid "Choose work mode"
@@ -150,9 +156,6 @@ msgstr "Zmniejsz powiększenie"
 
 msgid "Default mode"
 msgstr "Tryb zwykły"
-
-msgid "Default task register"
-msgstr "Domyślny wykaz zadaniowy"
 
 msgid "Display everything"
 msgstr "Pokaż wszystko"
@@ -241,8 +244,20 @@ msgstr "Dopasuj &szerokość"
 msgid "Flatten text"
 msgstr "Spłaszcz strukturę tekstu"
 
+msgid "Go back to previous fiche"
+msgstr "Wróć do ostatnio oglądanej fiszki"
+
+msgid "Go to element parent in structure register"
+msgstr "Przejdź do ojca elementu w wykazie struktury"
+
+msgid "Go to left in binary search"
+msgstr "Idź na lewo w wyszukiwaniu binarnym"
+
 msgid "Go to page"
 msgstr "Idź do strony"
+
+msgid "Go to right in binary search"
+msgstr "Idź na prawo w wyszukiwaniu binarnym"
 
 msgid "Highlight color"
 msgstr "Kolor podświetlenia"
@@ -292,6 +307,9 @@ msgstr "Szerokość linii"
 msgid "Line-specific properties"
 msgstr "Właściwości linii"
 
+msgid "Load task register from file"
+msgstr "Wczytaj wykaz zadaniowy z pliku"
+
 #, python-format
 msgid "Magnify %d%%"
 msgstr "Powiększ do %d%%"
@@ -328,6 +346,9 @@ msgstr "Otwórz dokument DjVu"
 
 msgid "Open directory with lexicographic data"
 msgstr "Otwórz katalog z danymi leksykograficznymi"
+
+msgid "Open task register"
+msgstr "Otwórz wykaz zadaniowy"
 
 msgid "Original entry"
 msgstr "Hasło oryginalne"
@@ -399,11 +420,17 @@ msgstr "Kształt"
 msgid "Show &register panel"
 msgstr "Pokaż panel &wykazów"
 
+msgid "Show default task register"
+msgstr "Pokaż domyślny wykaz zadaniowy"
+
 msgid "Show/hide the register panel"
 msgstr "Pokaż/ukryj panel wykazów"
 
 msgid "Solid color"
 msgstr "Jednolity kolor"
+
+msgid "Start/stop binary search"
+msgstr "Włącz/wyłącz wyszukiwanie binarne"
 
 msgid "Stretch the image to the window size"
 msgstr "Rozciągnij obraz do rozmiarów okna"
@@ -441,6 +468,9 @@ msgstr "Identyfikator utworu"
 
 msgid "Work mode"
 msgstr "Tryb pracy"
+
+msgid "Work unknown"
+msgstr "Utwór nieznany"
 
 msgid "Wrong database configuration"
 msgstr "Niepoprawna konfiguracja bazy danych"
@@ -513,6 +543,15 @@ msgstr "słowo"
 
 msgid "words"
 msgstr "słowa"
+
+#~ msgid "Bookmarks"
+#~ msgstr "Zakładki"
+
+#~ msgid "Choose task register"
+#~ msgstr "Wybierz wykaz zadaniowy"
+
+#~ msgid "Default task register"
+#~ msgstr "Domyślny wykaz zadaniowy"
 
 #~ msgid "new"
 #~ msgstr "nowa"

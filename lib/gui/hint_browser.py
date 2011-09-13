@@ -23,7 +23,7 @@ class HintRegisterBrowser(RegisterBrowser):
 		RegisterBrowser.reset(self)
 		self.__hints = []
 
-	def setRegister(self, reg):
+	def setRegister(self, reg, getEntry=None):
 		self.reset()
 		i = 0
 		for element in reg:

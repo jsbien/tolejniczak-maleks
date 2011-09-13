@@ -62,23 +62,29 @@ class EntryRegisterBrowser(RegisterBrowser):
 	def levelDown(self):
 		elementId = self.__selectedElement
 		#elif self.__level == "ENTRY":
-		if self.__level == "ENTRY":			
+		if self.__level == "ENTRY":	
+			elements = self.__dBController.getWorksForEntry(elementId)	
+			self.__stack.append(elementId)
+			self.__level = "WORK"
+			self.DeleteAllItems()
+			self.__fillRegister(elements)
+		elif self.__level == "WORK":	
 			#print elementId
-			elements = self.__dBController.getPagesForEntry(elementId)
+			elements = self.__dBController.getPagesForWork(self.__stack[-1], elementId)
 			#elements = ["0", "1", "2", "3", "4"]
 			self.__stack.append(elementId)
 			self.__level = "PAGE"
 			self.DeleteAllItems()
 			self.__fillRegister(elements)
 		elif self.__level == "PAGE":
-			elements = self.__dBController.getLinesForPage(self.__stack[-1], elementId)
+			elements = self.__dBController.getLinesForPage(self.__stack[-2], self.__stack[-1], elementId)
 			#elements = ["4", "5", "6", "7"]
 			self.__stack.append(elementId)
 			self.__level = "LINE"
 			self.DeleteAllItems()
 			self.__fillRegister(elements)
 		else:
-			elements = self.__dBController.getFichesForLine(self.__stack[-2], self.__stack[-1], elementId)
+			elements = self.__dBController.getFichesForLine(self.__stack[-3], self.__stack[-2], self.__stack[-1], elementId)
 			self.__level = "FICHE"
 			self.DeleteAllItems()
 			self.__fillRegister(elements)
@@ -94,18 +100,26 @@ class EntryRegisterBrowser(RegisterBrowser):
 		if self.__stack == []:
 			return
 		if self.__level == "FICHE":
-			elements = self.__dBController.getLinesForPage(self.__stack[-2], self.__stack.pop())
+			elements = self.__dBController.getLinesForPage(self.__stack[-3], self.__stack[-2], self.__stack[-1])
 			#elements = ["4", "5", "6", "7"]
 			self.__level = "LINE"
 			self.DeleteAllItems()
 			self.__fillRegister(elements)
 		elif self.__level == "LINE":
-			elements = self.__dBController.getPagesForEntry(self.__stack.pop())
+			self.__stack.pop()
+			elements = self.__dBController.getPagesForWork(self.__stack[-2], self.__stack[-1])
 			#elements = ["0", "1", "2", "3", "4"]
 			self.__level = "PAGE"
 			self.DeleteAllItems()
 			self.__fillRegister(elements)
 		elif self.__level == "PAGE":
+			self.__stack.pop()
+			elements = self.__dBController.getWorksForEntry(self.__stack[-1])
+			self.__level = "WORK"
+			self.DeleteAllItems()
+			self.__fillRegister(elements)
+		elif self.__level == "WORK":
+			self.__stack.pop()
 			elements = self.__dBController.getEntriesRegister()
 			self.__level = "ENTRY"
 			self.DeleteAllItems()

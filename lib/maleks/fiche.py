@@ -228,6 +228,17 @@ class StructureIndex(object):
 	def isAlphabetic(self):
 		return self.__alphabetic
 
+	def getTaskRegisterFromFile(self, path):
+		res = TaskRegister(None, None, empty=True)
+		f = open(path)
+		for line in f:
+			if line == "\n" or line[0] == "#":
+				continue
+			line = line.strip()
+			res.append(self.getFicheById(line))
+		f.close()
+		return res
+
 #si = StructureIndex("/home/to/fajny")
 #def traverse(el, level=0):
 #	if isinstance(el, fiche):

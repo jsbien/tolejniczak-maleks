@@ -423,7 +423,8 @@ class MainWindow(wx.Frame):
         self.strucreg_browser = StructureRegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER | wx.LC_REPORT)
         self.entryreg_browser = EntryRegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER | wx.LC_REPORT)
         self.entryreg_browser.setDBController(self.dBController)
-        self.hintreg_browser = HintRegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
+        self.hintreg_browser = HintRegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER | wx.LC_REPORT)
+        self.bookreg_browser = RegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER | wx.LC_REPORT)
         #self.sidebar.AddPage(self.outline_browser, _('Outline'))
         #self.sidebar.AddPage(self.maparea_browser, _('Hyperlinks'))
         #self.sidebar.AddPage(self.text_browser, _('Text'))
@@ -431,6 +432,7 @@ class MainWindow(wx.Frame):
         self.sidebar.AddPage(self.strucreg_browser, _('Structure Register'))
         self.sidebar.AddPage(self.entryreg_browser, _('Entry Register'))
         self.sidebar.AddPage(self.hintreg_browser, _('Hint Register'))
+        self.sidebar.AddPage(self.bookreg_browser, _('Bookmark Register'))
         self.sidebar.Bind(
             wx.EVT_CHOICEBOOK_PAGE_CHANGED,
             #self.on_sidebar_page_changed
@@ -441,10 +443,11 @@ class MainWindow(wx.Frame):
                 self.on_display_taskreg,
                 self.on_display_strucreg,
                 self.on_display_entryreg,
-                self.on_display_hintreg
+                self.on_display_hintreg,
+                self.on_display_bookreg
             )
         )
-        for widget in [self.taskreg_browser, self.strucreg_browser, self.entryreg_browser, self.hintreg_browser]:
+        for widget in [self.taskreg_browser, self.strucreg_browser, self.entryreg_browser, self.hintreg_browser, self.bookreg_browser]:
             widget.addListener(self)
         self.sidebar.ChangeSelection(1)
         
@@ -749,25 +752,21 @@ class MainWindow(wx.Frame):
     def on_bookmark(self, event):
         if self.dBController != None:
             self.dBController.bookmarkFiche(self.ficheId)
-            if self.bookmarksActive:
-                self.taskreg_browser.setRegister(self.dBController.getBookmarksTaskRegister())
-                self.taskreg_browser.select(self.ficheId)
+            if self.active_register == self.bookreg_browser:
+                self.bookreg_browser.setRegister(self.dBController.getBookmarksTaskRegister(), self.dBController.getActualEntryForFiche if self.dBController != None else None)
+                self.bookreg_browser.select(self.ficheId)
+
+    def on_default_register(self, event):
+        self.taskreg_browser.setRegister(self.taskRegister, self.dBController.getActualEntryForFiche if self.dBController != None else None)
+        self.taskreg_browser.select(self.ficheId)
 
     def on_choose_register(self, event):
         if self.active_register == self.taskreg_browser:
-            li = [_('Default task register'), _('Bookmarks')]
-            dg = wx.SingleChoiceDialog(self, _('Choose task register'), _('Task Register'), li)
+            dg = wx.FileDialog(self, _('Open task register'), os.getcwd(), style=wx.FD_OPEN)
             if dg.ShowModal() == wx.ID_OK:
-                i = dg.GetSelection()
-                if i != -1:
-                    if i == 0:
-                        self.bookmarksActive = False
-                        self.taskreg_browser.setRegister(self.taskRegister)
-                        self.taskreg_browser.select(self.ficheId)
-                    elif i == 1 and self.dBController != None:
-                        self.bookmarksActive = True
-                        self.taskreg_browser.setRegister(self.dBController.getBookmarksTaskRegister())
-                        self.taskreg_browser.select(self.ficheId)
+                register = self.index.getTaskRegisterFromFile(dg.GetPath())
+                self.taskreg_browser.setRegister(register, self.dBController.getActualEntryForFiche if self.dBController != None else None)
+                self.taskreg_browser.select(self.ficheId)
             self.page_widget.SetFocus()
         
     # TODO: A flage __fileOpen i sprawdzanie we wszystkich istotnych metodach
@@ -823,7 +822,7 @@ class MainWindow(wx.Frame):
 
     def stop_binary_search(self):
         self.active_register.stopBinarySearch()
-        if self.active_register in [self.strucreg_browser]:
+        if self.active_register in [self.strucreg_browser]: # TODO: A zmiany stron w innych wykazach: czy pozwalac?
             self._enable_page_change()
         self.SetStatusText("", 2)
     
@@ -1056,13 +1055,22 @@ class MainWindow(wx.Frame):
     def on_display_entryreg(self, event):
         if not self.__closing:
             self.on_undisplay()
+            self._disable_page_change()  
             self.active_register = self.entryreg_browser
             if self.ficheId != None: self.active_register.select(self.ficheId)
 
     def on_display_hintreg(self, event):
         if not self.__closing:
             self.on_undisplay()
+            self._disable_page_change()  
             self.active_register = self.hintreg_browser
+
+    def on_display_bookreg(self, event):
+        if not self.__closing:
+            self.on_undisplay()
+            self._disable_page_change()
+            self.active_register = self.bookreg_browser
+            if self.ficheId != None: self.bookreg_browser.select(self.ficheId)
 
     def on_display_everything(self, event):
         self.page_widget.render_mode = djvu.decode.RENDER_COLOR
@@ -1359,7 +1367,7 @@ class MainWindow(wx.Frame):
         self.index = None
         self.config = None
         self.taskRegister = None
-        self.bookmarksActive = False
+        #self.bookmarksActive = False
         self.hintRegister = None
         self.top_panel.setHintRegister(None)
         self.history = []
@@ -1389,6 +1397,7 @@ class MainWindow(wx.Frame):
         self.strucreg_browser.reset()
         self.entryreg_browser.reset()
         self.hintreg_browser.reset()
+        self.bookreg_browser.reset()
         self.page_no = 0
         self.dBController.setPerDocumentConnection(None, None, None)
         #def clear_models():
@@ -1404,6 +1413,8 @@ class MainWindow(wx.Frame):
                 self.config = Configuration(path)
                 self.config.configureDatabase(self.dBController)
                 self.entryreg_browser.initialize() # TODO: C przeniesc do initialize_registers i dac flage czy udalo sie wczytac plik czy nie
+                self.bookreg_browser.DeleteAllItems()
+                self.bookreg_browser.setRegister(self.dBController.getBookmarksTaskRegister(), self.dBController.getActualEntryForFiche if self.dBController != None else None) # TODO: C j.w., sprawdzanie czy dBController jest null
                 self.hintRegister = HintRegister(path)
                 self.hintRegister.readUserHints(path)
                 self.hintRegister.sort()
@@ -1482,7 +1493,7 @@ class MainWindow(wx.Frame):
     def initialize_registers(self):
         self.taskreg_browser.DeleteAllItems()
         if self.taskRegister != None:
-            self.taskreg_browser.setRegister(self.taskRegister)
+            self.taskreg_browser.setRegister(self.taskRegister, self.dBController.getActualEntryForFiche if self.dBController != None else None)
             self.taskreg_browser.select(self.ficheId)
         self.strucreg_browser.DeleteAllItems()
         #if self.taskRegister != None:
@@ -1534,6 +1545,9 @@ class MainWindow(wx.Frame):
                     self.top_panel.setHypothesis(hypothesis)
                 else:
                     self.top_panel.setHypothesis("")
+                entry = self.dBController.getActualEntryForFiche(self.ficheId)
+                if entry != None:
+                    self.top_panel.setEntry(entry)
 
     def update_title(self):
         if self.path is None:
@@ -1555,8 +1569,8 @@ class MainWindow(wx.Frame):
                 #self._config['save_dir'] = os.path.dirname(dialog.GetPath()) or ''
                 fileToSave = dialog.GetPath()
                 bookmarksTaskRegister.saveToFile(fileToSave)
-        except IOError:
-            wx.MessageBox
+        #except IOError:
+        #    wx.MessageBox()
         finally:
             dialog.Destroy()
         self.page_widget.SetFocus()

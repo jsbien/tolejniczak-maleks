@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-13 15:57+0200\n"
+"POT-Creation-Date: 2011-09-13 19:34+0200\n"
 "PO-Revision-Date: 2010-06-26 18:05+0300\n"
 "Last-Translator: Kyrill Detinov <lazy.kent.suse@gmail.com>\n"
 "Language-Team: openSUSE Translation Team\n"
@@ -101,6 +101,15 @@ msgstr "&Масштаб"
 msgid "About…"
 msgstr "О программе…"
 
+msgid "Accept edit panel content"
+msgstr ""
+
+msgid "Accept edit panel content as prefix"
+msgstr ""
+
+msgid "Accept hint panel content"
+msgstr ""
+
 msgid "Actual entry"
 msgstr ""
 
@@ -129,14 +138,11 @@ msgid "Binary search"
 msgstr ""
 
 #, fuzzy
-msgid "Bookmarks"
+msgid "Bookmark Register"
 msgstr "закладки"
 
 msgid "Border"
 msgstr "Рамка"
-
-msgid "Choose task register"
-msgstr ""
 
 msgid "Choose work mode"
 msgstr ""
@@ -151,9 +157,6 @@ msgid "Decrease the magnification"
 msgstr "Уменьшить масштаб"
 
 msgid "Default mode"
-msgstr ""
-
-msgid "Default task register"
 msgstr ""
 
 msgid "Display everything"
@@ -244,8 +247,20 @@ msgstr "По &ширине страницы"
 msgid "Flatten text"
 msgstr "Упростить структуру текста"
 
+msgid "Go back to previous fiche"
+msgstr ""
+
+msgid "Go to element parent in structure register"
+msgstr ""
+
+msgid "Go to left in binary search"
+msgstr ""
+
 msgid "Go to page"
 msgstr "Перейти к странице"
+
+msgid "Go to right in binary search"
+msgstr ""
 
 msgid "Highlight color"
 msgstr "Подсветка"
@@ -295,6 +310,9 @@ msgstr "Ширина линии"
 msgid "Line-specific properties"
 msgstr "Параметры, специфичные для строки"
 
+msgid "Load task register from file"
+msgstr ""
+
 #, python-format
 msgid "Magnify %d%%"
 msgstr "Увеличение %d%%"
@@ -330,6 +348,9 @@ msgid "Open a DjVu document"
 msgstr "Открыть DjVu документ"
 
 msgid "Open directory with lexicographic data"
+msgstr ""
+
+msgid "Open task register"
 msgstr ""
 
 msgid "Original entry"
@@ -403,11 +424,18 @@ msgid "Show &register panel"
 msgstr ""
 
 #, fuzzy
+msgid "Show default task register"
+msgstr "Показать/скрыть боковую панель"
+
+#, fuzzy
 msgid "Show/hide the register panel"
 msgstr "Показать/скрыть боковую панель"
 
 msgid "Solid color"
 msgstr "Сплошная заливка"
+
+msgid "Start/stop binary search"
+msgstr ""
 
 msgid "Stretch the image to the window size"
 msgstr "Масштабировать страницу по размеру окна"
@@ -444,6 +472,9 @@ msgid "Work identificator"
 msgstr ""
 
 msgid "Work mode"
+msgstr ""
+
+msgid "Work unknown"
 msgstr ""
 
 msgid "Wrong database configuration"
@@ -517,6 +548,10 @@ msgstr "слово"
 
 msgid "words"
 msgstr "слова"
+
+#, fuzzy
+#~ msgid "Bookmarks"
+#~ msgstr "закладки"
 
 #~ msgid "Show &sidebar"
 #~ msgstr "Показать &боковую панель"

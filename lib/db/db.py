@@ -100,6 +100,16 @@ class DBController(object):
 		else:
 			return row[0]
 
+	def getActualEntryForFiche(self, ficheId):
+		res = None
+		cursor = self.__openDBWithCursor()
+		cursor.execute("select entry from actual_entries where fiche = %s", (ficheId))
+		row = cursor.fetchone()
+		if row != None:
+			res = row[0]
+		self.__closeDBAndCursor(cursor)
+		return res
+
 	def getEntriesForFiche(self, ficheId):
 		actual = ""
 		actualComment = ""
@@ -237,14 +247,39 @@ class DBController(object):
 		res = [_("Entry unknown")]
 		row = cursor.fetchone()
 		while row != None:
-			res.append(row[0])
+			res.append(str(row[0]))
 			row = cursor.fetchone()
 		self.__closeDBAndCursor(cursor)
 		return res
 
-	def getPagesForEntry(self, entry):
+	def getWorksForEntry(self, entry):
 		cursor = self.__openDBWithCursor()
-		cursor.execute("select distinct page from pages p, actual_entries e where p.fiche = e.fiche and entry = %s order by page", (entry))
+		print entry, type(entry)
+		if isinstance(entry, unicode) and entry == _("Entry unknown"): # TODO: NOTE tu i w ponizszych metodach, bo _ zamienia na unicode
+			cursor.execute("select distinct work from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) order by work")
+		else:
+			cursor.execute("select distinct work from fiches f, actual_entries e where f.fiche = e.fiche and entry = %s order by work", (entry))
+		res = [_('Work unknown')]
+		row = cursor.fetchone()
+		while row != None:
+			if row[0] != None:
+				res.append(str(row[0]))
+			row = cursor.fetchone()
+		self.__closeDBAndCursor(cursor)
+		return res
+
+	def getPagesForWork(self, entry, work):
+		cursor = self.__openDBWithCursor()
+		if isinstance(work, unicode) and work == _("Work unknown"):
+			if isinstance(entry, unicode) and entry == _("Entry unknown"):
+				cursor.execute("select distinct page from fiches f, pages p where f.fiche = p.fiche and work is null and not exists (select * from actual_entries e where f.fiche = e.fiche) order by page")
+			else:
+				cursor.execute("select distinct page from fiches f, pages p, actual_entries e where f.fiche = p.fiche and p.fiche = e.fiche and entry = %s and work is null order by page", (entry))
+		else:
+			if isinstance(entry, unicode) and entry == _("Entry unknown"):
+				cursor.execute("select distinct page from fiches f, pages p where f.fiche = p.fiche and work = %s and not exists (select * from actual_entries e where f.fiche = e.fiche) order by page", (work))
+			else:
+				cursor.execute("select distinct page from fiches f, pages p, actual_entries e where f.fiche = p.fiche and p.fiche = e.fiche and entry = %s and work = %s order by page", (entry, work))
 		res = [_("Page unknown")]
 		row = cursor.fetchone()
 		while row != None:
@@ -253,9 +288,30 @@ class DBController(object):
 		self.__closeDBAndCursor(cursor)
 		return res
 
-	def getLinesForPage(self, entry, page):
+	def getLinesForPage(self, entry, work, page):
 		cursor = self.__openDBWithCursor()
-		cursor.execute("select distinct line from linesIndex l, pages p, actual_entries e where p.fiche = l.fiche and p.fiche = e.fiche and page = %s and entry = %s order by line", (page, entry))
+		if isinstance(page, unicode) and page == _("Page unknown"):
+			if isinstance(work, unicode) and work == _("Work unknown"):
+				if isinstance(entry, unicode) and entry == _("Entry unknown"):
+					cursor.execute("select distinct line from fiches f, linesIndex l where f.fiche = l.fiche and work is null and not exists (select * from actual_entries e where f.fiche = e.fiche) and not exists (select * from pages p where l.fiche = p.fiche) order by line")
+				else:
+					cursor.execute("select distinct line from fiches f, linesIndex l, actual_entries e where f.fiche = l.fiche and f.fiche = e.fiche and entry = %s and work is null and not exists (select * from pages p where l.fiche = p.fiche) order by line", (entry))
+			else:
+				if isinstance(entry, unicode) and entry == _("Entry unknown"):
+					cursor.execute("select distinct line from fiches f, linesIndex l where f.fiche = l.fiche and work = %s and not exists (select * from actual_entries e where f.fiche = e.fiche) and not exists (select * from pages p where l.fiche = p.fiche) order by line", (work))
+				else:
+					cursor.execute("select distinct line from fiches f, linesIndex l, actual_entries e where f.fiche = l.fiche and f.fiche = e.fiche and entry = %s and work = %s and not exists (select * from pages p where l.fiche = p.fiche) order by line", (entry, work))
+		else:
+			if isinstance(work, unicode) and work == _("Work unknown"):
+				if isinstance(entry, unicode) and entry == _("Entry unknown"):
+					cursor.execute("select distinct line from fiches f, linesIndex l, pages p where f.fiche = p.fiche and p.fiche = l.fiche and page = %s and work is null and not exists (select * from actual_entries e where f.fiche = e.fiche) order by line", (page))
+				else:
+					cursor.execute("select distinct line from fiches f, linesIndex l, pages p, actual_entries e where f.fiche = p.fiche and p.fiche = l.fiche and p.fiche = e.fiche and page = %s and entry = %s and work is null order by line", (page, entry))
+			else:
+				if isinstance(entry, unicode) and entry == _("Entry unknown"):
+					cursor.execute("select distinct line from fiches f, linesIndex l, pages p where f.fiche = p.fiche and p.fiche = l.fiche and page = %s and work = %s and not exists (select * from actual_entries e where f.fiche = e.fiche) order by line", (page, work))
+				else:
+					cursor.execute("select distinct line from fiches f, linesIndex l, pages p, actual_entries e where f.fiche = p.fiche and p.fiche = l.fiche and p.fiche = e.fiche and page = %s and entry = %s and work = %s order by line", (page, entry, work))
 		res = [_("Line unknown")]
 		row = cursor.fetchone()
 		while row != None:
@@ -264,9 +320,54 @@ class DBController(object):
 		self.__closeDBAndCursor(cursor)
 		return res
 
-	def getFichesForLine(self, entry, page, line):
+	def getFichesForLine(self, entry, work, page, line):
 		cursor = self.__openDBWithCursor()
-		cursor.execute("select l.fiche from linesIndex l, pages p, actual_entries e where p.fiche = l.fiche and p.fiche = e.fiche and page = %s and entry = %s and line = %s", (page, entry, line))
+		if isinstance(line, unicode) and line == _("Line unknown"):
+			if isinstance(page, unicode) and page == _("Page unknown"):
+				if isinstance(work, unicode) and work == _("Work unknown"):
+					if isinstance(entry, unicode) and entry == _("Entry unknown"):
+						cursor.execute("select * from fiches where 1 = 2")
+					else:
+						cursor.execute("select f.fiche from fiches f, actual_entries e where f.fiche = e.fiche and entry = %s and work is null and not exists (select * from pages p where f.fiche = p.fiche) and not exists (select * from linesIndex l where l.fiche = f.fiche)", (entry))
+				else:
+					if isinstance(entry, unicode) and entry == _("Entry unknown"):
+						cursor.execute("select f.fiche from fiches f where work = %s and not exists (select * from actual_entries e where f.fiche = e.fiche) and not exists (select * from pages p where f.fiche = p.fiche) and not exists (select * from linesIndex l where l.fiche = f.fiche)", (work))
+					else:
+						cursor.execute("select f.fiche from fiches f, actual_entries e where f.fiche = e.fiche and entry = %s and work = %s and not exists (select * from pages p where f.fiche = p.fiche) and not exists (select * from linesIndex l where l.fiche = f.fiche)", (entry, work))
+			else:
+				if isinstance(work, unicode) and work == _("Work unknown"):
+					if isinstance(entry, unicode) and entry == _("Entry unknown"):
+						cursor.execute("select f.fiche from fiches f, pages p where f.fiche = p.fiche and page = %s and work is null and not exists (select * from actual_entries e where f.fiche = e.fiche) and not exists (select * from linesIndex l where l.fiche = f.fiche)", (page))
+					else:
+						cursor.execute("select f.fiche from fiches f, pages p, actual_entries e where f.fiche = p.fiche and p.fiche = e.fiche and page = %s and entry = %s and work is null and not exists (select * from linesIndex l where l.fiche = f.fiche)", (page, entry))
+				else:
+					if isinstance(entry, unicode) and entry == _("Entry unknown"):
+						cursor.execute("select f.fiche from fiches f, pages p where f.fiche = p.fiche and page = %s and work = %s and not exists (select * from actual_entries e where f.fiche = e.fiche) and not exists (select * from linesIndex l where l.fiche = f.fiche)", (page, work))
+					else:
+						cursor.execute("select f.fiche from fiches f, pages p, actual_entries e where f.fiche = p.fiche and p.fiche = e.fiche and page = %s and entry = %s and work = %s and not exists (select * from linesIndex l where l.fiche = f.fiche)", (page, entry, work))
+		else:
+			if isinstance(page, unicode) and page == _("Page unknown"):
+				if isinstance(work, unicode) and work == _("Work unknown"):
+					if isinstance(entry, unicode) and entry == _("Entry unknown"):
+						cursor.execute("select l.fiche from fiches f, linesIndex l where f.fiche = l.fiche and work is null and not exists (select * from actual_entries e where f.fiche = e.fiche) and not exists (select * from pages p where l.fiche = p.fiche) and line = %s", (line))
+					else:
+						cursor.execute("select l.fiche from fiches f, linesIndex l, actual_entries e where f.fiche = l.fiche and f.fiche = e.fiche and entry = %s and work is null and not exists (select * from pages p where l.fiche = p.fiche) and line = %s", (entry, line))
+				else:
+					if isinstance(entry, unicode) and entry == _("Entry unknown"):
+						cursor.execute("select l.fiche from fiches f, linesIndex l where f.fiche = l.fiche and work = %s and not exists (select * from actual_entries e where f.fiche = e.fiche) and not exists (select * from pages p where l.fiche = p.fiche) and line = %s", (work, line))
+					else:
+						cursor.execute("select l.fiche from fiches f, linesIndex l, actual_entries e where f.fiche = l.fiche and f.fiche = e.fiche and entry = %s and work = %s and not exists (select * from pages p where l.fiche = p.fiche) and line = %s", (entry, work, line))
+			else:
+				if isinstance(work, unicode) and work == _("Work unknown"):
+					if isinstance(entry, unicode) and entry == _("Entry unknown"):
+						cursor.execute("select l.fiche from fiches f, linesIndex l, pages p where f.fiche = p.fiche and p.fiche = l.fiche and page = %s and work is null and not exists (select * from actual_entries e where f.fiche = e.fiche) and line = %s", (page, line))
+					else:
+						cursor.execute("select l.fiche from fiches f, linesIndex l, pages p, actual_entries e where f.fiche = p.fiche and p.fiche = l.fiche and p.fiche = e.fiche and page = %s and entry = %s and work is null and line = %s", (page, entry, line))
+				else:
+					if isinstance(entry, unicode) and entry == _("Entry unknown"):
+						cursor.execute("select l.fiche from fiches f, linesIndex l, pages p where f.fiche = p.fiche and p.fiche = l.fiche and page = %s and work = %s and not exists (select * from actual_entries e where f.fiche = e.fiche) and line = %s", (page, work, line))
+					else:
+						cursor.execute("select l.fiche from fiches f, linesIndex l, pages p, actual_entries e where f.fiche = p.fiche and p.fiche = l.fiche and p.fiche = e.fiche and page = %s and entry = %s and work = %s and line = %s", (page, entry, work, line))
 		res = []
 		row = cursor.fetchone()
 		while row != None:

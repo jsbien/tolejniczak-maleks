@@ -28,7 +28,7 @@ class StructureRegisterBrowser(RegisterBrowser):
 		self.__element = None
 		self.__path = ""
 
-	def setRegister(self, reg):
+	def setRegister(self, reg, getEntry=None):
 		if self.binarySearchActive():
 			for l in self._listeners:
 				l.stop_binary_search()

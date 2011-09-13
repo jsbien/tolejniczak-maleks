@@ -12,6 +12,7 @@
 
 from maleks.maleks.useful import Notifier
 from maleks.maleks.registers import anyHint
+from maleks.i18n import _
 import wx
 from maleks.gui import __RESOURCES_PATH__
 
@@ -26,8 +27,11 @@ class TopPanel(wx.Panel, Notifier):
 		self.__editPanel = wx.TextCtrl(self, wx.ID_ANY)
 		self.__hintPanel = wx.TextCtrl(self, wx.ID_ANY)
 		self.__editPanelAcceptButton = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(__RESOURCES_PATH__ + "/edins.png"))
+		self.__editPanelAcceptButton.SetToolTip(wx.ToolTip(_('Accept edit panel content')))
 		self.__editPanelPrefixAcceptButton = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(__RESOURCES_PATH__ + "/edpre.png"))
+		self.__editPanelPrefixAcceptButton.SetToolTip(wx.ToolTip(_('Accept edit panel content as prefix')))
 		self.__hintPanelAcceptButton = wx.BitmapButton(self, wx.ID_ANY, wx.Bitmap(__RESOURCES_PATH__ + "/hins.png"))
+		self.__hintPanelAcceptButton.SetToolTip(wx.ToolTip(_('Accept hint panel content')))
 		sizer.Add(wx.Panel(self), 0)
 		sizer.Add(self.__hypothesisPanel, 1, wx.EXPAND)
 		sizer.Add(wx.Panel(self), 0)
@@ -86,5 +90,9 @@ class TopPanel(wx.Panel, Notifier):
 	def setHypothesis(self, content):
 		self.__hypothesisPanel.SetValue(content)
 		self.__editPanel.SetValue(content)
+		self.editPanelChanged(None)
+
+	def setEntry(self, entry):
+		self.__editPanel.SetValue(entry)
 		self.editPanelChanged(None)
 

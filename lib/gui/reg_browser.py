@@ -13,6 +13,7 @@
 # TODO: C usuwanie cyklicznosci
 
 import wx
+from maleks.maleks.useful import nvl
 #from djvusmooth.i18n import _
 
 class RegisterBrowser(wx.ListView):
@@ -26,6 +27,7 @@ class RegisterBrowser(wx.ListView):
 		self.InsertColumn(0, '', width=15)#wx.LIST_AUTOSIZE)
 		self.InsertColumn(1, '', width=15)#wx.LIST_AUTOSIZE)
 		self.InsertColumn(2, '', width=300)#wx.LIST_AUTOSIZE)
+		self.InsertColumn(3, '', width=wx.LIST_AUTOSIZE)
 		self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onSelect, self)
 		self._listeners = []
 		self.reset()
@@ -58,7 +60,7 @@ class RegisterBrowser(wx.ListView):
 		self._item2element = {}
 		self._element2item = {}
 	
-	def setRegister(self, reg):
+	def setRegister(self, reg, getEntry=None):
 		if self.__binary:
 			for l in self._listeners:
 				l.stop_binary_search()
@@ -68,13 +70,15 @@ class RegisterBrowser(wx.ListView):
 			self.InsertStringItem(i, "")
 			self.SetStringItem(i, 1, "")
 			self.SetStringItem(i, 2, element.getLabel())
+			self.SetStringItem(i, 3, (lambda x: nvl(getEntry(x)) if getEntry != None else "")(element.getId()))
 			self._items.append(i)
 			self._item2element.setdefault(i, element.getId())
 			self._element2item.setdefault(element.getId(), i)
 			i += 1
 		#self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
 		#self.SetColumnWidth(1, wx.LIST_AUTOSIZE)
-		#self.SetColumnWidth(2, wx.LIST_AUTOSIZE)
+		self.SetColumnWidth(2, wx.LIST_AUTOSIZE)
+		self.SetColumnWidth(3, wx.LIST_AUTOSIZE)
 
 	def __getElementId(self, item):
 		return self._item2element[item.GetId()]

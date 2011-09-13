@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-13 15:57+0200\n"
+"POT-Creation-Date: 2011-09-13 19:34+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -101,6 +101,15 @@ msgstr ""
 msgid "About…"
 msgstr ""
 
+msgid "Accept edit panel content"
+msgstr ""
+
+msgid "Accept edit panel content as prefix"
+msgstr ""
+
+msgid "Accept hint panel content"
+msgstr ""
+
 msgid "Actual entry"
 msgstr ""
 
@@ -125,13 +134,10 @@ msgstr ""
 msgid "Binary search"
 msgstr ""
 
-msgid "Bookmarks"
+msgid "Bookmark Register"
 msgstr ""
 
 msgid "Border"
-msgstr ""
-
-msgid "Choose task register"
 msgstr ""
 
 msgid "Choose work mode"
@@ -147,9 +153,6 @@ msgid "Decrease the magnification"
 msgstr ""
 
 msgid "Default mode"
-msgstr ""
-
-msgid "Default task register"
 msgstr ""
 
 msgid "Display everything"
@@ -239,7 +242,19 @@ msgstr ""
 msgid "Flatten text"
 msgstr ""
 
+msgid "Go back to previous fiche"
+msgstr ""
+
+msgid "Go to element parent in structure register"
+msgstr ""
+
+msgid "Go to left in binary search"
+msgstr ""
+
 msgid "Go to page"
+msgstr ""
+
+msgid "Go to right in binary search"
 msgstr ""
 
 msgid "Highlight color"
@@ -290,6 +305,9 @@ msgstr ""
 msgid "Line-specific properties"
 msgstr ""
 
+msgid "Load task register from file"
+msgstr ""
+
 #, python-format
 msgid "Magnify %d%%"
 msgstr ""
@@ -325,6 +343,9 @@ msgid "Open a DjVu document"
 msgstr ""
 
 msgid "Open directory with lexicographic data"
+msgstr ""
+
+msgid "Open task register"
 msgstr ""
 
 msgid "Original entry"
@@ -397,10 +418,16 @@ msgstr ""
 msgid "Show &register panel"
 msgstr ""
 
+msgid "Show default task register"
+msgstr ""
+
 msgid "Show/hide the register panel"
 msgstr ""
 
 msgid "Solid color"
+msgstr ""
+
+msgid "Start/stop binary search"
 msgstr ""
 
 msgid "Stretch the image to the window size"
@@ -438,6 +465,9 @@ msgid "Work identificator"
 msgstr ""
 
 msgid "Work mode"
+msgstr ""
+
+msgid "Work unknown"
 msgstr ""
 
 msgid "Wrong database configuration"
