@@ -23,8 +23,9 @@ class RegisterBrowser(wx.ListView):
 		#col.SetId(0)
 		#col.SetText(_('Fiche identifiers'))
 		#self.InsertColumnItem(0, col)
-		self.InsertColumn(0, '', width=wx.LIST_AUTOSIZE)
-		#self.InsertColumn(1, '')#, width=wx.LIST_AUTOSIZE)
+		self.InsertColumn(0, '', width=15)#wx.LIST_AUTOSIZE)
+		self.InsertColumn(1, '', width=15)#wx.LIST_AUTOSIZE)
+		self.InsertColumn(2, '', width=300)#wx.LIST_AUTOSIZE)
 		self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onSelect, self)
 		self._listeners = []
 		self.reset()
@@ -64,12 +65,16 @@ class RegisterBrowser(wx.ListView):
 		self.reset()
 		i = 0
 		for element in reg:
-			self.InsertStringItem(i, element.getLabel())
-			#self.InsertStringItem(i, "*")
+			self.InsertStringItem(i, "")
+			self.SetStringItem(i, 1, "")
+			self.SetStringItem(i, 2, element.getLabel())
 			self._items.append(i)
 			self._item2element.setdefault(i, element.getId())
 			self._element2item.setdefault(element.getId(), i)
 			i += 1
+		#self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
+		#self.SetColumnWidth(1, wx.LIST_AUTOSIZE)
+		#self.SetColumnWidth(2, wx.LIST_AUTOSIZE)
 
 	def __getElementId(self, item):
 		return self._item2element[item.GetId()]
@@ -172,6 +177,7 @@ class RegisterBrowser(wx.ListView):
 
 	def stopBinarySearch(self):
 		self.__binary = False
+		self.__unmarkScope()
 		
 	def __selectCenter(self):
 		# TODO: D co jak lenn == 0?
@@ -191,19 +197,36 @@ class RegisterBrowser(wx.ListView):
 			for l in self._listeners:
 				l.stop_binary_search()
 
+	def __markScope(self):
+		for i in self._items:
+			if i >= self.__left and i <= self.__right:
+				self.SetStringItem(i, 0, "*")
+			else:
+				self.SetStringItem(i, 0, "")
+				
+	def __unmarkScope(self):
+		for i in self._items:
+			self.SetStringItem(i, 0, "")
+			self.SetStringItem(i, 1, "")
+
 	def startBinarySearch(self):
 		self.__binary = True
 		self.__left = 0
 		self.__right = len(self._items) - 1
+		self.__markScope()
 		self.__selectCenter()
 
 	def nextBinary(self):
 		self.__left = self.__center
+		self.SetStringItem(self.__center, 1, ">")
+		self.__markScope()
 		self.__selectCenter()
 
 	def prevBinary(self):
 		if self.__left == self.__right:
 			return
 		self.__right = self.__center - 1
+		self.SetStringItem(self.__center, 1, "<")
+		self.__markScope()
 		self.__selectCenter()
 

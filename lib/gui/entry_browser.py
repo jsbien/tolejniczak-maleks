@@ -29,6 +29,10 @@ class EntryRegisterBrowser(RegisterBrowser):
 		self.__dBController = controller
 
 	def initialize(self):
+		if self.binarySearchActive():
+			for l in self._listeners:
+				l.stop_binary_search()
+		self.reset()
 		elements = self.__dBController.getEntriesRegister()
 		#print elements
 		#elements = ["a", "b", "c", "d"]
@@ -37,7 +41,9 @@ class EntryRegisterBrowser(RegisterBrowser):
 	def __fillRegister(self, elements):
 		i = 0
 		for element in elements:
-			self.InsertStringItem(i, element)
+			self.InsertStringItem(i, "")
+			self.SetStringItem(i, 1, "")
+			self.SetStringItem(i, 2, element)
 			self._items.append(i)
 			self._item2element.setdefault(i, element)
 			self._element2item.setdefault(element, i)

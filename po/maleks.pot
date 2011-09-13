@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-13 00:18+0200\n"
+"POT-Creation-Date: 2011-09-13 15:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -248,6 +248,9 @@ msgstr ""
 msgid "Highlight color and opacity"
 msgstr ""
 
+msgid "Hint Register"
+msgstr ""
+
 msgid "Increase the magnification"
 msgstr ""
 
@@ -482,9 +485,6 @@ msgstr ""
 msgid "lines"
 msgstr ""
 
-msgid "new"
-msgstr ""
-
 msgid "page"
 msgstr ""
 
@@ -500,7 +500,7 @@ msgstr ""
 msgid "regions"
 msgstr ""
 
-msgid "user hint"
+msgid "unknown"
 msgstr ""
 
 msgid "value"

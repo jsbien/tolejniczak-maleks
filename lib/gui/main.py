@@ -47,6 +47,7 @@ from maleks.gui.page import PageWidget, PercentZoom, OneToOneZoom, StretchZoom, 
 from maleks.gui.reg_browser import RegisterBrowser
 from maleks.gui.struc_browser import StructureRegisterBrowser
 from maleks.gui.entry_browser import EntryRegisterBrowser
+from maleks.gui.hint_browser import HintRegisterBrowser
 from maleks.gui.toppanel import TopPanel
 from maleks.gui.regbar import RegisterToolbar
 from maleks.gui import dialogs
@@ -309,7 +310,8 @@ class MainWindow(wx.Frame):
         def get(self):
             return self._config.read_int('main_window_splitter_sash', 160)
         def set(self, value):
-            self._config['main_window_splitter_sash'] = value
+            #self._config['main_window_splitter_sash'] = value
+            pass
         return property(get, set)
 
     @apply
@@ -317,7 +319,8 @@ class MainWindow(wx.Frame):
         def get(self):
             return self._config.read_int('main_window_splitter_sash_left', 660)
         def set(self, value):
-            self._config['main_window_splitter_sash_left'] = value
+            #self._config['main_window_splitter_sash_left'] = value
+            pass
         return property(get, set)
 
     @apply
@@ -334,6 +337,16 @@ class MainWindow(wx.Frame):
             return self._config.read_bool('main_window_left_sidebar_shown', True)
         def set(self, value):
             self._config['main_window_left_sidebar_shown'] = value
+        return property(get, set)
+
+    @apply
+    def ficheId():
+        def get(self):
+            return self._ficheId
+        def set(self, value):
+            if (not self.goingBack) and (self.history == [] or self.history[-1] != self._ficheId) and self._ficheId != None:
+                self.history.append(self._ficheId)
+            self._ficheId = value
         return property(get, set)
 
     #@apply
@@ -406,16 +419,18 @@ class MainWindow(wx.Frame):
         #self.outline_browser = OutlineBrowser(self.sidebar)
         #self.maparea_browser = MapAreaBrowser(self.sidebar)
         #self.taskreg_browser = TaskRegisterBrowser(self.sidebar)
-        self.taskreg_browser = RegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
-        self.strucreg_browser = StructureRegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
-        self.entryreg_browser = EntryRegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
+        self.taskreg_browser = RegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER | wx.LC_REPORT)
+        self.strucreg_browser = StructureRegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER | wx.LC_REPORT)
+        self.entryreg_browser = EntryRegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER | wx.LC_REPORT)
         self.entryreg_browser.setDBController(self.dBController)
+        self.hintreg_browser = HintRegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
         #self.sidebar.AddPage(self.outline_browser, _('Outline'))
         #self.sidebar.AddPage(self.maparea_browser, _('Hyperlinks'))
         #self.sidebar.AddPage(self.text_browser, _('Text'))
         self.sidebar.AddPage(self.taskreg_browser, _('Task Register'))
         self.sidebar.AddPage(self.strucreg_browser, _('Structure Register'))
         self.sidebar.AddPage(self.entryreg_browser, _('Entry Register'))
+        self.sidebar.AddPage(self.hintreg_browser, _('Hint Register'))
         self.sidebar.Bind(
             wx.EVT_CHOICEBOOK_PAGE_CHANGED,
             #self.on_sidebar_page_changed
@@ -424,24 +439,26 @@ class MainWindow(wx.Frame):
                 #self.on_display_maparea,
                 #self.on_display_text)
                 self.on_display_taskreg,
-                self.on_display_strucreg, 
-                self.on_display_entryreg
+                self.on_display_strucreg,
+                self.on_display_entryreg,
+                self.on_display_hintreg
             )
         )
-        for widget in [self.taskreg_browser, self.strucreg_browser, self.entryreg_browser]:
+        for widget in [self.taskreg_browser, self.strucreg_browser, self.entryreg_browser, self.hintreg_browser]:
             widget.addListener(self)
+        self.sidebar.ChangeSelection(1)
         
         self.main_panel = wx.Panel(self.splitter)
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
         self.top_panel = TopPanel(self.main_panel)
-        self.top_panel.toolbar.addListener(self)
+        self.top_panel.addListener(self)
         #self.top_panel = wx.TextCtrl(self.main_panel, wx.ID_ANY)
         
         #self.scrolled_panel = ScrolledPanel(self.splitter)
         self.scrolled_panel = ScrolledPanel(self.main_panel)
         #self.splitter.SetSashGravity(0.2)
         #self.super_splitter.SetSashGravity(0.9)
-        self.active_register = self.taskreg_browser
+        self.active_register = self.strucreg_browser
         
         self.main_sizer.Add(self.top_panel, 0, wx.ALIGN_CENTER | wx.EXPAND)
         self.main_sizer.Add(self.scrolled_panel, 1, wx.ALIGN_CENTER | wx.EXPAND)
@@ -484,6 +501,9 @@ class MainWindow(wx.Frame):
         self._disable_page_change()
         
         self.page_widget.zoom = FitPageZoom()
+        self.history = []
+        self._ficheId = None
+        self.goingBack = False
         
         #self.taskreg_browser.Bind(wx.EVT_SET_FOCUS, self.defocus, self.taskreg_browser)
 
@@ -673,13 +693,19 @@ class MainWindow(wx.Frame):
                 return
             else:
                 ok = True
-        self.hintRegister.addHint(self.top_panel.getEditPanelContent())
+        if self.hintRegister.addHint(self.top_panel.getEditPanelContent()):
+            self.hintreg_browser.setRegister(self.hintRegister)
+            # TODO: A typy (np. ponizej jest unicode ktore jest uzywane do znajdywania stringow itemowych)
+            self.hintreg_browser.hintChanged(self.top_panel.getEditPanelContent())
+            self.top_panel.editPanelChanged(None)
         self.dirty = True # TODO: NOTE bo mozemy musiec np. zapisac do pliku dodana powyzej podpowiedz
         if self.active_register.allowsNextFiche() and self.active_register.hasSelection():
             if ok:
                 self.lastEntry = self.top_panel.getEditPanelContent()
                 self.wasEditAccept = True
             self.active_register.getNextFiche()
+        else:
+            self.update_indices()
         #pass
 
     def on_edit_prefix_accept(self, event):
@@ -712,6 +738,8 @@ class MainWindow(wx.Frame):
                 self.lastEntry = self.top_panel.getHint()
                 self.wasEditAccept = True
             self.active_register.getNextFiche()
+        else:
+            self.update_indices()
 
     def on_up(self, event):
         #print self.active_register == self.entryreg_browser
@@ -1031,6 +1059,11 @@ class MainWindow(wx.Frame):
             self.active_register = self.entryreg_browser
             if self.ficheId != None: self.active_register.select(self.ficheId)
 
+    def on_display_hintreg(self, event):
+        if not self.__closing:
+            self.on_undisplay()
+            self.active_register = self.hintreg_browser
+
     def on_display_everything(self, event):
         self.page_widget.render_mode = djvu.decode.RENDER_COLOR
 
@@ -1089,6 +1122,12 @@ class MainWindow(wx.Frame):
             #self.update_page_widget(new_page = True)
         return property(get, set)
 
+    def on_back(self, event):
+        if self.history != []:
+            self.goingBack = True
+            self.page_no = self.index.getFicheNoById(self.history.pop())
+            self.goingBack = False
+
     def on_first_page(self, event):
         self.page_no = 0
 
@@ -1140,10 +1179,17 @@ class MainWindow(wx.Frame):
 
     def on_stop_binary(self, event):
     #    if self.mode == _('Browsing mode'):
+        #print self.active_register.binaryAvailable(), self.active_register.binarySearchActive()
         if self.active_register.binaryAvailable() and not self.active_register.binarySearchActive():
             self.start_binary_search()
         else:
             self.stop_binary_search()
+
+    def on_hint_changed(self, hint):
+        self.hintreg_browser.hintChanged(hint)
+
+    def on_hint_selected(self, hint):
+        self.top_panel.setHint(hint)
 
     def on_goto_page(self, event):
         dialog = dialogs.NumberEntryDialog(
@@ -1316,7 +1362,8 @@ class MainWindow(wx.Frame):
         self.bookmarksActive = False
         self.hintRegister = None
         self.top_panel.setHintRegister(None)
-        self.ficheId = None
+        self.history = []
+        self._ficheId = None
         self.wasEditAccept = False
         self.lastEntry = None
 
@@ -1341,6 +1388,7 @@ class MainWindow(wx.Frame):
         self.taskreg_browser.reset()
         self.strucreg_browser.reset()
         self.entryreg_browser.reset()
+        self.hintreg_browser.reset()
         self.page_no = 0
         self.dBController.setPerDocumentConnection(None, None, None)
         #def clear_models():
@@ -1355,16 +1403,17 @@ class MainWindow(wx.Frame):
                 self.index = StructureIndex(path)
                 self.config = Configuration(path)
                 self.config.configureDatabase(self.dBController)
-                self.entryreg_browser.initialize()
+                self.entryreg_browser.initialize() # TODO: C przeniesc do initialize_registers i dac flage czy udalo sie wczytac plik czy nie
                 self.hintRegister = HintRegister(path)
                 self.hintRegister.readUserHints(path)
+                self.hintRegister.sort()
                 self.top_panel.setHintRegister(self.hintRegister)
                 self.taskRegister = self.config.getDefaultTaskRegister(self.index)
                 self.document = self.context.new_document(djvu.decode.FileURI(self.index.getFiche(0).getDjVuPath()))
-                try:
-                    self.ficheId = self.taskRegister[0].getId()
-                except IndexError:
-                    self.ficheId = self.index.getFiche(0).getId()
+                #try:
+                #    self.ficheId = self.taskRegister[0].getId()
+                #except IndexError:
+                self.ficheId = self.index.getFiche(0).getId()
                 self.update_indices()
                 #self.metadata_model = MetadataModel(self.document)
                 #self.text_model = TextModel(self.document)
@@ -1444,9 +1493,12 @@ class MainWindow(wx.Frame):
             self.strucreg_browser.setRegister(self.index)
             if self.active_register == self.strucreg_browser:
                 self.regbar.setPath(self.strucreg_browser.getPath())
+        self.hintreg_browser.DeleteAllItems()
+        if self.hintRegister != None:
+            self.hintreg_browser.setRegister(self.hintRegister)
 
     def update_registers(self):
-        if self.notify:
+        if self.notify and self.active_register != self.hintreg_browser:
             self.active_register.select(self.ficheId)
 
     # TODO: A zapisywanie wartosci indeksow przy zamykaniu programu
@@ -1497,12 +1549,14 @@ class MainWindow(wx.Frame):
         if self.dBController != None:
             bookmarksTaskRegister = self.dBController.getBookmarksTaskRegister()
             dialog = wx.FileDialog(self, style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT, message = _('Export bookmarks'))
-            dialog.SetPath(self._config.read('open_dir', ''))
+            dialog.SetDirectory(os.getcwd())#self._config.read('save_dir', ''))
         try:
             if dialog.ShowModal() == wx.ID_OK:
-                self._config['open_dir'] = os.path.dirname(dialog.GetPath()) or ''
+                #self._config['save_dir'] = os.path.dirname(dialog.GetPath()) or ''
                 fileToSave = dialog.GetPath()
                 bookmarksTaskRegister.saveToFile(fileToSave)
+        except IOError:
+            wx.MessageBox
         finally:
             dialog.Destroy()
         self.page_widget.SetFocus()

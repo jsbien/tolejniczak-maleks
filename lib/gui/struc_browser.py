@@ -29,6 +29,10 @@ class StructureRegisterBrowser(RegisterBrowser):
 		self.__path = ""
 
 	def setRegister(self, reg):
+		if self.binarySearchActive():
+			for l in self._listeners:
+				l.stop_binary_search()
+		self.reset()
 		self.__register = reg
 		self.__fillRegister(reg.getRoot().getChildren())
 		self.__element = reg.getRoot()
@@ -39,7 +43,9 @@ class StructureRegisterBrowser(RegisterBrowser):
 		for element in elements:
 			if isinstance(element, Fiche):
 				self.__ficheLevel = True
-			self.InsertStringItem(i, element.getLabel())
+			self.InsertStringItem(i, "")
+			self.SetStringItem(i, 1, "")
+			self.SetStringItem(i, 2, element.getLabel())
 			self._items.append(i)
 			self._item2element.setdefault(i, element.getId())
 			self._element2item.setdefault(element.getId(), i)
@@ -68,6 +74,7 @@ class StructureRegisterBrowser(RegisterBrowser):
 			if self.__ficheLevel:
 				for l in self._listeners:
 					l.start_binary_search()
+				self.__binaryAvailable = True
 				#for l in self._listeners: # TODO: D jeden listener
 				#	elementId = l.request_selection()
 				#	if elementId != None:
@@ -78,6 +85,7 @@ class StructureRegisterBrowser(RegisterBrowser):
 	def onUp(self, event):
 		if self.__element.getParent() != None:
 			self.__ficheLevel = False
+			self.__binaryAvailable = False
 			self.__element = self.__element.getParent()
 			self.__selectStructureNode(self.__element)
 

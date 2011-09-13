@@ -11,6 +11,8 @@
 # General Public License for more details.
 
 import os
+import getpass
+import icu
 from maleks.i18n import _
 
 def commonprefix(a, b):
@@ -20,6 +22,16 @@ def commonprefix(a, b):
 			break
 		pref += a[i] 
 	return pref
+
+def getUser():
+	try:
+		res = getpass.getuser()
+	except:
+		res = str(_("unknown").encode("utf-8"))
+	return res
+
+def anyHint((a, b, c, d)):
+	return a if a != "" else (b if b != "" else c)
 
 class HintRegister(object):
 
@@ -56,7 +68,8 @@ class HintRegister(object):
 			for line in f:
 				if line == "\n" or line[0] == "#":
 					continue
-				self.__entries.append((line[:-1], "", "", "(" + str(_("user hint").encode("utf-8")) + ")"))
+				els = line[:-1].split("\t")
+				self.__entries.append((els[0], "", "", "(" + els[1] + ")"))
 			f.close()
 
 	# TODO: A dokladnie omowic kasztowosc (tutaj i w innych przypadkach)
@@ -79,23 +92,33 @@ class HintRegister(object):
 				break
 		return hint
 		
-	# TODO: C efektywniej (kubleki na litery?, posortowac?)
+	# TODO: C efektywniej (kubelki na litery?, posortowac?)
 
 	def addHint(self, hint):
 		found = False
 		for (sp17Entry, lindeEntry, doroszewskiEntry, siglum) in self.__entries:
 			if hint == unicode(sp17Entry, "utf-8") or hint == unicode(lindeEntry, "utf-8") or hint == unicode(doroszewskiEntry, "utf-8"):
 				found = True
-				break
+				return False
 		if not found:
-			self.__entries.append((str(hint.encode("utf-8")), "", "", "(" + str(_("new").encode("utf-8")) + ")"))
-			self.__new.append(str(hint.encode("utf-8")))
+			self.__entries.append((str(hint.encode("utf-8")), "", "", "(" + getUser() + ")"))
+			self.__new.append(str(hint.encode("utf-8")) + "\t" + getUser())
+			self.sort()
+			return True
+		return False
 
 	def saveUserHints(self):
 		f = open(self.__path + "/user_hint.reg", "a")
 		for hint in self.__new:
 			f.write(hint + "\n")
 		f.close()
+
+	def sort(self):
+		collator = icu.Collator.createInstance(icu.Locale('pl_PL.UTF-8'))
+		self.__entries = sorted(self.__entries, cmp=lambda a, b: collator.compare(anyHint(a), anyHint(b)))
+
+	def __getitem__(self, ind):
+		return self.__entries[ind]
 
 class TaskRegister(object):
 

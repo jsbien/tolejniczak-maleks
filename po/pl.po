@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-13 00:18+0200\n"
+"POT-Creation-Date: 2011-09-13 15:57+0200\n"
 "PO-Revision-Date: 2009-05-31 14:45+CEST\n"
 "Last-Translator: Tomasz Olejniczak <tomek.87@poczta.onet.pl>\n"
 "Language-Team: none\n"
@@ -250,6 +250,9 @@ msgstr "Kolor podświetlenia"
 msgid "Highlight color and opacity"
 msgstr "Kolor i przezroczystość podświetlenia"
 
+msgid "Hint Register"
+msgstr "Wykaz podpowiedzi"
+
 msgid "Increase the magnification"
 msgstr "Zwiększ powiększenie"
 
@@ -484,9 +487,6 @@ msgstr "linia"
 msgid "lines"
 msgstr "linie"
 
-msgid "new"
-msgstr "nowa"
-
 msgid "page"
 msgstr "strona"
 
@@ -502,8 +502,8 @@ msgstr "region"
 msgid "regions"
 msgstr "regiony"
 
-msgid "user hint"
-msgstr "użytkownika"
+msgid "unknown"
+msgstr "nieznany"
 
 msgid "value"
 msgstr "wartość"
@@ -513,6 +513,12 @@ msgstr "słowo"
 
 msgid "words"
 msgstr "słowa"
+
+#~ msgid "new"
+#~ msgstr "nowa"
+
+#~ msgid "user hint"
+#~ msgstr "użytkownika"
 
 #~ msgid ""
 #~ "Entry comments will not be saved if their corresponding entries are empty"
