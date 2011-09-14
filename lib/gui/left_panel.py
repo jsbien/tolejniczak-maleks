@@ -12,7 +12,9 @@
 
 import wx
 from maleks.i18n import _
-from maleks.maleks.useful import nvl
+from maleks.maleks.useful import nvl, Notifier
+
+# TODO: C posprawdzac czy dirty dobrze dziala
 
 class ValidatingTextCtrl(wx.TextCtrl):
 
@@ -21,6 +23,7 @@ class ValidatingTextCtrl(wx.TextCtrl):
 		self.__value = None
 		self.__validator = myvalidator
 		self.__valid = True
+		self.__frozen = None
 
 	def CheckValidity(self, friend=None):
 		if not self.__validator(self.GetValue()):
@@ -35,6 +38,12 @@ class ValidatingTextCtrl(wx.TextCtrl):
 			#if friend != None:
 			#	friend.SetBackgroundColour(wx.NullColour)
 			#	friend.__valid = True
+
+	def FreezeValue(self):
+		self.__freeze = self.GetValue()
+
+	def ThawValue(self):
+		self.SetValue(self.__freeze)
 
 	def MemorizeValue(self, value):
 		self.__value = value
@@ -62,9 +71,16 @@ class IndexPanel(wx.Panel):
 		self._dirty = False
 		self._ficheId = None
 		self._inputEventEnabled = False
+		self._frozen = False
+
+	def freezeValues(self):
+		self._frozen = True
+
+	def thawValues(self):
+		self._frozen = False
 
 	def _input(self, event):
-		if self._inputEventEnabled:
+		if self._inputEventEnabled and (not self._frozen):
 			self._dirty = True
 
 	def isDirty(self):
@@ -138,6 +154,38 @@ class SecondaryIndicesPanel(IndexPanel):
 		self.__entryLocation.Bind(wx.EVT_TEXT, self.__entryLocationInput)
 		self.__textEntryComment.Bind(wx.EVT_TEXT, self.__validateInput)
 
+	def freezeValues(self):
+		IndexPanel.freezeValues(self)
+		self.__pageNumber.FreezeValue()
+		self.__lineNumber.FreezeValue()
+		self.__entryBegin.FreezeValue()
+		self.__entryBeginLine.FreezeValue()
+		self.__entryBeginWord.FreezeValue()
+		self.__entryBeginChar.FreezeValue()
+		self.__entryEnd.FreezeValue()
+		self.__entryEndLine.FreezeValue()
+		self.__entryEndWord.FreezeValue()
+		self.__entryEndChar.FreezeValue()
+		self.__ficheEntryComment.FreezeValue()
+		self.__entryLocation.FreezeValue()
+		self.__textEntryComment.FreezeValue()
+
+	def thawValues(self):
+		IndexPanel.thawValues(self)
+		self.__pageNumber.ThawValue()
+		self.__lineNumber.ThawValue()
+		self.__entryBegin.ThawValue()
+		self.__entryBeginLine.ThawValue()
+		self.__entryBeginWord.ThawValue()
+		self.__entryBeginChar.ThawValue()
+		self.__entryEnd.ThawValue()
+		self.__entryEndLine.ThawValue()
+		self.__entryEndWord.ThawValue()
+		self.__entryEndChar.ThawValue()
+		self.__ficheEntryComment.ThawValue()
+		self.__entryLocation.ThawValue()
+		self.__textEntryComment.ThawValue()
+
 	def __validateInput(self, event):
 		self._input(event)
 		event.GetEventObject().CheckValidity()
@@ -152,6 +200,7 @@ class SecondaryIndicesPanel(IndexPanel):
 		self.__entryLocation.CheckValidity(friend=self.__textEntryComment)
 
 	def fill(self, values, ficheId):
+		self._dirty = False
 		self._ficheId = ficheId
 		self.__pageNumber.MemorizeValue(nvl(values[0]))
 		self.__lineNumber.MemorizeValue(nvl(values[1]))
@@ -181,6 +230,42 @@ class MainIndicesPanel(IndexPanel):
 		self._buildFicheIndexGUI()
 		self._buildPageAndLineIndicesGUI()
 		self.SetSizer(self._sizer)
+	
+	def freezeValues(self):
+		IndexPanel.freezeValues(self)
+		self.__actualEntry.FreezeValue()
+		self.__actualComment.FreezeValue()
+		self.__originalEntry.FreezeValue()
+		self.__originalComment.FreezeValue()
+		self.__work.FreezeValue()
+		self.__firstWordPage.FreezeValue()
+		self.__lastWordPage.FreezeValue()
+		self.__matrixNumber.FreezeValue()
+		self.__matrixSector.FreezeValue()
+		self.__editor.FreezeValue()
+		self.__comment.FreezeValue()
+		self.__page.FreezeValue()
+		self.__pageComment.FreezeValue()
+		self.__line.FreezeValue()
+		self.__lineComment.FreezeValue()
+
+	def thawValues(self):
+		IndexPanel.thawValues(self)
+		self.__actualEntry.ThawValue()
+		self.__actualComment.ThawValue()
+		self.__originalEntry.ThawValue()
+		self.__originalComment.ThawValue()
+		self.__work.ThawValue()
+		self.__firstWordPage.ThawValue()
+		self.__lastWordPage.ThawValue()
+		self.__matrixNumber.ThawValue()
+		self.__matrixSector.ThawValue()
+		self.__editor.ThawValue()
+		self.__comment.ThawValue()
+		self.__page.ThawValue()
+		self.__pageComment.ThawValue()
+		self.__line.ThawValue()
+		self.__lineComment.ThawValue()
 
 	def _buildEntryIndicesGUI(self):
 		self.__actualEntry = ValidatingTextCtrl(self, myvalidator=lambda x: len(x) <= 40)
@@ -219,6 +304,7 @@ class MainIndicesPanel(IndexPanel):
 		self.__originalEntry.CheckValidity(friend=self.__originalComment)
 
 	def fillEntryIndices(self, (actual, actualComment, original, originalComment), ficheId):
+		self._dirty = False
 		self._ficheId = ficheId
 		self.__actualEntry.MemorizeValue(nvl(actual))
 		self.__actualComment.MemorizeValue(nvl(actualComment))
@@ -263,6 +349,7 @@ class MainIndicesPanel(IndexPanel):
 		self.__comment.Bind(wx.EVT_TEXT, self.__validateInput)
 
 	def fillFicheIndex(self, ficheIndexRecord, ficheId):
+		self._dirty = False
 		self._ficheId = ficheId
 		self.__work.MemorizeValue(nvl(ficheIndexRecord[0]))
 		self.__firstWordPage.MemorizeValue(nvl(ficheIndexRecord[1]))
@@ -319,6 +406,7 @@ class MainIndicesPanel(IndexPanel):
 		self.__line.CheckValidity(friend=self.__lineComment)
 
 	def fillPageAndLineIndices(self, (page, pageComment, line, lineComment), ficheId):
+		self._dirty = False
 		self._ficheId = ficheId
 		self.__page.MemorizeValue(nvl(page))
 		self.__pageComment.MemorizeValue(nvl(pageComment))
@@ -331,4 +419,28 @@ class MainIndicesPanel(IndexPanel):
 
 	def getPageAndLineIndicesValue(self):
 		return (self.__page.GetValidatedValue(), self.__pageComment.GetValidatedValue(), self.__line.GetValidatedValue(), self.__lineComment.GetValidatedValue())
+
+class ControlPanel(wx.Panel, Notifier):
+
+	def __init__(self, *args, **kwargs):
+		wx.Panel.__init__(self, *args, **kwargs)
+		Notifier.__init__(self)
+		sizer = wx.BoxSizer(wx.HORIZONTAL)
+		self.__button = wx.CheckBox(self, wx.ID_ANY)
+		self.__down = wx.ComboBox(self, wx.ID_ANY)
+		sizer.Add(self.__button, 0, wx.EXPAND)
+		sizer.Add(wx.StaticText(self, label=_("Search mode")), 0, wx.EXPAND)
+		self.SetSizer(sizer)
+		self.Bind(wx.EVT_CHECKBOX, self.__onClick)
+
+	def __onClick(self, event):
+		for l in self._listeners:
+			l.on_search_mode(event)
+
+	def stopSearch(self):
+		self.__button.SetValue(False)
+		self.__onClick(None)
+
+	def isSearchMode(self):
+		return self.__button.GetValue()
 

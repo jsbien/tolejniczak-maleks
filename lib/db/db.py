@@ -110,6 +110,16 @@ class DBController(object):
 		self.__closeDBAndCursor(cursor)
 		return res
 
+	def getOriginalEntryForFiche(self, ficheId):
+		res = None
+		cursor = self.__openDBWithCursor()
+		cursor.execute("select entry from original_entries where fiche = %s", (ficheId))
+		row = cursor.fetchone()
+		if row != None:
+			res = row[0]
+		self.__closeDBAndCursor(cursor)
+		return res
+
 	def getEntriesForFiche(self, ficheId):
 		actual = ""
 		actualComment = ""

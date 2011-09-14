@@ -51,7 +51,7 @@ from maleks.gui.hint_browser import HintRegisterBrowser
 from maleks.gui.toppanel import TopPanel
 from maleks.gui.regbar import RegisterToolbar
 from maleks.gui import dialogs
-from maleks.gui.left_panel import MainIndicesPanel, SecondaryIndicesPanel
+from maleks.gui.left_panel import MainIndicesPanel, SecondaryIndicesPanel, ControlPanel
 #from djvusmooth.text import mangle as text_mangle
 #import djvusmooth.models.metadata
 #import djvusmooth.models.annotations
@@ -399,11 +399,14 @@ class MainWindow(wx.Frame):
         self.left_sidepanel = wx.Panel(self.splitter, wx.ID_ANY)
         self.left_sizer = wx.BoxSizer(wx.VERTICAL)
         self.left_sidebar = wx.Choicebook(self.left_sidepanel, wx.ID_ANY)
+        self.left_control = ControlPanel(self.left_sidepanel, wx.ID_ANY)
+        self.left_control.addListener(self)
         self.mainind_panel = MainIndicesPanel(self.left_sidebar)
         self.secind_panel = SecondaryIndicesPanel(self.left_sidebar)
         self.left_sidebar.AddPage(self.mainind_panel, _('Main Indices'))
         self.left_sidebar.AddPage(self.secind_panel, _('Secondary Indices'))
         self.left_sizer.Add(self.left_sidebar, 1, wx.EXPAND)
+        self.left_sizer.Add(self.left_control, 0, wx.EXPAND)
         self.left_sidepanel.SetSizer(self.left_sizer)
         
         self.sidepanel = wx.Panel(self.splitter, wx.ID_ANY)
@@ -827,10 +830,22 @@ class MainWindow(wx.Frame):
         self.SetStatusText("", 2)
     
     def start_binary_search(self):
-        if self.active_register in [self.strucreg_browser]:    
+        if self.active_register in [self.strucreg_browser]:
             self._disable_page_change()
         self.active_register.startBinarySearch()
         self.SetStatusText(_("Binary search"), 2)
+
+    def on_search_mode(self, event):
+        if self.left_control.isSearchMode():
+            self.mainind_panel.freezeValues()
+            self.secind_panel.freezeValues()
+        else:
+            self.mainind_panel.disableInputEvent()
+            self.mainind_panel.thawValues()
+            self.mainind_panel.enableInputEvent()
+            self.secind_panel.disableInputEvent()
+            self.secind_panel.thawValues()
+            self.secind_panel.enableInputEvent()
     
     def _dispose_modes(self):
         #if self.mode == _('Browsing mode') and self.taskreg_browser.binarySearchActive():
@@ -1516,7 +1531,10 @@ class MainWindow(wx.Frame):
     # TODO: A czyszczenie indeksow przy zamykaniu/otwieraniu nowego katalogu
 
     def update_indices(self):
+        # TODO: C co jak dBController == None (co z thaw/freeze? w indeksach itp.)
         if self.dBController != None:
+            if self.left_control.isSearchMode(): # TODO: C j.w.
+                self.left_control.stopSearch()
             if self.mainind_panel.isDirty():
                 self.dBController.setEntriesForFiche(self.mainind_panel.getEntryIndicesValue(), self.mainind_panel.getFicheId())
                 self.dBController.setFiche(self.mainind_panel.getFicheIndexValue(), self.mainind_panel.getFicheId())
@@ -1545,7 +1563,7 @@ class MainWindow(wx.Frame):
                     self.top_panel.setHypothesis(hypothesis)
                 else:
                     self.top_panel.setHypothesis("")
-                entry = self.dBController.getActualEntryForFiche(self.ficheId)
+                entry = self.dBController.getOriginalEntryForFiche(self.ficheId)
                 if entry != None:
                     self.top_panel.setEntry(entry)
 

@@ -30,11 +30,14 @@ class HintRegisterBrowser(RegisterBrowser):
 			self.InsertStringItem(i, "")
 			self.SetStringItem(i, 1, "")
 			self.SetStringItem(i, 2, anyHint(element))
+			self.SetStringItem(i, 3, element[3])
 			self._items.append(i)
 			self._item2element.setdefault(i, anyHint(element))
 			self._element2item.setdefault(anyHint(element), i)
 			self.__hints.append(element)
 			i += 1
+		self.SetColumnWidth(2, wx.LIST_AUTOSIZE)
+		self.SetColumnWidth(3, wx.LIST_AUTOSIZE)
 			
 	def hintChanged(self, hint):
 		itemId = self.FindItem(-1, hint, partial=True)
