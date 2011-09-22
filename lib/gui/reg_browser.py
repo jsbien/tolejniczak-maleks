@@ -34,10 +34,10 @@ class RegisterBrowser(wx.ListView):
 
 	def reset(self):
 		self.DeleteAllItems()
-		self.__veto = False
+		self._veto = False
 		self._selected = None
 		#self._items = []
-		self.__binary = False
+		self._binary = False
 		self.__left = 0
 		self.__right = 0
 		self.__center = 0
@@ -61,7 +61,7 @@ class RegisterBrowser(wx.ListView):
 		self._element2item = {}
 	
 	def setRegister(self, reg, getEntry=None):
-		if self.__binary:
+		if self._binary:
 			for l in self._listeners:
 				l.stop_binary_search()
 		self.reset()
@@ -84,11 +84,11 @@ class RegisterBrowser(wx.ListView):
 		return self._item2element[item.GetId()]
 	
 	def onSelect(self, event):
-		if self.__binary and (not self.__programmaticSelect):
+		if self._binary and (not self.__programmaticSelect):
 			self.stopBinarySearch()
 			for l in self._listeners:
 				l.stop_binary_search()
-		if not self.__veto:
+		if not self._veto:
     	# TODO: D uwaga! to wywoluje zmiane strony a w konsekwencji TaskRegisterBrowser.select
 			itemId = event.GetIndex() # TODO: NOTE http://wxpython-users.1045709.n5.nabble.com/wx-ListCtrl-Item-Information-on-Double-Click-td3394264.html
 			self._selected = itemId
@@ -106,18 +106,18 @@ class RegisterBrowser(wx.ListView):
 	def _select(self, itemId, veto=False):
 		self.EnsureVisible(itemId)
 		if veto:
-			self.__veto = True
+			self._veto = True
 			self._selected = itemId # TODO: NOTE bo nie bedzie ustawione w onSelect
 		self.Select(itemId)
-		if self.__binary: # TODO: NOTE bo onSelect uzywamy w trybie binarnym tylko do wychodzenia
+		if self._binary: # TODO: NOTE bo onSelect uzywamy w trybie binarnym tylko do wychodzenia
 				# z trybu binarnego
 			self._selected = itemId
 			self._element_selected(self._item2element[itemId], notify=False)
 		if veto:
-			self.__veto = False
+			self._veto = False
 
 	def select(self, elementId):
-		if self.__binary:
+		if self._binary:
 			self.stopBinarySearch()
 			for l in self._listeners:
 				l.stop_binary_search()
@@ -130,8 +130,8 @@ class RegisterBrowser(wx.ListView):
 	def hasSelection(self):
 		return self._selected != None
 
-	def getNextFiche(self):
-		if self.__binary:
+	def getNextFiche(self, entry=None):
+		if self._binary:
 			self.stopBinarySearch()
 			for l in self._listeners:
 				l.stop_binary_search()
@@ -148,7 +148,7 @@ class RegisterBrowser(wx.ListView):
 		pass
 
 	#def selectPrevElement(self):
-	#	#if self.__binary:
+	#	#if self._binary:
 	#	#	return
 	#	if self._selected == None:
 	#		return
@@ -166,7 +166,7 @@ class RegisterBrowser(wx.ListView):
 	#			break
 
 	def find(self, text):
-		if self.__binary:
+		if self._binary:
 			self.stopBinarySearch()
 			for l in self._listeners:
 				l.stop_binary_search()
@@ -177,10 +177,10 @@ class RegisterBrowser(wx.ListView):
 			self._select(itemId)
 
 	def binarySearchActive(self):
-		return self.__binary
+		return self._binary
 
 	def stopBinarySearch(self):
-		self.__binary = False
+		self._binary = False
 		self.__unmarkScope()
 		
 	def __selectCenter(self):
@@ -214,7 +214,7 @@ class RegisterBrowser(wx.ListView):
 			self.SetStringItem(i, 1, "")
 
 	def startBinarySearch(self):
-		self.__binary = True
+		self._binary = True
 		self.__left = 0
 		self.__right = len(self._items) - 1
 		self.__markScope()

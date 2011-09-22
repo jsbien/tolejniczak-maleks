@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-14 18:00+0200\n"
+"POT-Creation-Date: 2011-09-22 21:11+0200\n"
 "PO-Revision-Date: 2009-05-31 14:45+CEST\n"
 "Last-Translator: Tomasz Olejniczak <tomek.87@poczta.onet.pl>\n"
 "Language-Team: none\n"
@@ -235,6 +235,9 @@ msgstr "Fiszka została już zaindeksowana"
 msgid "Fiche already indexed in entry prefix index"
 msgstr "Fiszka została już zaindeksowana w indeksie prefiksów hasłowych"
 
+msgid "First fiche"
+msgstr "Pierwsza fiszka"
+
 msgid "Fit &page"
 msgstr "D&opasuj do okna"
 
@@ -285,6 +288,9 @@ msgstr "Przejdź do strony…"
 
 msgid "Jump to previous document page"
 msgstr "Przejdź do poprzedniej strony dokumentu"
+
+msgid "Last fiche"
+msgstr "Ostatnia fiszka"
 
 msgid "License"
 msgstr "Licencja"

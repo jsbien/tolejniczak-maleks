@@ -1,8 +1,8 @@
 #encoding=utf-8
 
-from djvusmooth.maleks.fiche import StructureIndex, Configuration, Fiche
-from djvusmooth.db.db import DBController
-from djvusmooth import config
+from maleks.maleks.fiche import StructureIndex, Configuration, Fiche
+from maleks.db.db import DBController
+from maleks import config
 import sys
 import os
 
@@ -13,10 +13,10 @@ if len(sys.argv) != 2:
 if os.path.isdir(sys.argv[1]):
 	path = sys.argv[1]
 	if os.name == 'posix':
-		legacy_path = os.path.expanduser('~/.DjVuSmooth')
+		legacy_path = os.path.expanduser('~/.Maleks')
 	else:
 		legacy_path = None
-	config = config.Config('djvusmooth', legacy_path)
+	config = config.Config('maleks', legacy_path)
 	dbController = DBController(config)
 	index = StructureIndex(path)
 	cfg = Configuration(path)

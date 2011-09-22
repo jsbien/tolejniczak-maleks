@@ -17,18 +17,22 @@ from xml.dom import minidom
 
 # TODO: C usuwanie cyklicznosci przy niszczeniu obiektow
 
+# fiszka
 class Fiche(object):
 
+	# idd - identyfikator fiszki (jednoznaczny, obliczany dynamicznie przy tworzeniu indeksu struktury)
+	# path - nazwa pliku djvu z fiszka bez rozszerzenia, jest jednoczesnie nazwa pliku hOCR (dualnego) z fiszka bez rozszerzenia
 	def __init__(self, idd, path):
 		self.__id = idd
 		self.__djVuPath = path + ".djvu"
-		self.__metaPath = None
+		self.__metaPath = None # tu bedzie kiedys sciezka do XML
 		self.__hOCRPath = path + ".xml"
-		self.__parent = None
+		self.__parent = None # element struktury (np. pudelko lub szufladka) w ktorym znajduje sie fiszka
 	
 	def getId(self):
 		return self.__id
-	
+
+	# opis fiszki wyswietlany w wykazach
 	def getLabel(self):
 		return self.__id
 	
@@ -38,29 +42,36 @@ class Fiche(object):
 	def getParent(self):
 		return self.__parent
 
+	# sciezka absolutna do pliku djvu z fiszka
 	def getDjVuPath(self):
-		return self.__parent.getPath() + "/" + self.__djVuPath
-		
+		return self.__parent.getPath() + os.sep + self.__djVuPath
+	
+	# sciezka absolutna do pliku hOCR z fiszka
 	def getHOCRPath(self):
-		return self.__parent.getPath() + "/" + self.__hOCRPath
+		return self.__parent.getPath() + os.sep + self.__hOCRPath
 
+	# "sciezka" opisowa (zlozona z nazw elementow struktury i identyfikatora fiszki)
 	def getDescriptivePath(self):
 		return self.__parent.getDescriptivePath() + "/" + self.__id
 
 	def __str__(self):
 		return self.__id + ": " + self.__djVuPath
 
+	# zwraca zawartosc tekstowa pierwszego wiersza w hOCR jezeli stosunek jego
+	# dolnego bounding boxu do wysokosci strony jest mniejszy niz parametr
+	# hocr_cut w pliku config.cfg
+	# w ten sposob wybieramy tylko te pierwsze wiersze ktore sa 
 	def getHOCREntry(self, pct):
 		if os.path.exists(self.getHOCRPath()):
 			doc = minidom.parse(self.getHOCRPath())
-			line = getElementsByClassName(doc, u"ocrx_line")[0]
-			page = getElementsByClassName(doc, u"ocr_page")[0]
-			if line == None or page == None:
+			line = getElementsByClassName(doc, u"ocrx_line")
+			page = getElementsByClassName(doc, u"ocr_page")
+			if line == [] or page == []:
 				return None
-			lineBbox = getBbox(line)
-			pageBbox = getBbox(page)
+			lineBbox = getBbox(line[0])
+			pageBbox = getBbox(page[0])
 			if float(lineBbox[3]) / float(pageBbox[3]) < pct:
-				return getTextContent(line)
+				return getTextContent(line[0])
 		return None
 
 class StructureNode(object):

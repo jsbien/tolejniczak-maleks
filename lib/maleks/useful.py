@@ -18,6 +18,12 @@ def repeat(string, num):
 		res += string
 	return res
 
+def ustr(string):
+	if isinstance(string, unicode):
+		return string
+	else:
+		return unicode(string, "utf-8")
+
 class Notifier(object):
 
 	def __init__(self):

@@ -427,7 +427,7 @@ class ControlPanel(wx.Panel, Notifier):
 		Notifier.__init__(self)
 		sizer = wx.BoxSizer(wx.HORIZONTAL)
 		self.__button = wx.CheckBox(self, wx.ID_ANY)
-		self.__down = wx.ComboBox(self, wx.ID_ANY)
+		#self.__down = wx.ComboBox(self, wx.ID_ANY)
 		sizer.Add(self.__button, 0, wx.EXPAND)
 		sizer.Add(wx.StaticText(self, label=_("Search mode")), 0, wx.EXPAND)
 		self.SetSizer(sizer)

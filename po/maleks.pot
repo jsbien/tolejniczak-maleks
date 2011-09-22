@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-14 18:00+0200\n"
+"POT-Creation-Date: 2011-09-22 21:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -233,6 +233,9 @@ msgstr ""
 msgid "Fiche already indexed in entry prefix index"
 msgstr ""
 
+msgid "First fiche"
+msgstr ""
+
 msgid "Fit &page"
 msgstr ""
 
@@ -282,6 +285,9 @@ msgid "Jump to page…"
 msgstr ""
 
 msgid "Jump to previous document page"
+msgstr ""
+
+msgid "Last fiche"
 msgstr ""
 
 msgid "License"

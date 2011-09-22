@@ -47,6 +47,7 @@ from maleks.gui.page import PageWidget, PercentZoom, OneToOneZoom, StretchZoom, 
 from maleks.gui.reg_browser import RegisterBrowser
 from maleks.gui.struc_browser import StructureRegisterBrowser
 from maleks.gui.entry_browser import EntryRegisterBrowser
+from maleks.gui.new_entry_browser import NewEntryRegisterBrowser
 from maleks.gui.hint_browser import HintRegisterBrowser
 from maleks.gui.toppanel import TopPanel
 from maleks.gui.regbar import RegisterToolbar
@@ -425,7 +426,9 @@ class MainWindow(wx.Frame):
         self.taskreg_browser = RegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER | wx.LC_REPORT)
         self.strucreg_browser = StructureRegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER | wx.LC_REPORT)
         self.entryreg_browser = EntryRegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER | wx.LC_REPORT)
+        self.new_entryreg_browser = NewEntryRegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER | wx.LC_REPORT)
         self.entryreg_browser.setDBController(self.dBController)
+        self.new_entryreg_browser.setDBController(self.dBController)
         self.hintreg_browser = HintRegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER | wx.LC_REPORT)
         self.bookreg_browser = RegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER | wx.LC_REPORT)
         #self.sidebar.AddPage(self.outline_browser, _('Outline'))
@@ -434,6 +437,7 @@ class MainWindow(wx.Frame):
         self.sidebar.AddPage(self.taskreg_browser, _('Task Register'))
         self.sidebar.AddPage(self.strucreg_browser, _('Structure Register'))
         self.sidebar.AddPage(self.entryreg_browser, _('Entry Register'))
+        self.sidebar.AddPage(self.new_entryreg_browser, 'Test entry register')
         self.sidebar.AddPage(self.hintreg_browser, _('Hint Register'))
         self.sidebar.AddPage(self.bookreg_browser, _('Bookmark Register'))
         self.sidebar.Bind(
@@ -446,11 +450,12 @@ class MainWindow(wx.Frame):
                 self.on_display_taskreg,
                 self.on_display_strucreg,
                 self.on_display_entryreg,
+                self.on_display_new_entryreg,
                 self.on_display_hintreg,
                 self.on_display_bookreg
             )
         )
-        for widget in [self.taskreg_browser, self.strucreg_browser, self.entryreg_browser, self.hintreg_browser, self.bookreg_browser]:
+        for widget in [self.taskreg_browser, self.strucreg_browser, self.entryreg_browser, self.new_entryreg_browser, self.hintreg_browser, self.bookreg_browser]:
             widget.addListener(self)
         self.sidebar.ChangeSelection(1)
         
@@ -510,6 +515,8 @@ class MainWindow(wx.Frame):
         self.history = []
         self._ficheId = None
         self.goingBack = False
+        self.fiche_for_locate = None
+        self.locate = 0
         
         #self.taskreg_browser.Bind(wx.EVT_SET_FOCUS, self.defocus, self.taskreg_browser)
 
@@ -709,7 +716,7 @@ class MainWindow(wx.Frame):
             if ok:
                 self.lastEntry = self.top_panel.getEditPanelContent()
                 self.wasEditAccept = True
-            self.active_register.getNextFiche()
+            self.active_register.getNextFiche(self.top_panel.getEditPanelContent())
         else:
             self.update_indices()
         #pass
@@ -749,7 +756,7 @@ class MainWindow(wx.Frame):
 
     def on_up(self, event):
         #print self.active_register == self.entryreg_browser
-        if self.active_register in [self.strucreg_browser, self.entryreg_browser]:
+        if self.active_register in [self.strucreg_browser, self.entryreg_browser, self.new_entryreg_browser]:
             self.active_register.onUp(event)
 
     def on_bookmark(self, event):
@@ -781,7 +788,7 @@ class MainWindow(wx.Frame):
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('H'), self.on_hint_accept)
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('D'), self.on_bookmark)
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('R'), self.on_choose_register)
-        self._install_shortcut(li, wx.ACCEL_CTRL, ord('S'), self.on_level_down)
+        self._install_shortcut(li, wx.ACCEL_CTRL, wx.WXK_RETURN, self.on_level_down)
         #self._install_shortcut(li, wx.ACCEL_NORMAL, wx.WXK_DOWN, self.on_next_fiche)
         #self._install_shortcut(li, wx.ACCEL_NORMAL, wx.WXK_UP, self.on_prev_fiche)
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('.'), self.on_next_binary)
@@ -866,7 +873,7 @@ class MainWindow(wx.Frame):
         self.page_widget.SetFocus()
 
     def on_level_down(self, event):
-        if self.active_register in [self.entryreg_browser, self.strucreg_browser]:
+        if self.active_register in [self.entryreg_browser, self.strucreg_browser, self.new_entryreg_browser]:
             self.active_register.levelDown()
 
     def on_splitter_sash_changed(self, event):
@@ -1074,6 +1081,13 @@ class MainWindow(wx.Frame):
             self.active_register = self.entryreg_browser
             if self.ficheId != None: self.active_register.select(self.ficheId)
 
+    def on_display_new_entryreg(self, event):
+        if not self.__closing:
+            self.on_undisplay()
+            self._disable_page_change()  
+            self.active_register = self.new_entryreg_browser
+            #if self.ficheId != None: self.active_register.select(self.ficheId)
+
     def on_display_hintreg(self, event):
         if not self.__closing:
             self.on_undisplay()
@@ -1199,6 +1213,11 @@ class MainWindow(wx.Frame):
     #        #else:
          if self.active_register.binarySearchActive():
              self.active_register.prevBinary()
+
+    def invisible_binary_search(self, ficheId):
+        self.notify = False
+        self.page_no = self.index.getFicheNoById(ficheId)
+        self.notify = True
 
     def on_stop_binary(self, event):
     #    if self.mode == _('Browsing mode'):
@@ -1389,6 +1408,8 @@ class MainWindow(wx.Frame):
         self._ficheId = None
         self.wasEditAccept = False
         self.lastEntry = None
+        self.fiche_for_locate = None
+        self.locate = 0
 
     def do_open(self, path):
         if isinstance(path, unicode):
@@ -1411,6 +1432,7 @@ class MainWindow(wx.Frame):
         self.taskreg_browser.reset()
         self.strucreg_browser.reset()
         self.entryreg_browser.reset()
+        self.new_entryreg_browser.reset()
         self.hintreg_browser.reset()
         self.bookreg_browser.reset()
         self.page_no = 0
@@ -1428,6 +1450,7 @@ class MainWindow(wx.Frame):
                 self.config = Configuration(path)
                 self.config.configureDatabase(self.dBController)
                 self.entryreg_browser.initialize() # TODO: C przeniesc do initialize_registers i dac flage czy udalo sie wczytac plik czy nie
+                self.new_entryreg_browser.initialize()
                 self.bookreg_browser.DeleteAllItems()
                 self.bookreg_browser.setRegister(self.dBController.getBookmarksTaskRegister(), self.dBController.getActualEntryForFiche if self.dBController != None else None) # TODO: C j.w., sprawdzanie czy dBController jest null
                 self.hintRegister = HintRegister(path)
@@ -1478,6 +1501,12 @@ class MainWindow(wx.Frame):
         self.update_registers()
         self.update_indices()
         self.update_panels()
+        #import time
+        #time.sleep(0.5)
+        for i in range(0, 200):
+            self.update_page_widget()
+        #self.Refresh()
+        #self.Update()
         return True
 
     def update_page_widget(self, new_document = False, new_page = False):
@@ -1530,17 +1559,30 @@ class MainWindow(wx.Frame):
     # TODO: A zapisywanie wartosci indeksow przy zamykaniu programu
     # TODO: A czyszczenie indeksow przy zamykaniu/otwieraniu nowego katalogu
 
+    def request_entry_change(self):
+        if self.dBController != None:
+            if self.mainind_panel.isDirty():
+                return self.mainind_panel.getEntryIndicesValue()[0]
+        return None
+
+    def locate_needed(self, ficheId):
+        self.fiche_for_locate = ficheId
+        self.locate = 1
+
     def update_indices(self):
         # TODO: C co jak dBController == None (co z thaw/freeze? w indeksach itp.)
         if self.dBController != None:
             if self.left_control.isSearchMode(): # TODO: C j.w.
                 self.left_control.stopSearch()
+            if self.secind_panel.isDirty():
+                self.dBController.setSecondaryIndicesForFiche(self.secind_panel.getValues(), self.secind_panel.getFicheId())
             if self.mainind_panel.isDirty():
                 self.dBController.setEntriesForFiche(self.mainind_panel.getEntryIndicesValue(), self.mainind_panel.getFicheId())
                 self.dBController.setFiche(self.mainind_panel.getFicheIndexValue(), self.mainind_panel.getFicheId())
                 self.dBController.setPageAndLineForFiche(self.mainind_panel.getPageAndLineIndicesValue(), self.mainind_panel.getFicheId())
-            if self.secind_panel.isDirty():
-                self.dBController.setSecondaryIndicesForFiche(self.secind_panel.getValues(), self.secind_panel.getFicheId())
+                if self.locate > 0:
+                    self.locate = 0
+                    self.new_entryreg_browser.locate(self.fiche_for_locate)
             self.mainind_panel.disableInputEvent()
             self.mainind_panel.fillEntryIndices(self.dBController.getEntriesForFiche(self.ficheId), self.ficheId)
             self.mainind_panel.fillFicheIndex(self.dBController.getFiche(self.ficheId), self.ficheId)
@@ -1549,6 +1591,8 @@ class MainWindow(wx.Frame):
             self.secind_panel.disableInputEvent()
             self.secind_panel.fill(self.dBController.getSecondaryIndicesForFiche(self.ficheId), self.ficheId)
             self.secind_panel.enableInputEvent()
+        self.fiche_for_locate = None
+        self.locate = 0
 
     def update_panels(self):
         if self.ficheId != None: # TODO: NOTE jest otwarty jakis dokument

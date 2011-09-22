@@ -10,79 +10,51 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 # General Public License for more details.
 
-import MySQLdb
 import _mysql_exceptions
+from maleks.db.db_entry import DBEntryController
 from maleks.i18n import _
 from maleks.maleks.registers import TaskRegister
 from maleks.maleks.fiche import Fiche
 
-class DBController(object):
-
-	def __nvl(self, obj):
-		if obj == "":
-			return None
-		return obj
+class DBController(DBEntryController):
 
 	def __init__(self, config):
-		self.__user = config.read('dbuser', '')
-		self.__globalUser = self.__user
-		self.__passwd = config.read('dbpass', '')
-		self.__globalPasswd = self.__passwd
-		self.__db = config.read('db', '')
-		self.__globalDb = self.__db
-		self.__conn = None
-
-	def setPerDocumentConnection(self, db, user, passwd):
-		self.__user = user if user != None else self.__globalUser
-		self.__passwd = passwd if passwd != None else self.__globalPasswd
-		self.__db = db if db != None else self.__globalDb
-
-	def valid(self):
-		return self.__user != '' and self.__passwd != '' and self.__db != ''
-
-	def __openDBWithCursor(self):
-		self.__conn = MySQLdb.connect(user=self.__user, passwd=self.__passwd, db=self.__db, use_unicode=False, init_command="SET NAMES 'utf8'",charset='utf8')
-		return self.__conn.cursor()
-
-	def __closeDBAndCursor(self, cursor):
-		cursor.close()
-		self.__conn.commit()
-		self.__conn.close()
+		DBEntryController.__init__(self, config)
 
 	def addFicheToFichesIndex(self, ficheId):
-		cursor = self.__openDBWithCursor()
-		cursor.execute("insert into fiches values (null, %s, null, null, null)", (ficheId))
-		self.__closeDBAndCursor(cursor)
+		cursor = self._openDBWithCursor()
+		cursor.execute("insert into fiches values (null, %s, null, null, null, null, null, null, null, null)", (ficheId))
+		self._closeDBAndCursor(cursor)
 
 	def bookmarkFiche(self, ficheId):
-		cursor = self.__openDBWithCursor()
+		cursor = self._openDBWithCursor()
 		cursor.execute("update fiches set bookmark = sysdate() where fiche = %s", (ficheId))
-		self.__closeDBAndCursor(cursor)
+		self._closeDBAndCursor(cursor)
 
 	def addFicheToEntriesIndex(self, ficheId, entry):
-		cursor = self.__openDBWithCursor()
+		cursor = self._openDBWithCursor()
 		try:
 			cursor.execute("insert into actual_entries values (%s, %s, null)", (ficheId, entry))
 			cursor.execute("insert into original_entries values (%s, %s, null)", (ficheId, entry))
 		except _mysql_exceptions.IntegrityError:
-			self.__closeDBAndCursor(cursor)
+			self._closeDBAndCursor(cursor)
 			return _('Fiche already indexed')
 		#print cursor.rowcount
-		self.__closeDBAndCursor(cursor)
+		self._closeDBAndCursor(cursor)
 		return None
 
 	def addFicheToPrefixesIndex(self, ficheId, entry):
-		cursor = self.__openDBWithCursor()
+		cursor = self._openDBWithCursor()
 		try:
 			cursor.execute("insert into entry_prefixes values (%s, %s, null)", (ficheId, entry))
 		except _mysql_exceptions.IntegrityError:
-			self.__closeDBAndCursor(cursor)
+			self._closeDBAndCursor(cursor)
 			return _('Fiche already indexed in entry prefix index')
-		self.__closeDBAndCursor(cursor)
+		self._closeDBAndCursor(cursor)
 		return None
 
 	def getHypothesisForFiche(self, ficheId, alphabetic):
-		cursor = self.__openDBWithCursor()
+		cursor = self._openDBWithCursor()
 		cursor.execute("select entry_hypothesis from hypotheses where fiche = %s", (ficheId))
 		row = cursor.fetchone()
 		if row == None and alphabetic:
@@ -94,7 +66,7 @@ class DBController(object):
 			nextEntry = cursor.fetchone()
 			if nextEntry != None and prevEntry != None and nextEntry[0] == prevEntry[0] == nextEntry[1] == prevEntry[1]:
 				row = nextEntry
-		self.__closeDBAndCursor(cursor)
+		self._closeDBAndCursor(cursor)
 		if row == None:
 			return None
 		else:
@@ -102,22 +74,22 @@ class DBController(object):
 
 	def getActualEntryForFiche(self, ficheId):
 		res = None
-		cursor = self.__openDBWithCursor()
+		cursor = self._openDBWithCursor()
 		cursor.execute("select entry from actual_entries where fiche = %s", (ficheId))
 		row = cursor.fetchone()
 		if row != None:
 			res = row[0]
-		self.__closeDBAndCursor(cursor)
+		self._closeDBAndCursor(cursor)
 		return res
 
 	def getOriginalEntryForFiche(self, ficheId):
 		res = None
-		cursor = self.__openDBWithCursor()
+		cursor = self._openDBWithCursor()
 		cursor.execute("select entry from original_entries where fiche = %s", (ficheId))
 		row = cursor.fetchone()
 		if row != None:
 			res = row[0]
-		self.__closeDBAndCursor(cursor)
+		self._closeDBAndCursor(cursor)
 		return res
 
 	def getEntriesForFiche(self, ficheId):
@@ -125,7 +97,7 @@ class DBController(object):
 		actualComment = ""
 		original = ""
 		originalComment = ""
-		cursor = self.__openDBWithCursor()
+		cursor = self._openDBWithCursor()
 		cursor.execute("select entry, comment from actual_entries where fiche = %s", (ficheId))
 		row = cursor.fetchone()
 		if row != None:
@@ -136,11 +108,11 @@ class DBController(object):
 		if row != None:
 			original = row[0]
 			originalComment = row[1]
-		self.__closeDBAndCursor(cursor)
+		self._closeDBAndCursor(cursor)
 		return (actual, actualComment, original, originalComment)
 
 	def setEntriesForFiche(self, (actual, actualComment, original, originalComment), ficheId):
-		cursor = self.__openDBWithCursor()
+		cursor = self._openDBWithCursor()
 		cursor.execute("select entry from actual_entries where fiche = %s", (ficheId))
 		row = cursor.fetchone()
 		hasActual = row != None
@@ -149,39 +121,39 @@ class DBController(object):
 		hasOriginal = row != None
 		if hasActual:
 			if actual != "":
-				cursor.execute("update actual_entries set entry = %s, comment = %s where fiche = %s", (actual, self.__nvl(actualComment), ficheId))
+				cursor.execute("update actual_entries set entry = %s, comment = %s where fiche = %s", (actual, self._nvl(actualComment), ficheId))
 			else:
 				cursor.execute("delete from actual_entries where fiche = %s", (ficheId))
 		elif actual != "":
-			cursor.execute("insert into actual_entries values (%s, %s, %s)", (ficheId, actual, self.__nvl(actualComment)))
+			cursor.execute("insert into actual_entries values (%s, %s, %s)", (ficheId, actual, self._nvl(actualComment)))
 		if hasOriginal:
 			if original != "":
-				cursor.execute("update original_entries set entry = %s, comment = %s where fiche = %s", (original, self.__nvl(originalComment), ficheId))
+				cursor.execute("update original_entries set entry = %s, comment = %s where fiche = %s", (original, self._nvl(originalComment), ficheId))
 			else:
 				cursor.execute("delete from original_entries where fiche = %s", (ficheId))
 		elif original != "":
-			cursor.execute("insert into original_entries values (%s, %s, %s)", (ficheId, original, self.__nvl(originalComment)))
-		self.__closeDBAndCursor(cursor)
+			cursor.execute("insert into original_entries values (%s, %s, %s)", (ficheId, original, self._nvl(originalComment)))
+		self._closeDBAndCursor(cursor)
 
 	def getFiche(self, ficheId):
-		cursor = self.__openDBWithCursor()
+		cursor = self._openDBWithCursor()
 		cursor.execute("select work, firstWordPage, lastWordPage, matrixNumber, matrixSector, editor, comment from fiches where fiche = %s", (ficheId))
 		row = cursor.fetchone()
 		#print row
-		self.__closeDBAndCursor(cursor)
+		self._closeDBAndCursor(cursor)
 		return row
 
 	def setFiche(self, values, ficheId):
-		cursor = self.__openDBWithCursor()
-		cursor.execute("update fiches set work = %s, firstWordPage = %s, lastWordPage = %s, matrixNumber = %s, matrixSector = %s, editor = %s, comment = %s where fiche = %s", (self.__nvl(values[0]), self.__nvl(values[1]), self.__nvl(values[2]), self.__nvl(values[3]), self.__nvl(values[4]), self.__nvl(values[5]), self.__nvl(values[6]), ficheId))
-		self.__closeDBAndCursor(cursor)
+		cursor = self._openDBWithCursor()
+		cursor.execute("update fiches set work = %s, firstWordPage = %s, lastWordPage = %s, matrixNumber = %s, matrixSector = %s, editor = %s, comment = %s where fiche = %s", (self._nvl(values[0]), self._nvl(values[1]), self._nvl(values[2]), self._nvl(values[3]), self._nvl(values[4]), self._nvl(values[5]), self._nvl(values[6]), ficheId))
+		self._closeDBAndCursor(cursor)
 
 	def getPageAndLineForFiche(self, ficheId):
 		page = ""
 		pageComment = ""
 		line = ""
 		lineComment = ""
-		cursor = self.__openDBWithCursor()
+		cursor = self._openDBWithCursor()
 		cursor.execute("select page, comment from pages where fiche = %s", (ficheId))
 		row = cursor.fetchone()
 		if row != None:
@@ -192,11 +164,11 @@ class DBController(object):
 		if row != None:
 			line = row[0]
 			lineComment = row[1]
-		self.__closeDBAndCursor(cursor)
+		self._closeDBAndCursor(cursor)
 		return (page, pageComment, line, lineComment)
 
 	def setPageAndLineForFiche(self, (page, pageComment, line, lineComment), ficheId):
-		cursor = self.__openDBWithCursor()
+		cursor = self._openDBWithCursor()
 		cursor.execute("select page from pages where fiche = %s", (ficheId))
 		row = cursor.fetchone()
 		hasPage = row != None
@@ -205,24 +177,24 @@ class DBController(object):
 		hasLine = row != None
 		if hasPage:
 			if page != "":
-				cursor.execute("update pages set page = %s, comment = %s where fiche = %s", (page, self.__nvl(pageComment), ficheId))
+				cursor.execute("update pages set page = %s, comment = %s where fiche = %s", (page, self._nvl(pageComment), ficheId))
 			else:
 				cursor.execute("delete from pages where fiche = %s", (ficheId))
 		elif page != "":
-			cursor.execute("insert into pages values (%s, %s, %s)", (ficheId, page, self.__nvl(pageComment)))
+			cursor.execute("insert into pages values (%s, %s, %s)", (ficheId, page, self._nvl(pageComment)))
 		if hasLine:
 			if line != "":
-				cursor.execute("update linesIndex set line = %s, comment = %s where fiche = %s", (line, self.__nvl(lineComment), ficheId))
+				cursor.execute("update linesIndex set line = %s, comment = %s where fiche = %s", (line, self._nvl(lineComment), ficheId))
 			else:
 				cursor.execute("delete from linesIndex where fiche = %s", (ficheId))
 		elif line != "":
-			cursor.execute("insert into linesIndex values (%s, %s, %s)", (ficheId, line, self.__nvl(lineComment)))
-		self.__closeDBAndCursor(cursor)
+			cursor.execute("insert into linesIndex values (%s, %s, %s)", (ficheId, line, self._nvl(lineComment)))
+		self._closeDBAndCursor(cursor)
 
 	def getSecondaryIndicesForFiche(self, ficheId):
 		res0 = [""]*11
 		res1 = [""]*2
-		cursor = self.__openDBWithCursor()
+		cursor = self._openDBWithCursor()
 		cursor.execute("select * from fiche_entries where fiche = %s", (ficheId))
 		row = cursor.fetchone()
 		if row != None:
@@ -231,39 +203,39 @@ class DBController(object):
 		row = cursor.fetchone()
 		if row != None:
 			res1 = list(row)
-		self.__closeDBAndCursor(cursor)
+		self._closeDBAndCursor(cursor)
 		return res0 + res1
 
 	def setSecondaryIndicesForFiche(self, (ficheEntry, textEntry, textEntryComment), ficheId):
-		cursor = self.__openDBWithCursor()
+		cursor = self._openDBWithCursor()
 		cursor.execute("select count(*) from fiche_entries where fiche = %s", (ficheId))
 		if cursor.fetchone()[0] > 0:
-			cursor.execute("update fiche_entries set pageNo = %s, lineNo = %s, entryBegin = %s, entryBeginLine = %s, entryBeginWord = %s, entryBeginChar = %s, entryEnd = %s, entryEndLine = %s, entryEndWord = %s, entryEndChar = %s, comment = %s where fiche = %s", tuple([self.__nvl(el) for el in ficheEntry] + [ficheId]))
+			cursor.execute("update fiche_entries set pageNo = %s, lineNo = %s, entryBegin = %s, entryBeginLine = %s, entryBeginWord = %s, entryBeginChar = %s, entryEnd = %s, entryEndLine = %s, entryEndWord = %s, entryEndChar = %s, comment = %s where fiche = %s", tuple([self._nvl(el) for el in ficheEntry] + [ficheId]))
 		elif ficheEntry != tuple([""]*11):
-			cursor.execute("insert into fiche_entries values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", tuple([ficheId] + [self.__nvl(a) for a in ficheEntry]))
+			cursor.execute("insert into fiche_entries values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", tuple([ficheId] + [self._nvl(a) for a in ficheEntry]))
 		cursor.execute("select count(*) from text_entries where fiche = %s", (ficheId))
 		if cursor.fetchone()[0] > 0:
 			if textEntry == "":
 				cursor.execute("delete from text_entries where fiche = %s", (ficheId))
 			else:
-				cursor.execute("update text_entries set entry = %s, comment = %s where fiche = %s", (textEntry, self.__nvl(textEntryComment), ficheId))
+				cursor.execute("update text_entries set entry = %s, comment = %s where fiche = %s", (textEntry, self._nvl(textEntryComment), ficheId))
 		elif textEntry != "":
-			cursor.execute("insert into text_entries values (%s, %s, %s)", (ficheId, textEntry, self.__nvl(textEntryComment)))
-		self.__closeDBAndCursor(cursor)
+			cursor.execute("insert into text_entries values (%s, %s, %s)", (ficheId, textEntry, self._nvl(textEntryComment)))
+		self._closeDBAndCursor(cursor)
 
 	def getEntriesRegister(self):
-		cursor = self.__openDBWithCursor()
+		cursor = self._openDBWithCursor()
 		cursor.execute("select distinct entry from actual_entries order by entry")
 		res = [_("Entry unknown")]
 		row = cursor.fetchone()
 		while row != None:
 			res.append(str(row[0]))
 			row = cursor.fetchone()
-		self.__closeDBAndCursor(cursor)
+		self._closeDBAndCursor(cursor)
 		return res
 
 	def getWorksForEntry(self, entry):
-		cursor = self.__openDBWithCursor()
+		cursor = self._openDBWithCursor()
 		print entry, type(entry)
 		if isinstance(entry, unicode) and entry == _("Entry unknown"): # TODO: NOTE tu i w ponizszych metodach, bo _ zamienia na unicode
 			cursor.execute("select distinct work from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) order by work")
@@ -275,11 +247,11 @@ class DBController(object):
 			if row[0] != None:
 				res.append(str(row[0]))
 			row = cursor.fetchone()
-		self.__closeDBAndCursor(cursor)
+		self._closeDBAndCursor(cursor)
 		return res
 
 	def getPagesForWork(self, entry, work):
-		cursor = self.__openDBWithCursor()
+		cursor = self._openDBWithCursor()
 		if isinstance(work, unicode) and work == _("Work unknown"):
 			if isinstance(entry, unicode) and entry == _("Entry unknown"):
 				cursor.execute("select distinct page from fiches f, pages p where f.fiche = p.fiche and work is null and not exists (select * from actual_entries e where f.fiche = e.fiche) order by page")
@@ -295,11 +267,11 @@ class DBController(object):
 		while row != None:
 			res.append(str(row[0]))
 			row = cursor.fetchone()
-		self.__closeDBAndCursor(cursor)
+		self._closeDBAndCursor(cursor)
 		return res
 
 	def getLinesForPage(self, entry, work, page):
-		cursor = self.__openDBWithCursor()
+		cursor = self._openDBWithCursor()
 		if isinstance(page, unicode) and page == _("Page unknown"):
 			if isinstance(work, unicode) and work == _("Work unknown"):
 				if isinstance(entry, unicode) and entry == _("Entry unknown"):
@@ -327,11 +299,11 @@ class DBController(object):
 		while row != None:
 			res.append(str(row[0]))
 			row = cursor.fetchone()
-		self.__closeDBAndCursor(cursor)
+		self._closeDBAndCursor(cursor)
 		return res
 
 	def getFichesForLine(self, entry, work, page, line):
-		cursor = self.__openDBWithCursor()
+		cursor = self._openDBWithCursor()
 		if isinstance(line, unicode) and line == _("Line unknown"):
 			if isinstance(page, unicode) and page == _("Page unknown"):
 				if isinstance(work, unicode) and work == _("Work unknown"):
@@ -383,28 +355,28 @@ class DBController(object):
 		while row != None:
 			res.append(row[0])
 			row = cursor.fetchone()
-		self.__closeDBAndCursor(cursor)
+		self._closeDBAndCursor(cursor)
 		return res
 
 	def getBookmarksTaskRegister(self):
 		reg = TaskRegister(None, None, empty=True)
-		cursor = self.__openDBWithCursor()
+		cursor = self._openDBWithCursor()
 		cursor.execute("select fiche from fiches where bookmark is not null order by position")
 		row = cursor.fetchone()
 		while row != None:
 			reg.append(Fiche(row[0], row[0]))
 			row = cursor.fetchone()
-		self.__closeDBAndCursor(cursor)
+		self._closeDBAndCursor(cursor)
 		return reg
 
 	#def getCommentTaskRegister(self):
 	#	reg = TaskRegister(None, None, emtpy=True)
-	#	cursor = self.__openDBWithCursor()
+	#	cursor = self._openDBWithCursor()
 	#	cursor.execute("select fiche from fiches where comment is not null and comment <> '' order by position")
 	#	row = cursor.fetchone()
 	#	while row != None:
 	#		reg.append(Fiche(row[0], row[0]))
 	#		row = cursor.fetchone()
-	#	self.__closeDBAndCursor(cursor)
+	#	self._closeDBAndCursor(cursor)
 	#	return reg
 
