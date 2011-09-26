@@ -51,9 +51,11 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		self._initialized = True
 
 	def refresh(self, ficheId):
-		self.initialize()
 		if self.__level in ["FICHE-GAP", "FICHE-ENTRY"]:
+			self.initialize()
 			self.locate(ficheId)
+		else:
+			self.initialize()
 
 	def __fillRegister(self, elements):
 		i = 0
@@ -166,7 +168,6 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 				self.__entry = None
 				(num, before, after) = self.__selectedElement
 				(elements, limitStart, self.__next) = self.__dBController.getFichesForGap(before, after, self.__limit)
-				self._select(0)
 			else:
 				self.__level = "FICHE-ENTRY"
 				self.__entry = self.__selectedElement

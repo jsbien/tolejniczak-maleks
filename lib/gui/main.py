@@ -1103,7 +1103,7 @@ class MainWindow(wx.Frame):
             self.active_register = self.new_entryreg_browser
             if self.ficheId != None:
                 if self.active_register.isActive():
-                    self.active_register.refresh()
+                    self.active_register.refresh(self.ficheId)
                 self.active_register.selectAndShow(self.ficheId)
             else:
                 if self.active_register.isActive():
@@ -1507,7 +1507,7 @@ class MainWindow(wx.Frame):
                 self.index = StructureIndex(path)
                 self.config = Configuration(path)
                 self.config.configureDatabase(self.dBController)
-                self.entryreg_browser.initialize() # TODO: C przeniesc do initialize_registers i dac flage czy udalo sie wczytac plik czy nie
+                self.entryreg_browser.initialize() # TODO: C przeniesc do initialize_registers i dac flage czy udalo sie wczytac plik czy nie (self.document = None starczy? - uzywane w update_indices)
                 if self.index.isAlphabetic():
                     self.new_entryreg_browser.initialize()
                 self.bookreg_browser.DeleteAllItems()
@@ -1629,6 +1629,8 @@ class MainWindow(wx.Frame):
         self.locate = 1
 
     def update_indices(self):
+        if self.document == None:
+            return
         # TODO: C co jak dBController == None (co z thaw/freeze? w indeksach itp.)
         if self.dBController != None:
             if self.left_control.isSearchMode(): # TODO: C j.w.

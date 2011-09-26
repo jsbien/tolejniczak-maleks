@@ -13,7 +13,7 @@
 import MySQLdb
 from maleks.i18n import _
 from maleks.maleks.useful import ustr
-from maleks.db.db_entry import DBEntryController
+from maleks.db.db_entry import DBEntryController, INF
 
 class DBWorkController(DBEntryController):
 

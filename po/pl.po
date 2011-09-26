@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-26 16:37+0200\n"
+"POT-Creation-Date: 2011-09-26 17:20+0200\n"
 "PO-Revision-Date: 2009-05-31 14:45+CEST\n"
 "Last-Translator: Tomasz Olejniczak <tomek.87@poczta.onet.pl>\n"
 "Language-Team: none\n"
@@ -286,9 +286,6 @@ msgstr "Przejdź do strony…"
 msgid "Jump to previous document page"
 msgstr "Przejdź do poprzedniej strony dokumentu"
 
-msgid "Multilevel Register"
-msgstr "Wykaz wielopoziomowy"
-
 msgid "License"
 msgstr "Licencja"
 
@@ -331,6 +328,9 @@ msgstr "Symbol sektora matrycy"
 
 msgid "More information about this program"
 msgstr "Więcej informacji o tym programie"
+
+msgid "Multilevel Register"
+msgstr "Wykaz wielopoziomowy"
 
 msgid "Neither display the foreground layer nor the background layer"
 msgstr "Nie pokazuj pierwszego planu ani tła"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-26 16:37+0200\n"
+"POT-Creation-Date: 2011-09-26 17:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -284,9 +284,6 @@ msgstr ""
 msgid "Jump to previous document page"
 msgstr ""
 
-msgid "Level Register"
-msgstr ""
-
 msgid "License"
 msgstr ""
 
@@ -328,6 +325,9 @@ msgid "Matrix sector symbol"
 msgstr ""
 
 msgid "More information about this program"
+msgstr ""
+
+msgid "Multilevel Register"
 msgstr ""
 
 msgid "Neither display the foreground layer nor the background layer"
