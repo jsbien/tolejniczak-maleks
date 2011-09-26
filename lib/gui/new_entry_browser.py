@@ -293,7 +293,7 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 				else:
 					self.__binaryType = "ENTRY"
 					(self.__left, self.__right, self.__center) = self.__dBController.getPositionsForFichesForEntry(el, self.__leftFiche, self.__rightFiche, self.__centerFiche)
-				print self.__left, self.__center, self.__right
+				#print self.__left, self.__center, self.__right
 				break
 			else:
 				pass
@@ -386,7 +386,7 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		else:
 			(elements, self.__index, self.__next, element) = self.__dBController.getFichesForEntryForLastFiche(self.__selectedElement, self.__limit)
 		self.DeleteAllItems()
-		print elements
+		#print elements
 		self.__fillRegister(elements)
 		itemId = self._element2item[element]
 		self.__localVeto = True

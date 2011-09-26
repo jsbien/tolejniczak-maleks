@@ -517,6 +517,7 @@ class MainWindow(wx.Frame):
         self.goingBack = False
         self.fiche_for_locate = None
         self.locate = 0
+        self.ignore_entries = False
         
         #self.taskreg_browser.Bind(wx.EVT_SET_FOCUS, self.defocus, self.taskreg_browser)
 
@@ -715,6 +716,7 @@ class MainWindow(wx.Frame):
             self.hintreg_browser.hintChanged(self.top_panel.getEditPanelContent())
             self.top_panel.editPanelChanged(None)
         self.dirty = True # TODO: NOTE bo mozemy musiec np. zapisac do pliku dodana powyzej podpowiedz
+        self.ignore_entries = True
         if self.active_register.allowsNextFiche() and self.active_register.hasSelection():
             if ok:
                 self.lastEntry = self.top_panel.getEditPanelContent()
@@ -722,6 +724,7 @@ class MainWindow(wx.Frame):
             self.active_register.getNextFiche(self.top_panel.getEditPanelContent())
         else:
             self.update_indices()
+        self.ignore_entries = False
         #pass
 
     def on_edit_prefix_accept(self, event):
@@ -753,6 +756,7 @@ class MainWindow(wx.Frame):
                 return
             else:
                 ok = True
+        self.ignore_entries = True
         if self.active_register.allowsNextFiche() and self.active_register.hasSelection():
             if ok:
                 self.lastEntry = self.top_panel.getHint()
@@ -760,6 +764,7 @@ class MainWindow(wx.Frame):
             self.active_register.getNextFiche()
         else:
             self.update_indices()
+        self.ignore_entries = False
 
     def on_up(self, event):
         #print self.active_register == self.entryreg_browser
@@ -1182,7 +1187,7 @@ class MainWindow(wx.Frame):
         return property(get, set)
 
     def on_back(self, event):
-        if self.history != []:
+        if self.history != [] and not self.active_register.binarySearchActive():
             self.goingBack = True
             self.page_no = self.index.getFicheNoById(self.history.pop())
             self.goingBack = False
@@ -1247,12 +1252,12 @@ class MainWindow(wx.Frame):
             return
         if self.active_register.binarySearchActive():
              if not self.active_register.nextBinaryAcceptPrepare():
-                print "ojej"
+                #print "ojej"
                 self.stop_binary_search()
                 self.on_edit_accept(None, binaryOK=True)
                 self.active_register.initialize()
              else:
-                print "ok"
+                #print "ok"
                 self.on_edit_accept(None, binaryOK=True)
                 self.active_register.binaryAcceptFinalize()
     
@@ -1261,12 +1266,12 @@ class MainWindow(wx.Frame):
             return
         if self.active_register.binarySearchActive():
              if not self.active_register.prevBinaryAcceptPrepare():
-                print "ojej"
+                #print "ojej"
                 self.stop_binary_search()
                 self.on_edit_accept(None, binaryOK=True)
                 self.active_register.initialize()
              else:
-                print "ok"
+                #print "ok"
                 self.on_edit_accept(None, binaryOK=True)
                 self.active_register.binaryAcceptFinalize()
 
@@ -1638,7 +1643,8 @@ class MainWindow(wx.Frame):
             if self.secind_panel.isDirty():
                 self.dBController.setSecondaryIndicesForFiche(self.secind_panel.getValues(), self.secind_panel.getFicheId())
             if self.mainind_panel.isDirty():
-                self.dBController.setEntriesForFiche(self.mainind_panel.getEntryIndicesValue(), self.mainind_panel.getFicheId())
+                if not self.ignore_entries:
+                    self.dBController.setEntriesForFiche(self.mainind_panel.getEntryIndicesValue(), self.mainind_panel.getFicheId())
                 self.dBController.setFiche(self.mainind_panel.getFicheIndexValue(), self.mainind_panel.getFicheId())
                 self.dBController.setPageAndLineForFiche(self.mainind_panel.getPageAndLineIndicesValue(), self.mainind_panel.getFicheId())
                 if self.locate > 0:
