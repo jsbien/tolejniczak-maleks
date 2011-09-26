@@ -757,7 +757,7 @@ class MainWindow(wx.Frame):
             self.error_box(_('Empty hint panel'))
             return
         ok = False
-        if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive() and not binaryOK:
+        if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive():
             self.active_register.prepareForActiveBinary()
         if self.dBController != None:
             msg = self.dBController.addFicheToEntriesIndex(self.ficheId, self.top_panel.getHint())
