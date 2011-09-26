@@ -125,6 +125,9 @@ class EntryRegisterBrowser(RegisterBrowser):
 			self.__level = "ENTRY"
 			self.DeleteAllItems()
 			self.__fillRegister(elements)
+
+	def topLevel(self):
+		return self.__level == "ENTRY"
 			
 	def binaryAvailable(self):
 		return self.__level == "ENTRY"

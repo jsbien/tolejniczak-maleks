@@ -90,6 +90,9 @@ class StructureRegisterBrowser(RegisterBrowser):
 			self.__element = self.__element.getParent()
 			self.__selectStructureNode(self.__element)
 
+	def topLevel(self):
+		return self.__element.getParent() == None
+
 	def _nextFicheNotFound(self):
 		fiche = self.__register.findNextFiche(self.__element)
 		if fiche != None:

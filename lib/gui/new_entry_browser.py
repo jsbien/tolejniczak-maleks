@@ -217,7 +217,7 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 				#:else:
 				#print "nie bylo nastepnej fiszki"
 				self.initialize()
-				for l in self._listners:
+				for l in self._listeners:
 					l.on_structure_element_selected("")
 
 	def onUp(self, event):
@@ -236,6 +236,7 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		return self.__level == "ENTRY"
 
 	def startBinarySearch(self):
+		self.__binaryScopeValid = True
 		if isinstance(self.__selectedElement, tuple):
 			(self.__leftFiche, self.__rightFiche, length) = self.__dBController.getGapCount(self.__selectedElement[1], self.__selectedElement[2])
 			self.__binaryType = "GAP"
@@ -254,6 +255,14 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		self.__left = self.__center + 1
 		if self.__left > self.__right:
 			self.__left = self.__right
+		if not self.__binaryScopeValid:
+			self.__binaryScopeValid = True
+			self.__leftFiche = self.__potentialNextLeftFiche
+			if self.__left == self.__right:
+				return False
+			self.__center = self.__potentialNextCenter
+			self.__centerFiche = self.__potentialNextCenterFiche
+			return True
 		if self.__binaryType == "GAP":
 			self.__leftFiche = self.__dBController.getFicheForGapPosition(self.__selectedElement[1], self.__selectedElement[2], self.__left)
 		else:
@@ -265,11 +274,60 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		self.__right = self.__center - 1
 		if self.__right < self.__left:
 			self.__right = self.__left
+		if not self.__binaryScopeValid:
+			self.__binaryScopeValid = True
+			self.__rightFiche = self.__potentialPrevRightFiche
+			if self.__right == self.__left:
+				return False
+			self.__center = self.__potentialPrevCenter
+			self.__centerFiche = self.__potentialPrevCenterFiche
+			return True
 		if self.__binaryType == "GAP":
 			self.__rightFiche = self.__dBController.getFicheForGapPosition(self.__selectedElement[1], self.__selectedElement[2], self.__right)
 		else:
 			self.__rightFiche = self.__dBController.getFicheForEntryPosition(self.__selectedElement, self.__right)
 		return self.__selectCenterPrepare()
+
+	def initializeForActiveBinary(self):
+		self._selected = None
+		self.DeleteAllItems()
+		elements = self.__dBController.getEntriesRegisterWithGaps()
+		self.__fillRegister(elements)
+
+	def prepareForActiveBinary(self):
+		#print self.__left, self.__center, self.__right
+		potentialPrevLeft = self.__left
+		potentialPrevRight = self.__center - 1
+		if potentialPrevRight < potentialPrevLeft:
+			potentialPrevRight = potentialPrevLeft
+		lenn = potentialPrevRight - potentialPrevLeft - 1
+		if potentialPrevRight == potentialPrevLeft:
+			return
+		#print self.__left, self.__center, self.__right
+		self.__potentialPrevCenter = potentialPrevLeft + lenn / 2
+		#print potentialPrevLeft, self.__potentialPrevCenter, potentialPrevRight
+		potentialNextLeft = self.__center + 1
+		potentialNextRight = self.__right
+		if potentialNextLeft > potentialNextRight:
+			potentialNextLeft = potentialNextRight
+		lenn = potentialNextRight - potentialNextLeft - 1
+		if potentialNextRight == potentialNextLeft:
+			return
+		self.__potentialNextCenter = potentialNextLeft + lenn / 2
+		self.__potentialPrevLeftFiche = self.__leftFiche
+		if self.__binaryType == "GAP":
+			self.__potentialPrevCenterFiche = self.__dBController.getFicheForGapPosition(self.__selectedElement[1], self.__selectedElement[2], self.__potentialPrevCenter)
+			self.__potentialPrevRightFiche = self.__dBController.getFicheForGapPosition(self.__selectedElement[1], self.__selectedElement[2], potentialPrevRight)
+			self.__potentialNextLeftFiche = self.__dBController.getFicheForGapPosition(self.__selectedElement[1], self.__selectedElement[2], potentialNextLeft)
+			self.__potentialNextCenterFiche = self.__dBController.getFicheForGapPosition(self.__selectedElement[1], self.__selectedElement[2], self.__potentialNextCenter)
+			#print self.__potentialPrevLeftFiche, self.__potentialPrevCenterFiche, self.__potentialPrevRightFiche
+		else:
+			self.__potentialPrevCenterFiche = self.__dBController.getFicheForEntryPosition(self.__selectedElement, self.__potentialPrevCenter)
+			self.__potentialPrevRightFiche = self.__dBController.getFicheForEntryPosition(self.__selectedElement, potentialPrevRight)
+			self.__potentialNextLeftFiche = self.__dBController.getFicheForEntryPosition(self.__selectedElement, potentialNextLeft)
+			self.__potentialNextCenterFiche = self.__dBController.getFicheForEntryPosition(self.__selectedElement, self.__potentialNextCenter)
+		self.__potentialNextRightFiche = self.__rightFiche
+		self.__binaryScopeValid = False
 
 	def binaryAcceptFinalize(self):
 		self._selected = None
@@ -280,7 +338,7 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		#print "@@@", self.__leftFiche, self.__centerFiche, self.__rightFiche
 		self.__left = None
 		for (i, el) in self._item2element.iteritems():
-			#print "$$$", el, self.__centerFiche, #self.__dBController.hasFiche(el, self.__centerFiche)
+			#print "$$$", el, self.__centerFiche, self.__dBController.hasFiche(el, self.__centerFiche)
 			#print el
 			if self.__dBController.hasFiche(el, self.__centerFiche):
 				#print "has"
@@ -288,9 +346,11 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 				for l in self._listeners:
 					l.on_structure_element_selected(self.__text(el))
 				if isinstance(el, tuple):
+					#print "tuple"
 					self.__binaryType = "GAP"
 					(self.__left, self.__right, self.__center) = self.__dBController.getPositionsForFichesForGap(el[1], el[2], self.__leftFiche, self.__rightFiche, self.__centerFiche)
 				else:
+					#print "entry"
 					self.__binaryType = "ENTRY"
 					(self.__left, self.__right, self.__center) = self.__dBController.getPositionsForFichesForEntry(el, self.__leftFiche, self.__rightFiche, self.__centerFiche)
 				#print self.__left, self.__center, self.__right
@@ -308,6 +368,26 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		self.__left = self.__center + 1
 		if self.__left > self.__right:
 			self.__left = self.__right
+		if not self.__binaryScopeValid:
+			self.__binaryScopeValid = True
+			self.__leftFiche = self.__potentialNextLeftFiche
+			if self.__left == self.__right:
+				for l in self._listeners:
+					l.stop_binary_search()
+				return
+			self.__center = self.__potentialNextCenter
+			self.__centerFiche = self.__potentialNextCenterFiche
+			self.__selectedElement = None
+			for (i, el) in self._item2element.iteritems():
+				#print self.__centerFiche, el, self.__dBController.hasFiche(el, self.__centerFiche)
+				if self.__dBController.hasFiche(el, self.__centerFiche):
+					self.__selectedElement = el
+					break
+			assert(self.__selectedElement != None)
+			for l in self._listeners:
+				l.on_structure_element_selected(self.__text(self.__selectedElement))
+				l.invisible_binary_search(self.__centerFiche)
+			return
 		if self.__binaryType == "GAP":
 			self.__leftFiche = self.__dBController.getFicheForGapPosition(self.__selectedElement[1], self.__selectedElement[2], self.__left)
 		else:
@@ -318,6 +398,26 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		self.__right = self.__center - 1
 		if self.__right < self.__left:
 			self.__right = self.__left
+		if not self.__binaryScopeValid:
+			self.__binaryScopeValid = True
+			self.__rightFiche = self.__potentialPrevRightFiche
+			if self.__left == self.__right:
+				for l in self._listeners:
+					l.stop_binary_search()
+				return
+			self.__center = self.__potentialPrevCenter
+			self.__centerFiche = self.__potentialPrevCenterFiche
+			self.__selectedElement = None
+			for (i, el) in self._item2element.iteritems():
+				#print self.__centerFiche, el, self.__dBController.hasFiche(el, self.__centerFiche)
+				if self.__dBController.hasFiche(el, self.__centerFiche):
+					self.__selectedElement = el
+					break
+			assert(self.__selectedElement != None)
+			for l in self._listeners:
+				l.on_structure_element_selected(self.__text(self.__selectedElement))
+				l.invisible_binary_search(self.__centerFiche)
+			return
 		if self.__binaryType == "GAP":
 			self.__rightFiche = self.__dBController.getFicheForGapPosition(self.__selectedElement[1], self.__selectedElement[2], self.__right)
 		else:
@@ -359,6 +459,9 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		#	#	l.on_structure_element_selected("")
 		#	for l in self._listeners:
 		#		l.stop_binary_search()
+
+	def topLevel(self):
+		return self.__level == "ENTRY"
 
 	def allowsNextFiche(self):
 		return self.__level in ["FICHE-ENTRY", "FICHE-GAP"]

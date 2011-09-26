@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-09-26 18:01+0200\n"
+"POT-Creation-Date: 2011-09-26 22:03+0200\n"
 "PO-Revision-Date: 2009-05-31 14:45+CEST\n"
 "Last-Translator: Tomasz Olejniczak <tomek.87@poczta.onet.pl>\n"
 "Language-Team: none\n"
@@ -228,9 +228,6 @@ msgstr "Eksportuj zakładki"
 
 msgid "Export bookmarks as task register"
 msgstr "Eskportuj zakładki jako wykaz zadaniowy"
-
-msgid "Fiche already indexed"
-msgstr "Fiszka została już zaindeksowana"
 
 msgid "Fiche already indexed in entry prefix index"
 msgstr "Fiszka została już zaindeksowana w indeksie prefiksów hasłowych"
@@ -549,6 +546,9 @@ msgstr "słowo"
 
 msgid "words"
 msgstr "słowa"
+
+#~ msgid "Fiche already indexed"
+#~ msgstr "Fiszka została już zaindeksowana"
 
 #~ msgid "First fiche"
 #~ msgstr "Pierwsza fiszka"

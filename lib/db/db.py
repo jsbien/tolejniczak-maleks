@@ -33,12 +33,20 @@ class DBController(DBWorkController):
 
 	def addFicheToEntriesIndex(self, ficheId, entry):
 		cursor = self._openDBWithCursor()
+		#try:
+		#	cursor.execute("insert into actual_entries values (%s, %s, null)", (ficheId, entry))
+		#	cursor.execute("insert into original_entries values (%s, %s, null)", (ficheId, entry))
+		#except _mysql_exceptions.IntegrityError:
+		#	self._closeDBAndCursor(cursor)
+		#	return _('Fiche already indexed')
 		try:
 			cursor.execute("insert into actual_entries values (%s, %s, null)", (ficheId, entry))
+		except _mysql_exceptions.IntegrityError:
+			cursor.execute("update actual_entries set entry = %s where fiche = %s", (entry, ficheId))
+		try:
 			cursor.execute("insert into original_entries values (%s, %s, null)", (ficheId, entry))
 		except _mysql_exceptions.IntegrityError:
-			self._closeDBAndCursor(cursor)
-			return _('Fiche already indexed')
+			cursor.execute("update original_entries set entry = %s where fiche = %s", (entry, ficheId))
 		#print cursor.rowcount
 		self._closeDBAndCursor(cursor)
 		return None

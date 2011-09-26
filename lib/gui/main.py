@@ -656,6 +656,7 @@ class MainWindow(wx.Frame):
     def _create_help_menu(self):
         menu = wx.Menu()
         #self._menu_item(menu, _('&About') + '\tF1', _('More information about this program'), self.on_about, id=wx.ID_ABOUT)
+        self._menu_item(menu, '&Skróty klawiaturowe', 'Lista skrótów klawiaturowych', self.on_shortcuts)
         self._menu_item(menu, _('&About'), _('More information about this program'), self.on_about, id=wx.ID_ABOUT)
         return menu
 
@@ -694,15 +695,16 @@ class MainWindow(wx.Frame):
         return li
 
     # TODO: A rozne przypadki bledow:
-    # TODO: A ignorowac wartosci z indeksow
     
     def on_edit_accept(self, event, binaryOK = False):
-        if self.active_register.binarySearchActive() and not binaryOK:
-            return
+        #if self.active_register.binarySearchActive() and not binaryOK:
+        #    return
         if self.top_panel.getEditPanelContent() == '':
             self.error_box(_('Empty edit panel'))
             return
         ok = False
+        if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive() and not binaryOK:
+            self.active_register.prepareForActiveBinary()
         if self.dBController != None:
             msg = self.dBController.addFicheToEntriesIndex(self.ficheId, self.top_panel.getEditPanelContent())
             if msg != None:
@@ -717,12 +719,18 @@ class MainWindow(wx.Frame):
             self.top_panel.editPanelChanged(None)
         self.dirty = True # TODO: NOTE bo mozemy musiec np. zapisac do pliku dodana powyzej podpowiedz
         self.ignore_entries = True
-        if self.active_register.allowsNextFiche() and self.active_register.hasSelection():
+        if self.active_register.allowsNextFiche() and self.active_register.hasSelection() and not self.active_register.binarySearchActive():
             if ok:
                 self.lastEntry = self.top_panel.getEditPanelContent()
                 self.wasEditAccept = True
             self.active_register.getNextFiche(self.top_panel.getEditPanelContent())
         else:
+            if not binaryOK and self.active_register == self.new_entryreg_browser:
+                if self.active_register.binarySearchActive():
+                    self.active_register.initializeForActiveBinary()
+                else:
+                    self.active_register.initialize()
+                    # TODO: C zakladamy tutaj ze level jest ENTRY (a zatem allowsNextFiche), ale co jak allowsNextFiche ale nie hasSelection?
             self.update_indices()
         self.ignore_entries = False
         #pass
@@ -743,12 +751,14 @@ class MainWindow(wx.Frame):
         self.regbar.setPath(path)
 
     def on_hint_accept(self, event):
-        if self.active_register.binarySearchActive():
-            return
+        #if self.active_register.binarySearchActive():
+        #    return
         if self.top_panel.getHint() == '':
             self.error_box(_('Empty hint panel'))
             return
         ok = False
+        if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive() and not binaryOK:
+            self.active_register.prepareForActiveBinary()
         if self.dBController != None:
             msg = self.dBController.addFicheToEntriesIndex(self.ficheId, self.top_panel.getHint())
             if msg != None:
@@ -757,18 +767,23 @@ class MainWindow(wx.Frame):
             else:
                 ok = True
         self.ignore_entries = True
-        if self.active_register.allowsNextFiche() and self.active_register.hasSelection():
+        if self.active_register.allowsNextFiche() and self.active_register.hasSelection() and not self.active_register.binarySearchActive():
             if ok:
                 self.lastEntry = self.top_panel.getHint()
                 self.wasEditAccept = True
             self.active_register.getNextFiche()
         else:
+            if self.active_register == self.new_entryreg_browser:
+                if self.active_register.binarySearchActive():
+                    self.active_register.initializeForActiveBinary()
+                else:
+                    self.active_register.initialize()
             self.update_indices()
         self.ignore_entries = False
 
     def on_up(self, event):
         #print self.active_register == self.entryreg_browser
-        if self.active_register in [self.strucreg_browser, self.entryreg_browser, self.new_entryreg_browser]:
+        if self.active_register in [self.strucreg_browser, self.entryreg_browser, self.new_entryreg_browser] and not self.active_register.topLevel():
             self.active_register.onUp(event)
             self.update_indices()
             if self.active_register == self.new_entryreg_browser:
@@ -1708,6 +1723,22 @@ class MainWindow(wx.Frame):
         message = '%(APPLICATION_NAME)s %(__version__)s\n' + _('Author') + ': %(__author__)s\n' + _('License') + ': %(LICENSE)s'
         message = message % globals()
         wx.MessageBox(message = message, caption = _(u'About…'))
+
+    def on_shortcuts(self, event):
+        msg = u'CTRL-E: akceptacja napisu z panelu edycji i przejście do następnej fiszki\n'
+        msg += u'CTRL-P: akceptacja napisu z panelu edycji jako prefiksu\n'
+        msg += u'CTRL-H: akceptacja napisu z panelu podpowiedzi i przejście do następnej fiszki\n'
+        msg += u'CTRL-D: dodanie fiszki do zakładek\n'
+        msg += u'CTRL-R: otwarcie wykazu zadaniowego z pliku\n'
+        msg += u'CTRL-ENTER: przejście do elementu zaznaczonego w wykazie\n'
+        msg += u'CTRL-↑: przejście do pierwszej fiszki w wybranym elemencie wykazu haseł\n'
+        msg += u'CTRL-↓: przejście do ostatniej fiszki w wybranym elemencie wykazu haseł\n'
+        msg += u'CTRL-<: przejście w lewo w wyszukiwaniu binarnym\n'
+        msg += u'CTRL->: przejście w prawo w wyszukiwaniu binarnym\n'
+        msg += u'CTRL-[: przejście w lewo w wyszukiwaniu binarnym i akceptacja napisu z panelu edycji\n'
+        msg += u'CTRL-]: przejście w prawo w wyszukiwaniu binarnym i akceptacja napisu z panelu edycji\n'
+        msg += u'CTRL-B: włączanie/wyłączanie wyszukiwania binarnego'
+        wx.MessageBox(message = msg, caption = u'Skróty klawiaturowe')
 
     def handle_message(self, event):
         message = event.message
