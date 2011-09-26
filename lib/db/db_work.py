@@ -13,46 +13,12 @@
 import MySQLdb
 from maleks.i18n import _
 from maleks.maleks.useful import ustr
+from maleks.db.db_entry import DBEntryController
 
-class DBCommon(object):
-
-	def _nvl(self, obj):
-		if obj == "":
-			return None
-		return obj
+class DBWorkController(DBEntryController):
 
 	def __init__(self, config):
-		self.__user = config.read('dbuser', '')
-		self.__globalUser = self.__user
-		self.__passwd = config.read('dbpass', '')
-		self.__globalPasswd = self.__passwd
-		self.__db = config.read('db', '')
-		self.__globalDb = self.__db
-		self.__conn = None
-
-	def setPerDocumentConnection(self, db, user, passwd):
-		self.__user = user if user != None else self.__globalUser
-		self.__passwd = passwd if passwd != None else self.__globalPasswd
-		self.__db = db if db != None else self.__globalDb
-
-	def valid(self):
-		return self.__user != '' and self.__passwd != '' and self.__db != ''
-
-	def _openDBWithCursor(self):
-		self.__conn = MySQLdb.connect(user=self.__user, passwd=self.__passwd, db=self.__db, use_unicode=False, init_command="SET NAMES 'utf8'",charset='utf8')
-		return self.__conn.cursor()
-
-	def _closeDBAndCursor(self, cursor):
-		cursor.close()
-		self.__conn.commit()
-		self.__conn.close()
-		
-INF = 10000000000
-
-class DBEntryController(DBCommon):
-
-	def __init__(self, config):
-		DBCommon.__init__(self, config)
+		DBEntryController.__init__(self, config)
 
 	def __firstEntry(self, cursor, entry):
 		cursor.execute("select max(position) from fiches f, actual_entries e where f.fiche = e.fiche and entry < %s", (entry))

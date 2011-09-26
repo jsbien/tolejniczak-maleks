@@ -37,6 +37,7 @@ class EntryRegisterBrowser(RegisterBrowser):
 		#print elements
 		#elements = ["a", "b", "c", "d"]
 		self.__fillRegister(elements)
+		self._initialized = True
 
 	def __fillRegister(self, elements):
 		i = 0

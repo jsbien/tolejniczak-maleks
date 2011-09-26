@@ -38,6 +38,7 @@ class HintRegisterBrowser(RegisterBrowser):
 			i += 1
 		self.SetColumnWidth(2, wx.LIST_AUTOSIZE)
 		self.SetColumnWidth(3, wx.LIST_AUTOSIZE)
+		self._initialized = True
 			
 	def hintChanged(self, hint):
 		itemId = self.FindItem(-1, hint, partial=True)

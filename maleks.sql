@@ -82,3 +82,9 @@ create table text_entries (
 	comment varchar(50)
 );
 
+create view entries as
+	select position, f.fiche, entry
+	from fiches f left join actual_entries e
+	on f.fiche = e.fiche
+	order by position;
+

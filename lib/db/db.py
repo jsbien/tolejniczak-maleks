@@ -11,15 +11,15 @@
 # General Public License for more details.
 
 import _mysql_exceptions
-from maleks.db.db_entry import DBEntryController
+from maleks.db.db_work import DBWorkController
 from maleks.i18n import _
 from maleks.maleks.registers import TaskRegister
 from maleks.maleks.fiche import Fiche
 
-class DBController(DBEntryController):
+class DBController(DBWorkController):
 
 	def __init__(self, config):
-		DBEntryController.__init__(self, config)
+		DBWorkController.__init__(self, config)
 
 	def addFicheToFichesIndex(self, ficheId):
 		cursor = self._openDBWithCursor()

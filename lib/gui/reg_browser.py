@@ -44,6 +44,7 @@ class RegisterBrowser(wx.ListView):
 		#self._item2element = {}
 		#self._element2item = {}
 		self.__programmaticSelect = False
+		self._initialized = False
 
 	def binaryAvailable(self):
 		return True
@@ -59,6 +60,9 @@ class RegisterBrowser(wx.ListView):
 		self._items = []
 		self._item2element = {}
 		self._element2item = {}
+
+	def isActive(self):
+		return self._initialized
 	
 	def setRegister(self, reg, getEntry=None):
 		if self._binary:
@@ -79,6 +83,7 @@ class RegisterBrowser(wx.ListView):
 		#self.SetColumnWidth(1, wx.LIST_AUTOSIZE)
 		self.SetColumnWidth(2, wx.LIST_AUTOSIZE)
 		self.SetColumnWidth(3, wx.LIST_AUTOSIZE)
+		self._initialized = True
 
 	def __getElementId(self, item):
 		return self._item2element[item.GetId()]
@@ -228,9 +233,15 @@ class RegisterBrowser(wx.ListView):
 
 	def prevBinary(self):
 		if self.__left == self.__right:
-			return
+			return # TODO: A cos tu jest nie tak! a gdzie wylaczenie wyszukiwania binarnego?
 		self.__right = self.__center - 1
 		self.SetStringItem(self.__center, 1, "<")
 		self.__markScope()
 		self.__selectCenter()
+
+	def showFirstElement(self):
+		pass
+
+	def showLastElement(self):
+		pass
 

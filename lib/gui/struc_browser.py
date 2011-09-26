@@ -37,6 +37,7 @@ class StructureRegisterBrowser(RegisterBrowser):
 		self.__fillRegister(reg.getRoot().getChildren())
 		self.__element = reg.getRoot()
 		self.__path = self.__element.getDescriptivePath()
+		self._initialized = True
 
 	def __fillRegister(self, elements):
 		i = 0
@@ -58,7 +59,7 @@ class StructureRegisterBrowser(RegisterBrowser):
 	def __selectStructureNode(self, node):
 		self.__path = node.getDescriptivePath()
 		for l in self._listeners:
-			l.on_structure_element_selected(node)
+			l.on_structure_element_selected(node.getDescriptivePath())
 		self.DeleteAllItems()
 		self.__fillRegister(node.getChildren())
 
