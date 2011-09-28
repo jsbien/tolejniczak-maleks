@@ -24,6 +24,12 @@ def ustr(string):
 	else:
 		return unicode(string, "utf-8")
 
+def stru(unic):
+	if isinstance(unic, str):
+		return unic
+	else:
+		return str(unic.encode("utf-8"))
+
 class Notifier(object):
 
 	def __init__(self):

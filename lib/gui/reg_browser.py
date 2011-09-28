@@ -13,6 +13,7 @@
 # TODO: C usuwanie cyklicznosci
 
 import wx
+import os
 from maleks.maleks.useful import nvl
 #from djvusmooth.i18n import _
 
@@ -24,9 +25,9 @@ class RegisterBrowser(wx.ListView):
 		#col.SetId(0)
 		#col.SetText(_('Fiche identifiers'))
 		#self.InsertColumnItem(0, col)
-		self.InsertColumn(0, '', width=15)#wx.LIST_AUTOSIZE)
+		self.InsertColumn(0, '', width=300)#wx.LIST_AUTOSIZE)
 		self.InsertColumn(1, '', width=15)#wx.LIST_AUTOSIZE)
-		self.InsertColumn(2, '', width=300)#wx.LIST_AUTOSIZE)
+		self.InsertColumn(2, '', width=15)#wx.LIST_AUTOSIZE)
 		self.InsertColumn(3, '', width=wx.LIST_AUTOSIZE)
 		self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onSelect, self)
 		self._listeners = []
@@ -71,9 +72,9 @@ class RegisterBrowser(wx.ListView):
 		self.reset()
 		i = 0
 		for element in reg:
-			self.InsertStringItem(i, "")
+			self.InsertStringItem(i, element.getLabel())
 			self.SetStringItem(i, 1, "")
-			self.SetStringItem(i, 2, element.getLabel())
+			self.SetStringItem(i, 2, "")
 			self.SetStringItem(i, 3, (lambda x: nvl(getEntry(x)) if getEntry != None else "")(element.getId()))
 			self._items.append(i)
 			self._item2element.setdefault(i, element.getId())
@@ -81,7 +82,7 @@ class RegisterBrowser(wx.ListView):
 			i += 1
 		#self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
 		#self.SetColumnWidth(1, wx.LIST_AUTOSIZE)
-		self.SetColumnWidth(2, wx.LIST_AUTOSIZE)
+		self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
 		self.SetColumnWidth(3, wx.LIST_AUTOSIZE)
 		self._initialized = True
 
@@ -170,12 +171,20 @@ class RegisterBrowser(wx.ListView):
 	#		if itemId == -1:
 	#			break
 
+	def findItem(self, column, text):
+		for i in self._items:
+			item = self.GetItem(i, column)
+			if os.path.commonprefix([item.GetText(), text]) == text:
+				return i
+		return -1
+
 	def find(self, text):
 		if self._binary:
 			self.stopBinarySearch()
 			for l in self._listeners:
 				l.stop_binary_search()
 		itemId = self.FindItem(-1, text, partial=True)
+		#itemId = self.findItem(2, text)
 		if itemId != -1:
 			if self._selected != None:
 				self._unselect(self._selected)
@@ -209,14 +218,14 @@ class RegisterBrowser(wx.ListView):
 	def __markScope(self):
 		for i in self._items:
 			if i >= self.__left and i <= self.__right:
-				self.SetStringItem(i, 0, "*")
+				self.SetStringItem(i, 1, "*")
 			else:
-				self.SetStringItem(i, 0, "")
+				self.SetStringItem(i, 1, "")
 				
 	def __unmarkScope(self):
 		for i in self._items:
-			self.SetStringItem(i, 0, "")
 			self.SetStringItem(i, 1, "")
+			self.SetStringItem(i, 2, "")
 
 	def startBinarySearch(self):
 		self._binary = True
@@ -227,7 +236,7 @@ class RegisterBrowser(wx.ListView):
 
 	def nextBinary(self):
 		self.__left = self.__center
-		self.SetStringItem(self.__center, 1, ">")
+		self.SetStringItem(self.__center, 2, ">")
 		self.__markScope()
 		self.__selectCenter()
 
@@ -235,7 +244,7 @@ class RegisterBrowser(wx.ListView):
 		if self.__left == self.__right:
 			return # TODO: A cos tu jest nie tak! a gdzie wylaczenie wyszukiwania binarnego?
 		self.__right = self.__center - 1
-		self.SetStringItem(self.__center, 1, "<")
+		self.SetStringItem(self.__center, 2, "<")
 		self.__markScope()
 		self.__selectCenter()
 

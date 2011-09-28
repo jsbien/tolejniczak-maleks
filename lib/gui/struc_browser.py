@@ -44,13 +44,14 @@ class StructureRegisterBrowser(RegisterBrowser):
 		for element in elements:
 			if isinstance(element, Fiche):
 				self.__ficheLevel = True
-			self.InsertStringItem(i, "")
+			self.InsertStringItem(i, element.getLabel())
 			self.SetStringItem(i, 1, "")
-			self.SetStringItem(i, 2, element.getLabel())
+			self.SetStringItem(i, 2, "")
 			self._items.append(i)
 			self._item2element.setdefault(i, element.getId())
 			self._element2item.setdefault(element.getId(), i)
-			i += 1	
+			i += 1
+		self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
 
 	def select(self, elementId):
 		if self.__ficheLevel:

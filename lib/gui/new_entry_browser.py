@@ -64,14 +64,14 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 				text = "(" + str(element[0]) + ")"
 			else:
 				text = element
-			self.InsertStringItem(i, "")
+			self.InsertStringItem(i, text)
 			self.SetStringItem(i, 1, "")
-			self.SetStringItem(i, 2, text)
+			self.SetStringItem(i, 2, "")
 			self._items.append(i)
 			self._item2element.setdefault(i, element)
 			self._element2item.setdefault(element, i)
 			i += 1
-		self.SetColumnWidth(2, wx.LIST_AUTOSIZE)
+		self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
 
 	def selectAndShow(self, ficheId):
 		if self.__level in ["FICHE-GAP", "FICHE-ENTRY"]:

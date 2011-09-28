@@ -1,4 +1,5 @@
 # encoding=UTF-8
+# Copyright © 2011 Tomasz Olejniczak <tomek.87@poczta.onet.pl>
 # Copyright © 2009, 2010, 2011 Jakub Wilk <jwilk@jwilk.net>
 #
 # This package is free software; you can redistribute it and/or modify
@@ -36,6 +37,32 @@ class Config(object):
 
     def read(self, key, default):
         return self._data.get(key, default)
+
+    def stru(self, unic):
+	    if isinstance(unic, str):
+		    return unic
+	    else:
+		    return str(unic.encode("utf-8"))
+
+    def read_list(self, key, default):
+        defaultString = ''
+        for d in default:
+            defaultString += self.__stru(d).replace('\\', '\\\\').replace(',', '\\,') + ','
+        if defaultString != '':
+            defaultString = defaultString[:-1]
+        res = self._data.get(key, defaultString)
+        els = res.split(",")
+        prev = ''
+        nels = []
+        for i in range(0, len(els)):
+            if len(prev) != 0 and prev[-1] == '\\':
+                nels[-1] += ',' + els[i]
+            else:
+                nels.append(els[i])
+            prev = els[i]
+        for i in range(0, len(nels)):
+            nels[i] = nels[i].replace('\\,', ',').replace('\\\\', '\\') # TODO: D co w razie \\\\, \\\\\\ itp.?
+        return nels
 
     def read_int(self, key, default):
         return int(self.read(key, default))

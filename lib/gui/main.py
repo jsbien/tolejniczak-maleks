@@ -62,6 +62,7 @@ from maleks.gui.left_panel import MainIndicesPanel, SecondaryIndicesPanel, Contr
 from maleks import config
 from maleks.maleks.fiche import StructureIndex, Configuration
 from maleks.maleks.registers import HintRegister
+from maleks.maleks.useful import stru, ustr
 from maleks.gui.mode import Mode
 from maleks.db.db import DBController
 
@@ -350,6 +351,23 @@ class MainWindow(wx.Frame):
             self._ficheId = value
         return property(get, set)
 
+    def __str(self, li):
+        res = ''
+        for el in li:
+            el = stru(el).replace('\\', '\\\\').replace(',', '\\,')
+            res += el + ','
+        if res != '':
+            res = res[:-1]
+        return res
+
+    @apply
+    def recently_used():
+        def get(self):
+            return self._config.read_list('recently_used', [])
+        def set(self, value):
+            self._config['recently_used'] = self.__str(value)
+        return property(get, set)
+
     #@apply
     #def default_editor_path():
     #    def get(self):
@@ -369,6 +387,7 @@ class MainWindow(wx.Frame):
     #        self.external_editor = external_editor.CustomEditor(*editor_path.split())
 
     def __init__(self):
+        self.recently_used_menu = {}
         self._config = wx.GetApp().config
         x, y, w, h = self.default_xywh
         wx.Frame.__init__(self, None, pos=(x, y), size=(w, h))
@@ -542,6 +561,13 @@ class MainWindow(wx.Frame):
         #save_menu_item = self._menu_item(menu, _('&Save') + '\tCtrl+S', _('Save the document'), self.on_save, icon=wx.ART_FILE_SAVE)
         #close_menu_item = self._menu_item(menu, _('&Close') + '\tCtrl+W', _('Close the document'), self.on_close, id=wx.ID_CLOSE)
         close_menu_item = self._menu_item(menu, _('&Close'), _('Close the document'), self.on_close, id=wx.ID_CLOSE)
+        menu.AppendSeparator()
+        submenu = wx.Menu()
+        for el in self.recently_used:
+            idd = wx.NewId()
+            self._menu_item(submenu, el, _(u'Open file: ') + ustr(el), self.on_recently_used, id=idd)
+            self.recently_used_menu.setdefault(idd, el)
+        menu.AppendMenu(wx.ID_ANY, _('&Recently used files'), submenu)    
         menu.AppendSeparator()
         export_bookmarks_menu_item = self._menu_item(menu, _('&Export bookmarks'), _('Export bookmarks as task register'), self.on_export_bookmarks)
         self.editable_menu_items += close_menu_item,
@@ -972,12 +998,22 @@ class MainWindow(wx.Frame):
             self.save_defaults()
             self.Destroy()
 
+    def on_recently_used(self, event):
+        self.do_open(self.recently_used_menu[event.GetId()])
+
     def on_open(self, event):
         dialog = OpenDialog(self)
         dialog.SetPath(self._config.read('open_dir', ''))
         try:
             if dialog.ShowModal() == wx.ID_OK:
                 self._config['open_dir'] = os.path.dirname(dialog.GetPath()) or ''
+                try:
+                    self.recently_used.index(os.path.abspath(dialog.GetPath()))
+                except ValueError:
+                    if len(self.recently_used) > 8: # TODO: D stala
+                        self.recently_used = self.recently_used + [os.path.abspath(dialog.GetPath())]
+                    else:
+                        self.recently_used = self.recently_used + [os.path.abspath(dialog.GetPath())]
                 self.do_open(dialog.GetPath())
         finally:
             dialog.Destroy()

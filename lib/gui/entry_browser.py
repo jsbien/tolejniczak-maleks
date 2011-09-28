@@ -12,6 +12,7 @@
 
 from maleks.gui.reg_browser import RegisterBrowser
 import time
+import wx
 
 class EntryRegisterBrowser(RegisterBrowser):
 
@@ -42,13 +43,14 @@ class EntryRegisterBrowser(RegisterBrowser):
 	def __fillRegister(self, elements):
 		i = 0
 		for element in elements:
-			self.InsertStringItem(i, "")
+			self.InsertStringItem(i, element)
 			self.SetStringItem(i, 1, "")
-			self.SetStringItem(i, 2, element)
+			self.SetStringItem(i, 2, "")
 			self._items.append(i)
 			self._item2element.setdefault(i, element)
 			self._element2item.setdefault(element, i)
 			i += 1
+		self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
 
 	def select(self, elementId):
 		if self.__level == "FICHE":
