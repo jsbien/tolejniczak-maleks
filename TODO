@@ -1,6 +1,5 @@
 * Komentarze w kodzie
-* Obsługa błędów
-* Posprawdzać zachowanie pustych wykazów
+* Obsługa błędów, zachowanie w nietypowych sytuacjach (np. nie otwarto żadnego pliku)
 * Fork służący do scalania kartotek
 * Dokumentacja formatu kartoteki (katalogu z danymi)
 * Informacja o rozmiarze danych
@@ -15,6 +14,7 @@
 * Testy dla dużych danych (3 miliony fiszek) i odpowiednie modyfikacje w razie pojawienia się problemów
 * Konfigurowalne skróty klawiszowe
 * Dostosowanie GUI do Windows
+* Przenośna wersja dla Windows
 * Synchronizacja między różnymi wykazami, przejście w każdym wykazie do aktualnie oglądanej fiszki (do omówienia: "aktualna fiszka* powinna być jakoś wyróżniona w każdym dostępnym wykazie (lub element do którego fiszka należy*)" - *czy w takim wypadku zmieniać element którego podelementy wyświetlamy, jeżeli fiszka należy do podelementu będącego w innym podelemencie?)
 * Zapisywanie wartości indeksów przy wychodzeniu z programu i w innych miejscach (poszukać), w ostateczności dodać przycisk "zapisz indeks"
 * Uporządkowanie spraw związanych z kasztowością
