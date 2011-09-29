@@ -1,0 +1,61 @@
+* Komentarze w kodzie
+* Obsługa błędów
+* Posprawdzać zachowanie pustych wykazów
+* Fork służący do scalania kartotek
+* Dokumentacja formatu kartoteki (katalogu z danymi)
+* Informacja o rozmiarze danych
+* Wykaz źródeł z dziurami
+* Wyszukiwanie przyrostowe po dziurach
+* Na początku binarnego podajemy czego szukamy (lub automatycznie przy przejściu z podpowiedzi) i potem samo wybiera w którą stronę idziemy
+* Pole edycji o zmiennym znaczeniu w wykazie wielopoziomowym
+* Nawigacja w nowym wykazie haseł: PgUp, PgDn
+* Wyszukiwanie przyrostowe w wykazie haseł powinno obejmować całą listę a nie tylko okienko
+* Funkcjonalność wspomagająca usuwanie dziur przed i po wybranym haśle (na tym etapie brak koncepcji co to miałaby być za funkcjonalnośc)
+* Tworzenie logów operacji użytkownika (pełna funkcjonalność niekoniecznie od razu - na początek logi potrzebne do usuwania błędów)
+* Testy dla dużych danych (3 miliony fiszek) i odpowiednie modyfikacje w razie pojawienia się problemów
+* Konfigurowalne skróty klawiszowe
+* Dostosowanie GUI do Windows
+* Synchronizacja między różnymi wykazami, przejście w każdym wykazie do aktualnie oglądanej fiszki (do omówienia: "aktualna fiszka* powinna być jakoś wyróżniona w każdym dostępnym wykazie (lub element do którego fiszka należy*)" - *czy w takim wypadku zmieniać element którego podelementy wyświetlamy, jeżeli fiszka należy do podelementu będącego w innym podelemencie?)
+* Zapisywanie wartości indeksów przy wychodzeniu z programu i w innych miejscach (poszukać), w ostateczności dodać przycisk "zapisz indeks"
+* Uporządkowanie spraw związanych z kasztowością
+* Akceptacja fiszki przy przejściu w lewo lub w prawo w wyszukiwaniu binarnym w innych wykazach niż wykaz haseł (do omówienia)
+* Chodzenie do przodu po cofniętych fiszkach
+* Wyświetlanie hasła przy identyfikatorze fiszki w wykazie struktury (i w innych wykazach)
+* Knapski jako dzieło w fiszkach z Ratuszowej
+* Położenie kursora po zakończeniu różnych operacji, inne sprawy związane z focusem (do wcześniejszego omówienia)
+* Wyświetlanie liczby fiszek o danym haśle w wykazach (można zrezygnować w razie gdyby okazało się za kosztowne lub sprawiało inne kłopoty)
+* Wykrywanie haseł nie po kolei przy próbie akcpetacji
+* Panel komunikatów: ścieżka fiszki w panelu komunikatów, wyświetlanie skrótów klawiaturowe w panelu komunikatów, komunikaty dla użytkownika, informacje o dostępnych operacjach (do omówienia)
+* Przejście do następnej i POPRZEDNIEJ fiszki w porządku naturalnym dostępne zawsze, w razie gdy fiszki nie ma na wykazie komunikat "fiszka spoza wykazu"
+* Konfiguracja rozmiaru czcionki
+* Zamiast panelu źródeł: najniższy wiersz w panelu - wypełniony jeżeli istnieje dokument zawierający tą fiszkę (wyświetlane położenie wyrażenia hasłowego i link do djvu)
+* Liczniki liczby obejrzeń fiszki (w pasku stanów lub panelu komunikatów)
+* Łączenie ze zdalną bazą danych
+* Wyszukiwanie z użyciem panelu indeksów
+* Inne porządki sortowania (do omówienia)
+* Optymalizacja bazy
+* Zmiana schematu bazy danych
+* Zrzuty baz danych do katalogu z kartoteką
+* Przygotowanie pakietu debianowego i instalki Windows
+
+Proste drobiazgi:
+
+* Wzmianka o grancie w "About"
+* Foliacja (zamiast strony: arkusz, karta, strona)
+* Zegar przy długich operacjach
+* Akceptacja podpowiedzi powinna odświeżać hasło i wpisywać w pole edycji wartość hasła (sprawdzić czy brak tej * funkcjonalności nie był przypadkiem jakimś bugiem)
+* Problem z szerokością kolumny w wykazie podpowiedzi
+* Niemożność cofania w wyszukiwaniu binarnym (lub cofanie przerywa)
+* Hipotezy ze wspólnego prefiksu sąsiednich haseł
+* Przejście z odpowiedniej pozycji wykazu podpowiedzi do wyszukiwania binarnego lub hasła w wykazie haseł
+* Wybór wykazu z listy (żeby nie trzeba się było przeklikiwać przez wykazy) lub skróty klawiaturowe
+
+Sprawy o "priorytecie przyzerowym":
+
+* Wyróżnianie gdy hasło oryginalne i aktualne są różne
+* Ukrywanie panelu indeksu
+* Przy otwieraniu przez "ostatnio otwierane kartoteki" pokazywanie wykazu aktywnego przy zamknięciu (do przemyślenia)
+* Podpowiedzi dla stron i wierszy (do omówienia)
+* Panel wycinka
+* Przejście do fiszki o numerze kolejnym względnym wobec fiszki aktualnej
+

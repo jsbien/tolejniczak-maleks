@@ -46,6 +46,8 @@ class HintRegister(object):
 					continue
 				line = line[:-1]
 				els = line.split(",")
+				for i in range(0, len(els)):
+					els[i] = els[i].replace('\\;', ',').replace('\\\\', '\\')
 				siglum = self.__computeSiglum(els)
 				self.__entries.append((els[0], els[1], els[2], siglum))
 			f.close()
@@ -69,6 +71,8 @@ class HintRegister(object):
 				if line == "\n" or line[0] == "#":
 					continue
 				els = line[:-1].split("\t")
+				for i in range(0, len(els)):
+					els[i] = els[i].replace('\\;', ',').replace('\\\\', '\\')
 				self.__entries.append((els[0], "", "", "(" + els[1] + ")"))
 			f.close()
 
@@ -110,6 +114,7 @@ class HintRegister(object):
 	def saveUserHints(self):
 		f = open(self.__path + "/user_hint.reg", "a")
 		for hint in self.__new:
+			hint = hint.replace('\\', '\\\\').replace(',', '\\;')
 			f.write(hint + "\n")
 		f.close()
 

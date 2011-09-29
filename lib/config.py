@@ -62,6 +62,8 @@ class Config(object):
             prev = els[i]
         for i in range(0, len(nels)):
             nels[i] = nels[i].replace('\\,', ',').replace('\\\\', '\\') # TODO: D co w razie \\\\, \\\\\\ itp.?
+        if nels == ['']:
+            nels = []
         return nels
 
     def read_int(self, key, default):

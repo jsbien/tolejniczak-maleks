@@ -22,7 +22,7 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 	def __init__(self, *args, **kwargs):
 		RegisterBrowser.__init__(self, *args, **kwargs)
 		self.__dBController = None
-		self.__limit = 8
+		self.__limit = 100
 		self.__localVeto = False
 
 	def setLimit(self, limit):
