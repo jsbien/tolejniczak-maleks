@@ -237,6 +237,7 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		return self.__level == "ENTRY"
 
 	def startBinarySearch(self):
+		log.log(["startBinarySearch"])
 		self.__binaryScopeValid = True
 		if isinstance(self.__selectedElement, tuple):
 			(self.__leftFiche, self.__rightFiche, length) = self.__dBController.getGapCount(self.__selectedElement[1], self.__selectedElement[2])
@@ -250,9 +251,11 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		self.__selectCenter()
 
 	def stopBinarySearch(self):
+		log.log(["stopBinarySearch"])
 		self._binary = False
 
 	def nextBinaryAcceptPrepare(self):
+		log.log(["nextBinaryAcceptPrepare"])
 		self.__left = self.__center + 1
 		if self.__left > self.__right:
 			self.__left = self.__right
@@ -271,6 +274,7 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		return self.__selectCenterPrepare()
 
 	def prevBinaryAcceptPrepare(self):
+		log.log(["prevBinaryAcceptPrepare"])
 		#print "!", self.__left, self.__center, self.__right
 		self.__right = self.__center - 1
 		if self.__right < self.__left:
@@ -290,12 +294,14 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		return self.__selectCenterPrepare()
 
 	def initializeForActiveBinary(self):
+		log.log(["initializeForActiveBinary"])
 		self._selected = None
 		self.DeleteAllItems()
 		elements = self.__dBController.getEntriesRegisterWithGaps()
 		self.__fillRegister(elements)
 
 	def prepareForActiveBinary(self):
+		log.log(["prepareForActiveBinary"])
 		#print self.__left, self.__center, self.__right
 		potentialPrevLeft = self.__left
 		potentialPrevRight = self.__center - 1
@@ -342,6 +348,7 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		self.__binaryScopeValid = False
 
 	def binaryAcceptFinalize(self):
+		log.log(["binaryAcceptFinalize"])
 		self._selected = None
 		self.DeleteAllItems()
 		elements = self.__dBController.getEntriesRegisterWithGaps()
@@ -377,6 +384,7 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 			l.invisible_binary_search(self.__centerFiche)
 		
 	def nextBinary(self):
+		log.log(["nextBinary"])
 		self.__left = self.__center + 1
 		if self.__left > self.__right:
 			self.__left = self.__right
@@ -414,6 +422,7 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		self.__selectCenter()
 
 	def prevBinary(self):
+		log.log(["prevBinary"])
 		#print self.__right, self.__center, self.__left
 		#print self.__rightFiche, self.__centerFiche, self.__leftFiche
 		self.__right = self.__center - 1
