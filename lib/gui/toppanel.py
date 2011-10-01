@@ -43,6 +43,7 @@ class TopPanel(wx.Panel, Notifier):
 		sizer.Add(wx.Panel(self), 0)
 		self.SetSizerAndFit(sizer)
 		self.__editPanel.Bind(wx.EVT_TEXT, self.editPanelChanged)
+		self.__hintPanel.Bind(wx.EVT_TEXT, self.__hintPanelChanged)
 		self.Bind(wx.EVT_BUTTON, self.__onEditAccept, self.__editPanelAcceptButton)
 		self.Bind(wx.EVT_BUTTON, self.__onEditPrefixAccept, self.__editPanelPrefixAcceptButton)
 		self.Bind(wx.EVT_BUTTON, self.__onHintAccept, self.__hintPanelAcceptButton)
@@ -77,7 +78,10 @@ class TopPanel(wx.Panel, Notifier):
 			self.__hintPanel.SetValue("")
 			self.__hint = None
 
-	def getHint(self):	
+	def __hintPanelChanged(self, event):
+		self.__hint = self.__hintPanel.GetValue()
+
+	def getHint(self):
 		return self.__hint
 
 	def setHint(self, hint):

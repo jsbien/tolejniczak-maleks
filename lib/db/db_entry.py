@@ -46,6 +46,28 @@ class DBCommon(object):
 		cursor.close()
 		self.__conn.commit()
 		self.__conn.close()
+
+	def _execute(self, cursor, query, pars=()):
+		if not isinstance(pars, tuple) and pars != None:
+			pars = (pars,)
+		#if pars == None:
+		#	pars = ()
+		#print pars
+		querystr = query
+		i = querystr.find("%s")
+		j = 0
+		while i != -1:
+			querya = querystr[:i]
+			queryb = querystr[i + 2:]
+			try:
+				querystr = querya + str(pars[j]) + queryb
+			except IndexError:
+				#print query, pars, j
+				raise
+			j += 1
+			i = querystr.find("%s")
+		#print querystr
+		cursor.execute(query, pars)
 		
 INF = 10000000000
 
@@ -55,13 +77,13 @@ class DBEntryController(DBCommon):
 		DBCommon.__init__(self, config)
 
 	def __firstEntry(self, cursor, entry):
-		cursor.execute("select max(position) from fiches f, actual_entries e where f.fiche = e.fiche and entry < %s", (entry))
+		self._execute(cursor, "select max(position) from fiches f, actual_entries e where f.fiche = e.fiche and entry < %s", (entry))
 		row = cursor.fetchone()
 		if row == None or row[0] == None:
 			maxPrev = -1
 		else:
 			maxPrev = int(row[0])
-		cursor.execute("select min(position) from fiches f, actual_entries e where f.fiche = e.fiche and entry = %s and position > %s", (entry, maxPrev))
+		self._execute(cursor, "select min(position) from fiches f, actual_entries e where f.fiche = e.fiche and entry = %s and position > %s", (entry, maxPrev))
 		row = cursor.fetchone()
 		if row == None or row[0] == None:
 			return INF # TODO: A lepiej; 100 mld fiszek starczy?
@@ -69,13 +91,14 @@ class DBEntryController(DBCommon):
 			return int(row[0])
 
 	def __lastEntry(self, cursor, entry):
+		#print entry
 		return int(self.__single(cursor, "select max(position) from fiches f, actual_entries e where f.fiche = e.fiche and entry = %s", (entry)))
 
 	def __entryLimits(self, cursor, entry):
 		return (self.__firstEntry(cursor, entry), self.__lastEntry(cursor, entry))
 
 	def __single(self, cursor, query, pars):
-		cursor.execute(query, pars)
+		self._execute(cursor, query, pars)
 		row = cursor.fetchone()
 		if row == None:
 			return None
@@ -112,12 +135,12 @@ class DBEntryController(DBCommon):
 		return res
 		
 	def __getPositions(self, cursor, query, pars, left, right, center):
-		cursor.execute("set @row = -1")
+		self._execute(cursor, "set @row = -1")
 		leftFiche = self.__single(cursor, "select a.row from (" + query + ") a where a.fiche = %s", pars + tuple([left]))
-		cursor.execute("set @row = -1")
+		self._execute(cursor, "set @row = -1")
 		#print pars, left, right, center
 		rightFiche = self.__single(cursor, "select a.row from (" + query + ") a where a.fiche = %s", pars + tuple([right]))
-		cursor.execute("set @row = -1")
+		self._execute(cursor, "set @row = -1")
 		centerFiche = self.__single(cursor, "select a.row from (" + query + ") a where a.fiche = %s", pars + tuple([center]))
 		return (leftFiche, rightFiche, centerFiche)
 		
@@ -159,6 +182,7 @@ class DBEntryController(DBCommon):
 		return (first, last, res)
 
 	def getFicheForGapPosition(self, before, after, pos):
+		#print pos
 		cursor = self._openDBWithCursor()
 		if before == None and after == None:
 			res = self.__single(cursor, "select fiche from fiches order by position limit %s,1", (pos))
@@ -169,6 +193,7 @@ class DBEntryController(DBCommon):
 			num = self.__lastEntry(cursor, before)
 			res = self.__single(cursor, "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s order by position limit %s,1", (num, pos))
 		else:
+			#print after, before
 			numa = self.__firstEntry(cursor, after)
 			numb = self.__lastEntry(cursor, before)
 			res = self.__single(cursor, "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and position < %s order by position limit %s,1", (numb, numa, pos))
@@ -195,22 +220,22 @@ class DBEntryController(DBCommon):
 
 	def getEntriesRegisterWithGaps(self):
 		cursor = self._openDBWithCursor()
-		#cursor.execute("select distinct entry from fiches f, actual_entries e where f.fiche = e.fiche and position = 0")
-		##cursor.execute("select min(position) from fiches")
+		#self._execute(cursor, "select distinct entry from fiches f, actual_entries e where f.fiche = e.fiche and position = 0")
+		##self._execute(cursor, "select min(position) from fiches")
 		##minPos = int(cursor.fetchone()[0])
-		##cursor.execute("select distinct entry from fiches f, actual_entries e where f.fiche = e.fiche and position = %s", (minPos))
+		##self._execute(cursor, "select distinct entry from fiches f, actual_entries e where f.fiche = e.fiche and position = %s", (minPos))
 		##if cursor.fetchone() == None:
 		##	res = [_("First fiche")]
 		##else:
 		res = []
-		#&cursor.execute("select distinct entry from fiches f, actual_entries e where f.fiche = e.fiche order by position")
-		cursor.execute("select distinct entry from actual_entries order by entry")
+		#&self._execute(cursor, "select distinct entry from fiches f, actual_entries e where f.fiche = e.fiche order by position")
+		self._execute(cursor, "select distinct entry from actual_entries order by entry")
 		row = cursor.fetchone()
 		while row != None:
 			res.append(str(row[0]))
 			row = cursor.fetchone()
 		prev = ""
-		##cursor.execute("select entry from actual_entries where fiche = (select fiche from fiches where position <> %s order by position desc limit 1)", (minPos))
+		##self._execute(cursor, "select entry from actual_entries where fiche = (select fiche from fiches where position <> %s order by position desc limit 1)", (minPos))
 		##if cursor.fetchone() == None:
 		##	res.append(_("Last fiche"))
 		prev = None
@@ -251,18 +276,18 @@ class DBEntryController(DBCommon):
 
 	def __smartLimit(self, cursor, query, pars, limitStart, atleast, limit):
 		if atleast != None:
-			cursor.execute(query.replace("#", "count(*)"), pars)
+			self._execute(cursor, query.replace("#", "count(*)"), pars)
 			num = int(cursor.fetchone()[0])
 			if limitStart + atleast > num:
 				limitStart = num - atleast
 		#print query.replace("#", "fiche") + " limit " + str(limitStart) + "," + str(limit), pars
-		#:cursor.execute(query.replace("#", "fiche") + " limit " + str(limitStart + limit) + ",1", pars)
+		#:self._execute(cursor, query.replace("#", "fiche") + " limit " + str(limitStart + limit) + ",1", pars)
 		#:row = cursor.fetchone()
 		#:if row != None:
 		#:	next = str(row[0])
 		#:else:
 		next = None
-		cursor.execute(query.replace("#", "fiche") + " limit " + str(limitStart) + "," + str(limit), pars)
+		self._execute(cursor, query.replace("#", "fiche") + " limit " + str(limitStart) + "," + str(limit), pars)
 		return (limitStart, next)
 
 	def getFichesForGap(self, before, after, limit, limitStart=0, atleast=None):
@@ -270,21 +295,21 @@ class DBEntryController(DBCommon):
 		res = []
 		#print ":", before, after
 		if before == None and after == None:
-			#cursor.execute("select fiche from fiches order by position")
+			#self._execute(cursor, "select fiche from fiches order by position")
 			(limitStart, next) = self.__smartLimit(cursor, "select # from fiches order by position", (), limitStart, atleast, limit) 
 		elif before == None:
 			num = self.__firstEntry(cursor, after)
-			#cursor.execute("select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position < %s order by position", (num))
+			#self._execute(cursor, "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position < %s order by position", (num))
 			(limitStart, next) = self.__smartLimit(cursor, "select # from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position < %s order by position", (num), limitStart, atleast, limit)
 		elif after == None:
 			num = self.__lastEntry(cursor, before)
 			#print num
-			#cursor.execute("select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s order by position", (num))
+			#self._execute(cursor, "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s order by position", (num))
 			(limitStart, next) = self.__smartLimit(cursor, "select # from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s order by position", (num), limitStart, atleast, limit)
 		else:
 			numa = self.__firstEntry(cursor, after)
 			numb = self.__lastEntry(cursor, before)
-			#cursor.execute("select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and position < %s order by position", (numb, numa))
+			#self._execute(cursor, "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and position < %s order by position", (numb, numa))
 			(limitStart, next) = self.__smartLimit(cursor, "select # from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and position < %s order by position", (numb, numa), limitStart, atleast, limit)
 		row = cursor.fetchone()
 		while row != None:
@@ -299,10 +324,10 @@ class DBEntryController(DBCommon):
 		next = None
 		cursor = self._openDBWithCursor()
 		##if ustr(entry) == _("First fiche"):
-		##	#cursor.execute("select fiche from fiches where position = 0") TODO: NOTE problem z autoincrement
-		##	cursor.execute("select fiche from fiches order by position limit 1")
+		##	#self._execute(cursor, "select fiche from fiches where position = 0") TODO: NOTE problem z autoincrement
+		##	self._execute(cursor, "select fiche from fiches order by position limit 1")
 		##elif ustr(entry) == _("Last fiche"):
-		##	cursor.execute("select fiche from fiches order by position desc limit 1")
+		##	self._execute(cursor, "select fiche from fiches order by position desc limit 1")
 		##else:
 		(first, last) = self.__entryLimits(cursor, entry)
 		#&(limitStart, next) = self.__smartLimit(cursor, "select # from fiches f where position >= %s and position <= %s and not exists (select * from actual_entries e where f.fiche = e.fiche and entry <> %s) order by position", (first, last, entry), limitStart, atleast, limit)
@@ -327,22 +352,22 @@ class DBEntryController(DBCommon):
 		rownum = 0
 		next = None
 		##if ustr(entry) == _("First fiche"):
-		##	cursor.execute("select fiche from fiches order by position limit 1")
+		##	self._execute(cursor, "select fiche from fiches order by position limit 1")
 		##elif ustr(entry) == _("Last fiche"):
-		##	cursor.execute("select fiche from fiches order by position desc limit 1")
+		##	self._execute(cursor, "select fiche from fiches order by position desc limit 1")
 		##else:
 		(first, last) = self.__entryLimits(cursor, entry)
-		cursor.execute("set @row = -1")
-		cursor.execute("select a.row from (select @row := @row + 1 as row, fiche from fiches f where (position >= %s and position <= %s and not exists (select * from actual_entries e where f.fiche = e.fiche and entry <> %s)) or ((position < %s or position > %s) and exists (select * from actual_entries e where e.fiche = f.fiche and entry = %s)) order by position) a where a.fiche = %s", (first, last, entry, first, last, entry, ficheId))
+		self._execute(cursor, "set @row = -1")
+		self._execute(cursor, "select a.row from (select @row := @row + 1 as row, fiche from fiches f where (position >= %s and position <= %s and not exists (select * from actual_entries e where f.fiche = e.fiche and entry <> %s)) or ((position < %s or position > %s) and exists (select * from actual_entries e where e.fiche = f.fiche and entry = %s)) order by position) a where a.fiche = %s", (first, last, entry, first, last, entry, ficheId))
 		rownum = cursor.fetchone()[0]
-			#:cursor.execute("select fiche from fiches f where position >= %s and position <= %s and not exists (select * from actual_entries e where f.fiche = e.fiche and entry <> %s) order by position limit %s,%s", (first, last, entry, rownum + limit, 1))
+			#:self._execute(cursor, "select fiche from fiches f where position >= %s and position <= %s and not exists (select * from actual_entries e where f.fiche = e.fiche and entry <> %s) order by position limit %s,%s", (first, last, entry, rownum + limit, 1))
 			#:row = cursor.fetchone()
 			#:if row != None:
 			#:	next = str(row[0])
 		rownum -= limit / 2
 		if rownum < 0:
 			rownum = 0
-		cursor.execute("select fiche from fiches f where (position >= %s and position <= %s and not exists (select * from actual_entries e where f.fiche = e.fiche and entry <> %s)) or ((position < %s or position > %s) and exists (select * from actual_entries e where e.fiche = f.fiche and entry = %s)) order by position limit %s,%s", (first, last, entry, first, last, entry, rownum, limit))
+		self._execute(cursor, "select fiche from fiches f where (position >= %s and position <= %s and not exists (select * from actual_entries e where f.fiche = e.fiche and entry <> %s)) or ((position < %s or position > %s) and exists (select * from actual_entries e where e.fiche = f.fiche and entry = %s)) order by position limit %s,%s", (first, last, entry, first, last, entry, rownum, limit))
 		row = cursor.fetchone()
 		while row != None:			
 			res.append(str(row[0]))
@@ -351,10 +376,10 @@ class DBEntryController(DBCommon):
 		return (res, rownum, next)
 		
 	def __smartQuery(self, cursor, query, pars, ficheId, ind, limit):
-		cursor.execute("set @row = -1")
-		cursor.execute("select a.row from (" + query.replace("#", "@row := @row + 1 as row,") + ") a where a.fiche = %s", pars + tuple([ficheId]))
+		self._execute(cursor, "set @row = -1")
+		self._execute(cursor, "select a.row from (" + query.replace("#", "@row := @row + 1 as row,") + ") a where a.fiche = %s", pars + tuple([ficheId]))
 		rownum = cursor.fetchone()[0]
-		#:cursor.execute(query.replace("#", "") + " limit %s,%s", pars + (limit + ind, 1))
+		#:self._execute(cursor, query.replace("#", "") + " limit %s,%s", pars + (limit + ind, 1))
 		#:row = cursor.fetchone()
 		#:if row != None:
 		#:	next = str(row[0])
@@ -363,7 +388,7 @@ class DBEntryController(DBCommon):
 		rownum -= limit / 2
 		if rownum < 0:
 			rownum = 0
-		cursor.execute(query.replace("#", "") + " limit %s,%s", pars + (rownum, limit))
+		self._execute(cursor, query.replace("#", "") + " limit %s,%s", pars + (rownum, limit))
 		return (rownum, next)
 
 	def getFichesForGapForLastFiche(self, before, after, limit):
@@ -411,32 +436,32 @@ class DBEntryController(DBCommon):
 			(num, before, after) = element
 			if before == None and after == None:
 				#print "join", ficheId
-				cursor.execute("select fiche from fiches where fiche = %s", (ficheId))
+				self._execute(cursor, "select fiche from fiches where fiche = %s", (ficheId))
 			elif before == None:
 				num = self.__firstEntry(cursor, after)
 				#print "\t", "a", num, ficheId
-				cursor.execute("select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position < %s and fiche = %s", (num, ficheId))
+				self._execute(cursor, "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position < %s and fiche = %s", (num, ficheId))
 			elif after == None:
 				num = self.__lastEntry(cursor, before)
 				#print "\t", "b", num, ficheId
-				cursor.execute("select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and fiche = %s", (num, ficheId))
+				self._execute(cursor, "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and fiche = %s", (num, ficheId))
 			else:
 				numa = self.__firstEntry(cursor, after)
 				numb = self.__lastEntry(cursor, before)
 				#print "\t", numa, numb, ficheId
-				cursor.execute("select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and position < %s and fiche = %s", (numb, numa, ficheId))
+				self._execute(cursor, "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and position < %s and fiche = %s", (numb, numa, ficheId))
 		else:
 			##if ustr(element) == _("First fiche"):
 			##	#print "\t", "first", ficheId
-			##	cursor.execute("select a.fiche from (select f.fiche from fiches f order by f.position limit 1) a where a.fiche = %s", (ficheId))
+			##	self._execute(cursor, "select a.fiche from (select f.fiche from fiches f order by f.position limit 1) a where a.fiche = %s", (ficheId))
 			##elif ustr(element) == _("Last fiche"):
 			##	#print "\t", "last", ficheId
-			##	cursor.execute("select a.fiche from (select f.fiche from fiches f order by f.position desc limit 1) a where a.fiche = %s", (ficheId))
+			##	self._execute(cursor, "select a.fiche from (select f.fiche from fiches f order by f.position desc limit 1) a where a.fiche = %s", (ficheId))
 			##else:
 			(first, last) = self.__entryLimits(cursor, element)
 			#print "\t", first, last, element, ficheId
 			#assert(cursor.fetchone() == None)
-			cursor.execute("select fiche from fiches f where ((position >= %s and position <= %s and not exists (select * from actual_entries e where f.fiche = e.fiche and entry <> %s)) or ((position < %s or position > %s) and exists (select * from actual_entries e where e.fiche = f.fiche and entry = %s))) and fiche = %s", (first, last, element, first, last, element, ficheId))
+			self._execute(cursor, "select fiche from fiches f where ((position >= %s and position <= %s and not exists (select * from actual_entries e where f.fiche = e.fiche and entry <> %s)) or ((position < %s or position > %s) and exists (select * from actual_entries e where e.fiche = f.fiche and entry = %s))) and fiche = %s", (first, last, element, first, last, element, ficheId))
 		row = cursor.fetchone()
 		#print "===", row
 		#row2 = cursor.fetchone()

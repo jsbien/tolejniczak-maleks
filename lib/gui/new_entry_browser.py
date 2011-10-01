@@ -16,6 +16,7 @@
 import wx
 from maleks.gui.reg_browser import RegisterBrowser
 from maleks.maleks.useful import nvl
+from maleks.maleks import log
 
 class NewEntryRegisterBrowser(RegisterBrowser):
 
@@ -315,6 +316,9 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 			return
 		self.__potentialNextCenter = potentialNextLeft + lenn / 2
 		self.__potentialPrevLeftFiche = self.__leftFiche
+		#print self.__selectedElement, potentialPrevRight, self.__potentialPrevCenter, potentialPrevLeft
+		#print potentialNextRight, self.__potentialNextCenter, potentialNextLeft
+		self.__left, self.__center, self.__right
 		if self.__binaryType == "GAP":
 			self.__potentialPrevCenterFiche = self.__dBController.getFicheForGapPosition(self.__selectedElement[1], self.__selectedElement[2], self.__potentialPrevCenter)
 			self.__potentialPrevRightFiche = self.__dBController.getFicheForGapPosition(self.__selectedElement[1], self.__selectedElement[2], potentialPrevRight)
@@ -327,6 +331,14 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 			self.__potentialNextLeftFiche = self.__dBController.getFicheForEntryPosition(self.__selectedElement, potentialNextLeft)
 			self.__potentialNextCenterFiche = self.__dBController.getFicheForEntryPosition(self.__selectedElement, self.__potentialNextCenter)
 		self.__potentialNextRightFiche = self.__rightFiche
+		log.log(["element początkowy:", self.__selectedElement])
+		log.log(["zakres początkowy:", self.__left, self.__center, self.__right])
+		log.log(["fiszki początkowe:", self.__leftFiche, self.__centerFiche, self.__rightFiche])
+		log.log(["obliczony zakres potencjalny w lewo:", potentialPrevLeft, self.__potentialPrevCenter, potentialPrevRight])
+		log.log(["obliczone fiszki potencjalne w lewo:", self.__potentialPrevLeftFiche, self.__potentialPrevCenterFiche, self.__potentialPrevRightFiche])
+		log.log(["obliczony zakres potencjalny w prawo:", potentialNextLeft, self.__potentialNextCenter, potentialNextRight])
+		log.log(["obliczone fiszki potencjalne w prawo:", self.__potentialNextLeftFiche, self.__potentialNextCenterFiche, self.__potentialNextRightFiche])
+		assert(self.__potentialNextCenterFiche != None and self.__potentialPrevCenterFiche != None)
 		self.__binaryScopeValid = False
 
 	def binaryAcceptFinalize(self):
@@ -378,10 +390,17 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 			self.__center = self.__potentialNextCenter
 			self.__centerFiche = self.__potentialNextCenterFiche
 			self.__selectedElement = None
+			log.log(["idziemy w prawo, szukamy", self.__centerFiche, ":"])
 			for (i, el) in self._item2element.iteritems():
-				#print self.__centerFiche, el, self.__dBController.hasFiche(el, self.__centerFiche)
+				log.log(["w", el, ":", self.__dBController.hasFiche(el, self.__centerFiche)])
 				if self.__dBController.hasFiche(el, self.__centerFiche):
 					self.__selectedElement = el
+					if isinstance(self.__selectedElement, tuple):
+						self.__binaryType = "GAP"
+						(self.__left, self.__right, self.__center) = self.__dBController.getPositionsForFichesForGap(el[1], el[2], self.__leftFiche, self.__rightFiche, self.__centerFiche)
+					else:
+						self.__binaryType = "ENTRY"
+						(self.__left, self.__right, self.__center) = self.__dBController.getPositionsForFichesForEntry(el, self.__leftFiche, self.__rightFiche, self.__centerFiche)
 					break
 			assert(self.__selectedElement != None)
 			for l in self._listeners:
@@ -395,6 +414,8 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		self.__selectCenter()
 
 	def prevBinary(self):
+		#print self.__right, self.__center, self.__left
+		#print self.__rightFiche, self.__centerFiche, self.__leftFiche
 		self.__right = self.__center - 1
 		if self.__right < self.__left:
 			self.__right = self.__left
@@ -408,10 +429,19 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 			self.__center = self.__potentialPrevCenter
 			self.__centerFiche = self.__potentialPrevCenterFiche
 			self.__selectedElement = None
+			#print "szukamy " + self.__centerFiche
+			log.log(["idziemy w lewo, szukamy", self.__centerFiche, ":"])
 			for (i, el) in self._item2element.iteritems():
 				#print self.__centerFiche, el, self.__dBController.hasFiche(el, self.__centerFiche)
+				log.log(["w", el, ":", self.__dBController.hasFiche(el, self.__centerFiche)])
 				if self.__dBController.hasFiche(el, self.__centerFiche):
 					self.__selectedElement = el
+					if isinstance(self.__selectedElement, tuple):
+						self.__binaryType = "GAP"
+						(self.__left, self.__right, self.__center) = self.__dBController.getPositionsForFichesForGap(el[1], el[2], self.__leftFiche, self.__rightFiche, self.__centerFiche)
+					else:
+						self.__binaryType = "ENTRY"
+						(self.__left, self.__right, self.__center) = self.__dBController.getPositionsForFichesForEntry(el, self.__leftFiche, self.__rightFiche, self.__centerFiche)
 					break
 			assert(self.__selectedElement != None)
 			for l in self._listeners:
@@ -419,9 +449,11 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 				l.invisible_binary_search(self.__centerFiche)
 			return
 		if self.__binaryType == "GAP":
+			#print self.__selectedElement
 			self.__rightFiche = self.__dBController.getFicheForGapPosition(self.__selectedElement[1], self.__selectedElement[2], self.__right)
 		else:
 			self.__rightFiche = self.__dBController.getFicheForEntryPosition(self.__selectedElement, self.__right)
+		#print self.__rightFiche, self.__right
 		self.__selectCenter()
 		
 	def __selectCenterPrepare(self):
@@ -448,10 +480,12 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 			return
 		self.__center = self.__left
 		self.__center += lenn // 2
+		#print self.__binaryType, self.__center
 		if self.__binaryType == "GAP":
 			self.__centerFiche = self.__dBController.getFicheForGapPosition(self.__selectedElement[1], self.__selectedElement[2], self.__center)
 		else:
 			self.__centerFiche = self.__dBController.getFicheForEntryPosition(self.__selectedElement, self.__center)
+		assert(self.__centerFiche != None)
 		for l in self._listeners:
 			l.invisible_binary_search(self.__centerFiche)
 		#if self.__left == self.__right == self.__center:

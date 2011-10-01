@@ -1,5 +1,6 @@
 * Komentarze w kodzie
 * Obsługa błędów, zachowanie w nietypowych sytuacjach (np. nie otwarto żadnego pliku)
+* Wyszukiwanie z celem i automatyczną zmianą dziury
 * Fork służący do scalania kartotek
 * Dokumentacja formatu kartoteki (katalogu z danymi)
 * Informacja o rozmiarze danych
@@ -49,12 +50,14 @@ Proste drobiazgi:
 * Hipotezy ze wspólnego prefiksu sąsiednich haseł
 * Przejście z odpowiedniej pozycji wykazu podpowiedzi do wyszukiwania binarnego lub hasła w wykazie haseł
 * Wybór wykazu z listy (żeby nie trzeba się było przeklikiwać przez wykazy) lub skróty klawiaturowe
+* Wyświetlanie potencjalnej głębokości wyszukiwania binarnego dla aktualnej dziury w pasku stanu
+* Fiszka startowa w razie otwarcia nie przez "ostatnio otwarte"
 
 Sprawy o "priorytecie przyzerowym":
 
 * Wyróżnianie gdy hasło oryginalne i aktualne są różne
 * Ukrywanie panelu indeksu
-* Przy otwieraniu przez "ostatnio otwierane kartoteki" pokazywanie wykazu aktywnego przy zamknięciu (do przemyślenia)
+* Przy otwieraniu przez "ostatnio otwierane kartoteki" pokazywanie wykazu i fiszki aktywnych przy zamknięciu
 * Podpowiedzi dla stron i wierszy (do omówienia)
 * Panel wycinka
 * Przejście do fiszki o numerze kolejnym względnym wobec fiszki aktualnej

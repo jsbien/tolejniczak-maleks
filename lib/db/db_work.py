@@ -20,7 +20,7 @@ class DBWorkController(DBEntryController):
 	def __init__(self, config):
 		DBEntryController.__init__(self, config)
 
-	def __firstEntry(self, cursor, entry):
+	"""def __firstEntry(self, cursor, entry):
 		cursor.execute("select max(position) from fiches f, actual_entries e where f.fiche = e.fiche and entry < %s", (entry))
 		row = cursor.fetchone()
 		if row == None or row[0] == None:
@@ -408,5 +408,5 @@ class DBWorkController(DBEntryController):
 		#row2 = cursor.fetchone()
 		#print "---", row2
 		self._closeDBAndCursor(cursor)
-		return row != None
+		return row != None"""
 

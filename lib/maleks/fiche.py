@@ -213,13 +213,25 @@ class StructureIndex(object):
 		return self.__ficheNo
 	
 	def getFicheNoById(self, ficheId):
-		return self.__ficheDict[ficheId][1]
+		try:
+			return self.__ficheDict[ficheId][1]
+		except KeyError:
+			print ficheId
+			raise
 	
 	def getFicheById(self, ficheId):
-		return self.__ficheDict[ficheId][0]
+		try:
+			return self.__ficheDict[ficheId][0]
+		except KeyError:
+			print ficheId
+			raise
 
 	def getNodeById(self, nodeId):
-		return self.__nodeDict[nodeId]
+		try:
+			return self.__nodeDict[nodeId]
+		except KeyError:
+			print nodeId
+			raise
 	
 	def getRoot(self):
 		return self.__tree

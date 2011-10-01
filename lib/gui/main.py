@@ -60,6 +60,7 @@ from maleks.gui.left_panel import MainIndicesPanel, SecondaryIndicesPanel, Contr
 #from djvusmooth import models
 #from djvusmooth import external_editor
 from maleks import config
+from maleks.maleks import log
 from maleks.maleks.fiche import StructureIndex, Configuration
 from maleks.maleks.registers import HintRegister
 from maleks.maleks.useful import stru, ustr
@@ -1560,6 +1561,7 @@ class MainWindow(wx.Frame):
             pass
         else:
             try:
+                log.startLog(path)
                 self.index = StructureIndex(path)
                 self.config = Configuration(path)
                 self.config.configureDatabase(self.dBController)
