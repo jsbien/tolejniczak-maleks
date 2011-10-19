@@ -523,7 +523,8 @@ class MainWindow(wx.Frame):
         self.modes = []
         self._setup_modes()
         self._use_mode(self.modes[0])
-        self.dirty = False
+        self.dirty = False # ta flaga informuje, czy do wykazu podpowiedzi
+            # dodane zostaly jakies elementy
         self.do_open(None)
         self.Bind(wx.EVT_CLOSE, self.on_exit)
         
@@ -1220,7 +1221,7 @@ class MainWindow(wx.Frame):
         return '#' + id
 
     @apply
-    def page_no():
+    def page_no(): # numer aktualnie ogladanej fiszki w porzadku naturalnym
         def get(self):
             return self._page_no
         def set(self, n):
@@ -1526,10 +1527,11 @@ class MainWindow(wx.Frame):
         self.fiche_for_locate = None
         self.locate = 0
 
+    # zamkniecie aktualnie otwartej karotetki i otwarcie nowej (jezeli path != None)
     def do_open(self, path):
         if isinstance(path, unicode):
             path = path.encode(system_encoding)
-        if self.dirty:
+        if self.dirty: # do wykazu podpowiedzi dodano nowa podpowiedz - trzeba ja zapisac
             self.hintRegister.saveUserHints()
         #    dialog = wx.MessageDialog(self, _('Do you want to save your changes?'), '', wx.YES_NO | wx.YES_DEFAULT | wx.CANCEL | wx.ICON_QUESTION)
         #    try:
@@ -1543,44 +1545,55 @@ class MainWindow(wx.Frame):
         #    finally:
         #        dialog.Destroy()
         self.path = path
-        self.reset()
-        self.taskreg_browser.reset()
-        self.strucreg_browser.reset()
-        self.entryreg_browser.reset()
-        self.new_entryreg_browser.reset()
-        self.hintreg_browser.reset()
+        self.reset() # resetuje okno glowne do stanu takiego jak na poczatku
+        self.taskreg_browser.reset() # j.w. dla poszczegolnych widokow wykazow
+        self.strucreg_browser.reset() # TODO: C dlaczego resetu widokow wykazow
+        self.entryreg_browser.reset() # nie mozna dac w MainWindow.reset (dotyczy
+        self.new_entryreg_browser.reset() # tez ponizszego resetowania numeru
+        self.hintreg_browser.reset() # aktualnej fiszki (page_no) na 0)?
         self.bookreg_browser.reset()
         self.page_no = 0
-        self.dBController.setPerDocumentConnection(None, None, None)
+        self.dBController.setPerDocumentConnection(None, None, None) # resetuje
+            # kontroler bazy danych do ustawien z globalnego pliku konfiguracyjnego
         #def clear_models():
         #    self.metadata_model = self.text_model = self.outline_model = self.annotations_model = None
         #    self.models = ()
         #    self.enable_edit(False)
-        if path is None:
+        if path is None: # tylko zamykamy poprzednio otwarta kartoteke
             #clear_models()
             pass
-        else:
+        else: # otwieramy nowa kartoteke
             try:
                 log.startLog(path)
-                self.index = StructureIndex(path)
-                self.config = Configuration(path)
-                self.config.configureDatabase(self.dBController)
-                self.entryreg_browser.initialize() # TODO: C przeniesc do initialize_registers i dac flage czy udalo sie wczytac plik czy nie (self.document = None starczy? - uzywane w update_indices)
-                if self.index.isAlphabetic():
-                    self.new_entryreg_browser.initialize()
-                self.bookreg_browser.DeleteAllItems()
-                self.bookreg_browser.setRegister(self.dBController.getBookmarksTaskRegister(), self.dBController.getActualEntryForFiche if self.dBController != None else None) # TODO: C j.w., sprawdzanie czy dBController jest null
-                self.hintRegister = HintRegister(path)
+                self.index = StructureIndex(path) # utworz indeks struktury
+                self.config = Configuration(path) # odczytaj plik konfiguracyjny kartoteki
+                self.config.configureDatabase(self.dBController) # skonfiguruj
+                    # kontroler bazy danych dla konkretnej kartoteki
+                # zainicjalizuj niektore widoki wykazow:
+                # TODO: ! wyraznie napisac dlaczego nie moga byc w initialize_registers
+                self.entryreg_browser.initialize() # TODO: C przeniesc do initialize_registers i dac
+                    # flage czy udalo sie wczytac plik czy nie (self.document = None starczy? -
+                    # - uzywane w update_indices)
+                if self.index.isAlphabetic(): # wykaz hasel ma sens tylko dla fiszek w kolejnosci alfabetycznej
+                    self.new_entryreg_browser.initialize() 
+                #self.bookreg_browser.DeleteAllItems()
+                self.bookreg_browser.setRegister(self.dBController.getBookmarksTaskRegister(), self.dBController.getActualEntryForFiche if self.dBController != None else None) # TODO: C j.w.,
+                    # zamiast sprawdzania flagi sprawdzanie czy dBController jest null
+                self.hintRegister = HintRegister(path) # zaladuj wykaz podpowiedzi
                 self.hintRegister.readUserHints(path)
                 self.hintRegister.sort()
-                self.top_panel.setHintRegister(self.hintRegister)
+                self.top_panel.setHintRegister(self.hintRegister) # gorna czesc panelu
+                    # glownego musi miec referencje do wykazu podpowiedzi zeby
+                    # wyswietlac podpowiedzi w panelu podpowiedzi
                 self.taskRegister = self.config.getDefaultTaskRegister(self.index)
                 self.document = self.context.new_document(djvu.decode.FileURI(self.index.getFiche(0).getDjVuPath()))
                 #try:
                 #    self.ficheId = self.taskRegister[0].getId()
                 #except IndexError:
-                self.ficheId = self.index.getFiche(0).getId()
-                self.update_indices()
+                self.ficheId = self.index.getFiche(0).getId() # pierwsza fiszka w
+                    # porzadku naturalnym
+                self.update_indices() # wyswietla w indeksach zawartosc
+                    # indeksow dla fiszki ficheId
                 #self.metadata_model = MetadataModel(self.document)
                 #self.text_model = TextModel(self.document)
                 #self.outline_model = OutlineModel(self.document)
@@ -1590,16 +1603,17 @@ class MainWindow(wx.Frame):
             except djvu.decode.JobFailed:
                 #clear_models()
                 self.reset()
-                # TODO: A czyscic tez inne zmienne (j. w.)
+                # TODO: A co zrobic tutaj?
                 # Do *not* display error message here. It will be displayed by `handle_message()`.
         self.page_no = 0 # again, to set status bar text
         self.update_title()
         self.update_page_widget(new_document = True, new_page = True)
-        self.initialize_registers()
-        self.update_panels()
+        self.initialize_registers() # zainicjalizuj widoki wykazow
+        self.update_panels() # zainicjalizuj gorna czesc panelu glownego
         self.dirty = False
         return True
 
+    # wyswielt fiszke o numerze kolejnym page_no
     def switch_document(self, page_no):
         if self.wasEditAccept:
             self.wasEditAccept = False

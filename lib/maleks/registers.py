@@ -15,6 +15,7 @@ import getpass
 import icu
 from maleks.i18n import _
 
+# 
 def commonprefix(a, b):
 	pref = u""
 	for i in range(0, min(len(a), len(b))):

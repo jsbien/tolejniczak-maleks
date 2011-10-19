@@ -454,9 +454,10 @@ class PageWidget(wx.lib.ogl.ShapeCanvas):
     #        next_shape.select()
     #    wx.CallAfter(reselect)
 
-    #def on_right_click(self, point, node):
-    #    if self.render_nonraster == RENDER_NONRASTER_MAPAREA:
-    #        self.show_maparea_menu(node, point)
+    def on_right_click(self, point, node):
+        pass
+        #if self.render_nonraster == RENDER_NONRASTER_MAPAREA:
+        #    self.show_maparea_menu(node, point)
 
     #def show_maparea_menu(self, node, point, extra={}):
     #    origin = self._xform_real_to_screen.inverse(point)
@@ -623,9 +624,6 @@ class PageWidget(wx.lib.ogl.ShapeCanvas):
 
     def remove_all_shapes(self):
         self._diagram.RemoveAllShapes()
-    
-    def on_right_click(self, event):
-        pass
 
     def set_size(self, size):
         if self.GetSize() == size:

@@ -25,20 +25,24 @@ class Fiche(object):
 	def __init__(self, idd, path):
 		self.__id = idd
 		self.__djVuPath = path + ".djvu"
-		self.__metaPath = None # tu bedzie kiedys sciezka do XML
+		self.__metaPath = None # tu bedzie kiedys sciezka do XMP
 		self.__hOCRPath = path + ".xml"
-		self.__parent = None # element struktury (np. pudelko lub szufladka) w ktorym znajduje sie fiszka
+		self.__parent = None
 	
+	# identyfikator fiszki
 	def getId(self):
 		return self.__id
 
 	# opis fiszki wyswietlany w wykazach
+	# TODO: ? czy wykazy korzystaja gdzies z tego ze id = getLabel()
 	def getLabel(self):
 		return self.__id
 	
+	# ustawia element struktury w ktorym znajduje sie fiszka
 	def setParent(self, parent):
 		self.__parent = parent
 
+	# element struktury (np. pudelko lub szufladka) w ktorym znajduje sie fiszka
 	def getParent(self):
 		return self.__parent
 
@@ -51,16 +55,22 @@ class Fiche(object):
 		return self.__parent.getPath() + os.sep + self.__hOCRPath
 
 	# "sciezka" opisowa (zlozona z nazw elementow struktury i identyfikatora fiszki)
+	# widoczna w panelu wykazow
 	def getDescriptivePath(self):
 		return self.__parent.getDescriptivePath() + "/" + self.__id
 
+	# reprezentacja tekstowa fiszki
 	def __str__(self):
 		return self.__id + ": " + self.__djVuPath
 
 	# zwraca zawartosc tekstowa pierwszego wiersza w hOCR jezeli stosunek jego
 	# dolnego bounding boxu do wysokosci strony jest mniejszy niz parametr
 	# hocr_cut w pliku config.cfg
-	# w ten sposob wybieramy tylko te pierwsze wiersze ktore sa 
+	# w ten sposob wybieramy tylko te pierwsze wiersze ktore sa "podejrzana" o
+	# bycie opisem hasla na fiszce (znajduja sie zaraz przy gornej krawedzi
+	# strony) - jezeli program do OCRu nie rozpoznal recznego dopisku z opisem
+	# hasla to pierwszy wiersz jest pierwszym wierszem tekstu maszynowego
+	# znajdujacego sie nizej
 	def getHOCREntry(self, pct):
 		if os.path.exists(self.getHOCRPath()):
 			doc = minidom.parse(self.getHOCRPath())
@@ -74,56 +84,71 @@ class Fiche(object):
 				return getTextContent(line[0])
 		return None
 
+# element struktury (np. pudelko, szufladka, porcja)
 class StructureNode(object):
 
+	# name - nazwa elementu (zdefiniowana w pliku z indeksem struktury)
+	# path - ścieżka do katalogu z elementem
 	def __init__(self, name, path):
 		self.__name = name
 		self.__path = path
 		self.__children = []
 		self.__parent = None
 
+	# identyfikator elementu
 	def getId(self):
 		return self.getPath()
 
+	# opis elementu widoczny w panelu wykazow
 	def getLabel(self):
 		return self.__name
 
+	# ojciec elementu (katalog nadrzedny)
 	def getParent(self):
 		return self.__parent
 	
+	# ustawia ojca elementu
 	def setParent(self, parent):
 		self.__parent = parent
 	
+	# dzieci elementu (podkatalogi albo fiszki)
 	def getChildren(self):
 		return self.__children
 
+	# dodaje dziecko elementu i ustawia w nim referencje do elementu
 	def add(self, child):
 		self.__children.append(child)
 		child.setParent(self)
 
+	# sciezka absolutna do elementu
 	def getPath(self):
 		if self.__parent == None:
 			return self.__path
 		else:
-			return self.__parent.getPath() + "/" + self.__path
+			return self.__parent.getPath() + os.sep + self.__path
 
+	# sciezka "opisowa" widoczna w panelu wykazow (zlozona z nazw elementow struktury)
 	def getDescriptivePath(self):
 		if self.__parent == None:
 			return "/" + self.__name
 		else:
 			return self.__parent.getDescriptivePath() + "/" + self.__name
 	
+	# tekstowa reprezentacja elementu
 	def __str__(self):
 		return self.__path + ": " + self.__name
 
+	# zwraca pierwsza fiszke w elemencie w porzadku naturalnym
 	def firstFiche(self):
 		if isinstance(self.__children[0], Fiche):
 			return self.__children[0]
 		else:
 			return self.__children[0].firstFiche()
 
+# konfiguracja (reprezentuje zawartosc pliku konfiguracyjnego kartoteki)
 class Configuration(object):
 
+	# otwiera plik o sciezce abspath i laduje z niego konfiguracje
 	def __init__(self, abspath):
 		# TODO: C obsluga bledow w pliku
 		self.__dict = {}
@@ -138,12 +163,15 @@ class Configuration(object):
 				self.__dict.setdefault(k, v)
 			f.close()
 
+	# odczytaj z konfiguracji wartosc k, jezeli nie ma to uzyj wartosci default
 	def get(self, k, default=None):
 		if self.__dict.get(k) == None:	
 			return default
 		else:
 			return self.__dict.get(k)
 	
+	# zwraca domyslny wykaz zadaniowy (zdefiniowany w pliku konfiguracyjnym i
+	# znajdujacy sie w karotece) lub wykaz pusty jesli takiego wykazu nie ma
 	def getDefaultTaskRegister(self, index):
 		# TODO: C komunikat o bledzie - nie ma takiego pliku
 		path = self.__dict.get("default_task_register")
@@ -153,14 +181,19 @@ class Configuration(object):
 		else:
 			return TaskRegister(None, None, empty=True)
 
+	# konfiguruje kontroler bazy danych na podstawie konfiguracji karotetki
+	# (pola z konfiguracji kartoteki przeslaniaja pola z globalnej konfiguracji)
 	def configureDatabase(self, dBController):
 		user = self.__dict.get("dbuser")
 		db = self.__dict.get("db")
 		passwd = self.__dict.get("dbpass")
 		dBController.setPerDocumentConnection(db, user, passwd)
 
+# indeks struktury
 class StructureIndex(object):
 
+	# tworzy indeks struktury na podstawie pliku z indeksem struktury o sciezce
+	# abspath
 	def __init__(self, abspath):
 		# TODO: C obsluga bledow w pliku
 		self.__ficheNo = 0
@@ -206,12 +239,15 @@ class StructureIndex(object):
 					self.__ficheNo += 1
 		f.close()
 
+	# zwraca fiszke o danym numerze kolejnym w porzadku naturalnym
 	def getFiche(self, ficheNo):
 		return self.__fiches[ficheNo]
 
+	# zwraca liczbe wszystkich fiszek w kartotece
 	def getFicheNo(self):
 		return self.__ficheNo
 	
+	# zwraca numer kolejny fiszki o danym identyfikatorze (Fiche.getId()) w porzadku naturalnym
 	def getFicheNoById(self, ficheId):
 		try:
 			return self.__ficheDict[ficheId][1]
@@ -219,6 +255,7 @@ class StructureIndex(object):
 			print ficheId
 			raise
 	
+	# zwraca fiszke o danym identyfikatorze (Fiche.getId())
 	def getFicheById(self, ficheId):
 		try:
 			return self.__ficheDict[ficheId][0]
@@ -226,6 +263,7 @@ class StructureIndex(object):
 			print ficheId
 			raise
 
+	# zwraca element struktury o danym identyfikatorze (StructureElement.getId())
 	def getNodeById(self, nodeId):
 		try:
 			return self.__nodeDict[nodeId]
@@ -233,9 +271,13 @@ class StructureIndex(object):
 			print nodeId
 			raise
 	
+	# zwraca element struktury reprezentujacy cala kartoteke
 	def getRoot(self):
 		return self.__tree
 
+	# dla danego elementu struktury (ficheParent) znajduje pierwsza fiszke w
+	# porzadku naturlanym po wszystkich fiszkach zawartym w danym elemencie;
+	# jezeli takiej fiszki nie ma zwraca None
 	def findNextFiche(self, ficheParent):
 		parent = self.__nodeDict[ficheParent.getId()]
 		while True:
@@ -248,9 +290,14 @@ class StructureIndex(object):
 			parent = gparent
 		return None
 
+	# zwraca True jezeli fiszki w kartotece sa uporzadkowane w kolejnosci alfabetycznej
+	# (jak w fiszkach z Ratuszowej)
+	# wpp zwraca False
 	def isAlphabetic(self):
 		return self.__alphabetic
 
+	# otwiera wykaz zadaniowy znajdujacy sie w pliku pod dana sciezka
+	# TODO: C czy moga tu wystapic jakies bledy?
 	def getTaskRegisterFromFile(self, path):
 		res = TaskRegister(None, None, empty=True)
 		f = open(path)

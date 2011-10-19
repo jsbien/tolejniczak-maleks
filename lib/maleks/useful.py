@@ -44,6 +44,7 @@ def nvl(obj):
 	return str(obj)
 
 # clazz powinna miec typ unicode
+# znajduje wszystkie tagi XML o danej klasie w dokumencie doc
 def getElementsByClassName(doc, clazz):
 	els = doc.getElementsByTagName(u"*")
 	res = []
@@ -57,6 +58,9 @@ def getElementsByClassName(doc, clazz):
 			continue
 	return res
 
+# zwraca bounding box (zapisany w sposob zgodny ze standardem hOCR) z tagu
+# HTML zawierajacego element hOCR
+# FIXME: wywali sie jak bounding box zapisany niepoprawnie
 def getBbox(hOCRDomElement):
 	try:
 		title = hOCRDomElement.attributes[u"title"].value
@@ -71,6 +75,8 @@ def getBbox(hOCRDomElement):
 		return [0, 0, 0, 0]
 	return bbox
 
+# zwraca zawartosc tekstowa (cala zawartosc z pominieciem tagow potomnych ale
+# nie ich zawartosci tekstowej)
 def getTextContent(domElement):
 	if domElement.nodeType == Node.TEXT_NODE:
 		return domElement.nodeValue

@@ -1,16 +1,18 @@
 * Komentarze w kodzie
-* Obsługa błędów, zachowanie w nietypowych sytuacjach (np. nie otwarto żadnego pliku)
 * Wyszukiwanie z celem i automatyczną zmianą dziury
+* Poprawa efektywności w miejsach gdzie stosunkowo łatwo to zrobić
+* Rozwiązanie problemu zasygnalizowanych w http://fleksem.klf.uw.edu.pl/~jsbien/maleks/maleks.txt - patrz dopisek na końcu listy TODO
 * Fork służący do scalania kartotek
+* Traktowanie jednoelementowej dziury jako fiszki
+* Wyświetlanie liczby fiszek o danym haśle w wykazie haseł
 * Dokumentacja formatu kartoteki (katalogu z danymi)
+* Obsługa błędów, zachowanie w nietypowych sytuacjach (np. nie otwarto żadnego pliku)
 * Informacja o rozmiarze danych
-* Wykaz źródeł z dziurami
 * Wyszukiwanie przyrostowe po dziurach
+* Akceptacja napisu w panelu edycji przez ENTER (do przemyślenia)
 * Na początku binarnego podajemy czego szukamy (lub automatycznie przy przejściu z podpowiedzi) i potem samo wybiera w którą stronę idziemy
-* Pole edycji o zmiennym znaczeniu w wykazie wielopoziomowym
 * Nawigacja w nowym wykazie haseł: PgUp, PgDn
 * Wyszukiwanie przyrostowe w wykazie haseł powinno obejmować całą listę a nie tylko okienko
-* Funkcjonalność wspomagająca usuwanie dziur przed i po wybranym haśle (na tym etapie brak koncepcji co to miałaby być za funkcjonalnośc)
 * Tworzenie logów operacji użytkownika (pełna funkcjonalność niekoniecznie od razu - na początek logi potrzebne do usuwania błędów)
 * Testy dla dużych danych (3 miliony fiszek) i odpowiednie modyfikacje w razie pojawienia się problemów
 * Konfigurowalne skróty klawiszowe
@@ -19,25 +21,22 @@
 * Synchronizacja między różnymi wykazami, przejście w każdym wykazie do aktualnie oglądanej fiszki (do omówienia: "aktualna fiszka* powinna być jakoś wyróżniona w każdym dostępnym wykazie (lub element do którego fiszka należy*)" - *czy w takim wypadku zmieniać element którego podelementy wyświetlamy, jeżeli fiszka należy do podelementu będącego w innym podelemencie?)
 * Zapisywanie wartości indeksów przy wychodzeniu z programu i w innych miejscach (poszukać), w ostateczności dodać przycisk "zapisz indeks"
 * Uporządkowanie spraw związanych z kasztowością
-* Akceptacja fiszki przy przejściu w lewo lub w prawo w wyszukiwaniu binarnym w innych wykazach niż wykaz haseł (do omówienia)
 * Chodzenie do przodu po cofniętych fiszkach
-* Wyświetlanie hasła przy identyfikatorze fiszki w wykazie struktury (i w innych wykazach)
 * Knapski jako dzieło w fiszkach z Ratuszowej
 * Położenie kursora po zakończeniu różnych operacji, inne sprawy związane z focusem (do wcześniejszego omówienia)
-* Wyświetlanie liczby fiszek o danym haśle w wykazach (można zrezygnować w razie gdyby okazało się za kosztowne lub sprawiało inne kłopoty)
+* Wyświetlanie liczby fiszek o danym haśle w wykazie haseł (można zrezygnować w razie gdyby okazało się za kosztowne lub sprawiało inne kłopoty)
 * Wykrywanie haseł nie po kolei przy próbie akcpetacji
 * Panel komunikatów: ścieżka fiszki w panelu komunikatów, wyświetlanie skrótów klawiaturowe w panelu komunikatów, komunikaty dla użytkownika, informacje o dostępnych operacjach (do omówienia)
-* Przejście do następnej i POPRZEDNIEJ fiszki w porządku naturalnym dostępne zawsze, w razie gdy fiszki nie ma na wykazie komunikat "fiszka spoza wykazu"
+* Przejście do następnej i POPRZEDNIEJ fiszki w porządku naturalnym dostępne zawsze, w razie gdy fiszki nie ma na wykazie komunikat "fiszka spoza wykazu" (do omówienia)
 * Konfiguracja rozmiaru czcionki
 * Zamiast panelu źródeł: najniższy wiersz w panelu - wypełniony jeżeli istnieje dokument zawierający tą fiszkę (wyświetlane położenie wyrażenia hasłowego i link do djvu)
 * Liczniki liczby obejrzeń fiszki (w pasku stanów lub panelu komunikatów)
-* Łączenie ze zdalną bazą danych
+* Łączenie ze zdalną bazą danych (do omówienia)
 * Wyszukiwanie z użyciem panelu indeksów
-* Inne porządki sortowania (do omówienia)
 * Optymalizacja bazy
 * Zmiana schematu bazy danych
 * Zrzuty baz danych do katalogu z kartoteką
-* Przygotowanie pakietu debianowego i instalki Windows
+* Przygotowanie pakietu debianowego i instalki Windows (być może wystarczy wersja portable)
 
 Proste drobiazgi:
 
@@ -61,4 +60,16 @@ Sprawy o "priorytecie przyzerowym":
 * Podpowiedzi dla stron i wierszy (do omówienia)
 * Panel wycinka
 * Przejście do fiszki o numerze kolejnym względnym wobec fiszki aktualnej
+* Akceptacja fiszki przy przejściu w lewo lub w prawo w wyszukiwaniu binarnym w innych wykazach niż wykaz haseł (do omówienia)
+* Wykaz źródeł z dziurami
+* Pole edycji o zmiennym znaczeniu w wykazie wielopoziomowym
+* Wyświetlanie hasła przy identyfikatorze fiszki w wykazie struktury (i w innych wykazach)
+* Inne porządki sortowania (do omówienia)
+* Wyświetlanie liczby fiszek o danym haśle w wykazach innych niż wykaz haseł (można zrezygnować w razie gdyby okazało się za kosztowne lub sprawiało inne kłopoty)
+
+Problemy z maleks.txt:
+
+* [czy episkop nie powinien się cały czas pokzywać w polu hipotezu i/lub polu edycji?]
+* [chyba bug - musiałem dwa razy kliknąc na "Akceptacja napisu w panelu edycji"; po pierwszym uaktualnił się wykaz, ale nie panel indeksu], [to dobrze, że w polu hipotez jest episkop, bo tak powinno cały czas być docelowo, ale jestem ciekawy, skąd on się wziął teraz], [stan po pierwszym kliknięciu na "Akceptacja napisu w panelu edycji", nieuaktualniony panel indeksu]
+* [omylkowo źle zaindeksowane hasło!!!], [gdyby hasłem było rzeczywiście "epiretyjski", to przydałaby się historia - podpowiedzi? wyrażeń hasłowych? - żeby nie trzeba było ponownie wpisywać hasła] (potrzebny lepszy przykład)
 
