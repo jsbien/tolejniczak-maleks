@@ -38,6 +38,8 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		self.__entry = None
 		self.__next = None
 		self.__noLocate = False
+		self.__binaryTarget = None
+		self.__leftTargetBinary = False
 		#self.__binaryType = None
 
 	def setDBController(self, controller):
@@ -237,9 +239,12 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 	def binaryAvailable(self):
 		return self.__level == "ENTRY"
 
-	def startBinarySearch(self):
+	def startBinarySearch(self, target=None):
 		log.log(["startBinarySearch", self.__selectedElement, self.__binaryType])
 		self.__binaryScopeValid = True
+		self.__binaryTarget = target
+		if self.__binaryTarget != None:
+			self.__leftTargetBinary = True
 		if isinstance(self.__selectedElement, tuple):
 			(self.__leftFiche, self.__rightFiche, length) = self.__dBController.getGapCount(self.__selectedElement[1], self.__selectedElement[2])
 			self.__binaryType = "GAP"
@@ -254,6 +259,7 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 	def stopBinarySearch(self):
 		log.log(["stopBinarySearch", self.__selectedElement, self.__binaryType])
 		self._binary = False
+		self.__binaryTarget = None
 
 	def nextBinaryAcceptPrepare(self):
 		log.log(["nextBinaryAcceptPrepare", self.__selectedElement, self.__binaryType])
@@ -541,4 +547,20 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		self._select(itemId)
 		self.__noLocate = False
 		self.__localVeto = False
+
+	def hasTarget(self):
+		return self.__binaryTarget != None
+
+	def determineNextTarget(self, entry):
+		# TODO: C co jak jestesmy w niewlasciwym elemencie (nie jestesmy w dziurze z tym celem)?
+		if self.__leftTargetBinary:
+			if entry >= self.__binaryTarget:
+				return "LEFT"
+			else: # TODO: C obsluga fiszek nie po kolei
+				return "RIGHT"
+		else:
+			if entry == self.__binaryTarget:
+				return "RIGHT"
+			else: # TODO: C j.w.
+				return "LEFT"
 

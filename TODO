@@ -1,8 +1,7 @@
 * Komentarze w kodzie
 * Wyszukiwanie z celem i automatyczną zmianą dziury
 * Poprawa efektywności w miejsach gdzie stosunkowo łatwo to zrobić
-* Rozwiązanie problemu zasygnalizowanych w http://fleksem.klf.uw.edu.pl/~jsbien/maleks/maleks.txt - patrz dopisek na końcu listy TODO
-* Fork służący do scalania kartotek
+* Rozwiązanie problemów zasygnalizowanych w http://fleksem.klf.uw.edu.pl/~jsbien/maleks/maleks.txt - patrz dopisek na końcu listy TODO
 * Traktowanie jednoelementowej dziury jako fiszki
 * Wyświetlanie liczby fiszek o danym haśle w wykazie haseł
 * Dokumentacja formatu kartoteki (katalogu z danymi)
@@ -32,7 +31,6 @@
 * Zamiast panelu źródeł: najniższy wiersz w panelu - wypełniony jeżeli istnieje dokument zawierający tą fiszkę (wyświetlane położenie wyrażenia hasłowego i link do djvu)
 * Liczniki liczby obejrzeń fiszki (w pasku stanów lub panelu komunikatów)
 * Łączenie ze zdalną bazą danych (do omówienia)
-* Wyszukiwanie z użyciem panelu indeksów
 * Optymalizacja bazy
 * Zmiana schematu bazy danych
 * Zrzuty baz danych do katalogu z kartoteką
@@ -61,11 +59,17 @@ Sprawy o "priorytecie przyzerowym":
 * Panel wycinka
 * Przejście do fiszki o numerze kolejnym względnym wobec fiszki aktualnej
 * Akceptacja fiszki przy przejściu w lewo lub w prawo w wyszukiwaniu binarnym w innych wykazach niż wykaz haseł (do omówienia)
-* Wykaz źródeł z dziurami
 * Pole edycji o zmiennym znaczeniu w wykazie wielopoziomowym
 * Wyświetlanie hasła przy identyfikatorze fiszki w wykazie struktury (i w innych wykazach)
 * Inne porządki sortowania (do omówienia)
 * Wyświetlanie liczby fiszek o danym haśle w wykazach innych niż wykaz haseł (można zrezygnować w razie gdyby okazało się za kosztowne lub sprawiało inne kłopoty)
+* Wykaz źródeł z dziurami
+
+Anulowane:
+
+* Fork służący do scalania kartotek
+* Obsługa fiszek Knapskiego
+* Wyszukiwanie z użyciem panelu indeksów
 
 Problemy z maleks.txt:
 

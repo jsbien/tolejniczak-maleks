@@ -306,7 +306,8 @@ class RegisterBrowser(wx.ListView):
 			self.SetStringItem(i, 2, "")
 
 	# zacznij wyszukiwanie binarne i inicjalizuj odpowiednie zmienne
-	def startBinarySearch(self):
+	# target - wykorzystywany tylko przez NewEntryRegisterBrowser
+	def startBinarySearch(self, target=None):
 		self._binary = True
 		self.__left = 0
 		self.__right = len(self._items) - 1
@@ -327,6 +328,10 @@ class RegisterBrowser(wx.ListView):
 		self.SetStringItem(self.__center, 2, "<") # zaznacz historie wyszukiwania
 		self.__markScope()
 		self.__selectCenter()
+
+	# czy wyszukiwanie binarne odbywa sie z celem - uzywane tylko w NewEntryRegisterBrowser
+	def hasTarget(self):
+		return False
 
 	# zaznacz pierwszy element - tu nic nie robi (bo do pierwszego i ostatniego
 	# elementu mozna nawigowac myszka lub Home/End), ale wykorzystywane w podklasie

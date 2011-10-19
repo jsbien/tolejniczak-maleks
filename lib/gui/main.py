@@ -731,8 +731,12 @@ class MainWindow(wx.Frame):
             self.error_box(_('Empty edit panel'))
             return
         ok = False
-        if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive() and not binaryOK:
-            self.active_register.prepareForActiveBinary()
+        if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive():
+            if self.active_register.hasTarget():
+                self.on_automatic_binary_accept()
+                return
+            if not binaryOK:
+                self.active_register.prepareForActiveBinary()
         if self.dBController != None:
             msg = self.dBController.addFicheToEntriesIndex(self.ficheId, self.top_panel.getEditPanelContent())
             if msg != None:
@@ -778,7 +782,7 @@ class MainWindow(wx.Frame):
     def on_structure_element_selected(self, path):
         self.regbar.setPath(path)
 
-    def on_hint_accept(self, event):
+    def on_hint_accept(self, event, binaryOK=False):
         #if self.active_register.binarySearchActive():
         #    return
         if self.top_panel.getHint() == '':
@@ -786,7 +790,11 @@ class MainWindow(wx.Frame):
             return
         ok = False
         if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive():
-            self.active_register.prepareForActiveBinary()
+            if self.active_register.hasTarget():
+                self.on_automatic_binary_accept(hint=True)
+                return
+            if not binaryOK:
+                self.active_register.prepareForActiveBinary()
         if self.dBController != None:
             msg = self.dBController.addFicheToEntriesIndex(self.ficheId, self.top_panel.getHint())
             if msg != None:
@@ -898,10 +906,10 @@ class MainWindow(wx.Frame):
             self._enable_page_change()
         self.SetStatusText("", 2)
     
-    def start_binary_search(self):
+    def start_binary_search(self, target=None):
         if self.active_register in [self.strucreg_browser]:
             self._disable_page_change()
-        self.active_register.startBinarySearch()
+        self.active_register.startBinarySearch(target=target)
         self.SetStatusText(_("Binary search"), 2)
 
     def on_search_mode(self, event):
@@ -1289,7 +1297,7 @@ class MainWindow(wx.Frame):
     #        #if not self.taskreg_browser.binarySearchActive():
     #        #    self.start_binary_search()
     #        #else:
-        if self.active_register.binarySearchActive():
+        if self.active_register.binarySearchActive() and not self.active_register.hasTarget():
             self.active_register.nextBinary()
 
     def on_prev_binary(self, event):
@@ -1297,13 +1305,43 @@ class MainWindow(wx.Frame):
     #        #if not self.taskreg_browser.binarySearchActive():
     #        #    self.start_binary_search()
     #        #else:
-         if self.active_register.binarySearchActive():
+         if self.active_register.binarySearchActive() and not self.active_register.hasTarget():
              self.active_register.prevBinary()
+
+    def on_automatic_binary_accept(self, hint=False):
+        if self.active_register.determineNextTarget(self.top_panel.getEditPanelContent()) == "LEFT":
+            if not self.active_register.prevBinaryAcceptPrepare():
+                self.stop_binary_search()
+                if hint:
+                    self.on_hint_accept(None, binaryOK=True)
+                else:
+                    self.on_edit_accept(None, binaryOK=True)
+                self.active_register.initialize()
+            else:
+                if hint:
+                    self.on_hint_accept(None, binaryOK=True)
+                else:
+                    self.on_edit_accept(None, binaryOK=True)
+                self.active_register.binaryAcceptFinalize()
+        else:
+            if not self.active_register.nextBinaryAcceptPrepare():
+                self.stop_binary_search()
+                if hint:
+                    self.on_hint_accept(None, binaryOK=True)
+                else:
+                    self.on_edit_accept(None, binaryOK=True)
+                self.active_register.initialize()
+            else:
+                if hint:
+                    self.on_hint_accept(None, binaryOK=True)
+                else:
+                    self.on_edit_accept(None, binaryOK=True)
+                self.active_register.binaryAcceptFinalize()
 
     def on_next_binary_accept(self, event):
         if self.active_register != self.new_entryreg_browser:
             return
-        if self.active_register.binarySearchActive():
+        if self.active_register.binarySearchActive() and not self.active_register.hasTarget():
              if not self.active_register.nextBinaryAcceptPrepare():
                 #print "ojej"
                 self.stop_binary_search()
@@ -1317,7 +1355,7 @@ class MainWindow(wx.Frame):
     def on_prev_binary_accept(self, event):
         if self.active_register != self.new_entryreg_browser:
             return
-        if self.active_register.binarySearchActive():
+        if self.active_register.binarySearchActive() and not self.active_register.hasTarget():
              if not self.active_register.prevBinaryAcceptPrepare():
                 #print "ojej"
                 self.stop_binary_search()
@@ -1339,6 +1377,8 @@ class MainWindow(wx.Frame):
         if not self.active_register.isActive(): # TODO: C zdecydowac sie czy to sprawdzac explicite tu czy schowac w implementacji rejestru
             return
         if self.active_register.binaryAvailable() and not self.active_register.binarySearchActive():
+            if self.register_search.GetValue() != "":
+                self.start_binary_search(self.register_search.GetValue())
             self.start_binary_search()
         else:
             self.stop_binary_search()
