@@ -1,33 +1,29 @@
 * Komentarze w kodzie
 * Wyszukiwanie z celem i automatyczną zmianą dziury
-* Poprawa efektywności w miejsach gdzie stosunkowo łatwo to zrobić
-* Rozwiązanie problemów zasygnalizowanych w http://fleksem.klf.uw.edu.pl/~jsbien/maleks/maleks.txt - patrz dopisek na końcu listy TODO
 * Traktowanie jednoelementowej dziury jako fiszki
-* Wyświetlanie liczby fiszek o danym haśle w wykazie haseł
+* Wyświetlanie liczby fiszek o danym haśle w wykazie haseł (można zrezygnować w razie gdyby okazało się za kosztowne lub sprawiało inne kłopoty)
 * Dokumentacja formatu kartoteki (katalogu z danymi)
 * Obsługa błędów, zachowanie w nietypowych sytuacjach (np. nie otwarto żadnego pliku)
 * Informacja o rozmiarze danych
 * Wyszukiwanie przyrostowe po dziurach
 * Akceptacja napisu w panelu edycji przez ENTER (do przemyślenia)
-* Na początku binarnego podajemy czego szukamy (lub automatycznie przy przejściu z podpowiedzi) i potem samo wybiera w którą stronę idziemy
-* Nawigacja w nowym wykazie haseł: PgUp, PgDn
 * Wyszukiwanie przyrostowe w wykazie haseł powinno obejmować całą listę a nie tylko okienko
 * Tworzenie logów operacji użytkownika (pełna funkcjonalność niekoniecznie od razu - na początek logi potrzebne do usuwania błędów)
 * Testy dla dużych danych (3 miliony fiszek) i odpowiednie modyfikacje w razie pojawienia się problemów
 * Konfigurowalne skróty klawiszowe
 * Dostosowanie GUI do Windows
 * Przenośna wersja dla Windows
+* Zmiana implementacji wykazu podpowiedzi w celu szybkiej aktualiacji i przywrócenie synchronizacji z innymi wykazami
 * Synchronizacja między różnymi wykazami, przejście w każdym wykazie do aktualnie oglądanej fiszki (do omówienia: "aktualna fiszka* powinna być jakoś wyróżniona w każdym dostępnym wykazie (lub element do którego fiszka należy*)" - *czy w takim wypadku zmieniać element którego podelementy wyświetlamy, jeżeli fiszka należy do podelementu będącego w innym podelemencie?)
+* Rozwiązanie problemów zasygnalizowanych w http://fleksem.klf.uw.edu.pl/~jsbien/maleks/maleks.txt - patrz dopisek na końcu listy TODO
 * Zapisywanie wartości indeksów przy wychodzeniu z programu i w innych miejscach (poszukać), w ostateczności dodać przycisk "zapisz indeks"
+* Nawigacja w nowym wykazie haseł: PgUp, PgDn
 * Uporządkowanie spraw związanych z kasztowością
 * Chodzenie do przodu po cofniętych fiszkach
-* Knapski jako dzieło w fiszkach z Ratuszowej
 * Położenie kursora po zakończeniu różnych operacji, inne sprawy związane z focusem (do wcześniejszego omówienia)
-* Wyświetlanie liczby fiszek o danym haśle w wykazie haseł (można zrezygnować w razie gdyby okazało się za kosztowne lub sprawiało inne kłopoty)
 * Wykrywanie haseł nie po kolei przy próbie akcpetacji
 * Panel komunikatów: ścieżka fiszki w panelu komunikatów, wyświetlanie skrótów klawiaturowe w panelu komunikatów, komunikaty dla użytkownika, informacje o dostępnych operacjach (do omówienia)
-* Przejście do następnej i POPRZEDNIEJ fiszki w porządku naturalnym dostępne zawsze, w razie gdy fiszki nie ma na wykazie komunikat "fiszka spoza wykazu" (do omówienia)
-* Konfiguracja rozmiaru czcionki
+* Przejście do następnej i POPRZEDNIEJ fiszki w porządku naturalnym dostępne zawsze, w razie gdy fiszki nie ma na wykazie komunikat "fiszka spoza wykazu" (do przemyślenia)
 * Zamiast panelu źródeł: najniższy wiersz w panelu - wypełniony jeżeli istnieje dokument zawierający tą fiszkę (wyświetlane położenie wyrażenia hasłowego i link do djvu)
 * Liczniki liczby obejrzeń fiszki (w pasku stanów lub panelu komunikatów)
 * Łączenie ze zdalną bazą danych (do omówienia)
@@ -52,6 +48,7 @@ Proste drobiazgi:
 
 Sprawy o "priorytecie przyzerowym":
 
+* Konfiguracja rozmiaru czcionki
 * Wyróżnianie gdy hasło oryginalne i aktualne są różne
 * Ukrywanie panelu indeksu
 * Przy otwieraniu przez "ostatnio otwierane kartoteki" pokazywanie wykazu i fiszki aktywnych przy zamknięciu
@@ -69,6 +66,7 @@ Anulowane:
 
 * Fork służący do scalania kartotek
 * Obsługa fiszek Knapskiego
+* Knapski jako dzieło w fiszkach z Ratuszowej
 * Wyszukiwanie z użyciem panelu indeksów
 
 Problemy z maleks.txt:

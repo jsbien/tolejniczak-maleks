@@ -11,6 +11,7 @@
 # General Public License for more details.
 
 import MySQLdb
+import time
 from maleks.i18n import _
 from maleks.maleks.useful import ustr
 
@@ -40,9 +41,11 @@ class DBCommon(object):
 
 	def _openDBWithCursor(self):
 		self.__conn = MySQLdb.connect(user=self.__user, passwd=self.__passwd, db=self.__db, use_unicode=False, init_command="SET NAMES 'utf8'",charset='utf8')
+		#self._time = 0
 		return self.__conn.cursor()
 
 	def _closeDBAndCursor(self, cursor):
+		#print "uplynelo:", self._time
 		cursor.close()
 		self.__conn.commit()
 		self.__conn.close()
@@ -66,8 +69,13 @@ class DBCommon(object):
 				raise
 			j += 1
 			i = querystr.find("%s")
-		#print querystr
+		#start = time.time()
 		cursor.execute(query, pars)
+		#stop = time.time()
+		#self._time += stop - start
+		#if stop - start >= 1.0:
+		#	print querystr
+		#	print stop - start
 		
 INF = 10000000000
 
@@ -113,6 +121,7 @@ class DBEntryController(DBCommon):
 		##elif ustr(entry) == _("Last fiche"):
 		##	last = self.__single(cursor, "select fiche from fiches order by position desc limit 1")
 		##	return (last, last, 1)
+		assert(entry != None)
 		(firstpos, lastpos) = self.__entryLimits(cursor, entry)
 		#&res = int(self.__single(cursor, "select count(*) from fiches f where position >= %s and position <= %s and not exists (select * from actual_entries e where f.fiche = e.fiche and entry <> %s)", (firstpos, lastpos, entry)))
 		res = int(self.__single(cursor, "select count(*) from fiches f where (position >= %s and position <= %s and not exists (select * from actual_entries e where f.fiche = e.fiche and entry <> %s)) or ((position < %s or position > %s) and exists (select * from actual_entries e where e.fiche = f.fiche and entry = %s))", (firstpos, lastpos, entry, firstpos, lastpos, entry)))

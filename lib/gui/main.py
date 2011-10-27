@@ -725,27 +725,30 @@ class MainWindow(wx.Frame):
     # TODO: A rozne przypadki bledow:
     
     def on_edit_accept(self, event, binaryOK = False):
-        print "edit!"
+        #print "edit"
         #if self.active_register.binarySearchActive() and not binaryOK:
         #    return
+        #from maleks.maleks.useful import Counter
+        #c = Counter()
         if self.top_panel.getEditPanelContent() == '':
             self.error_box(_('Empty edit panel'))
             return
         ok = False
-        print "ok!"
+        #print "ok"
         if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive():
-            print "A"
-            if self.active_register.hasTarget():
-                print "B"
-                self.on_automatic_binary_accept()
-                print "C"
-                return
-            print "D"
+            #print "A"
             if not binaryOK:
-                print "E"
+                #print "B"
+                if self.active_register.hasTarget():
+                    #print "C"
+                    self.on_automatic_binary_accept()
+                    #print "D"
+                    return
+                #print "E"
                 self.active_register.prepareForActiveBinary()
-                print "F"
-        print "po"
+                #print "F"
+        #print "po"
+        #print "poczatek", c
         if self.dBController != None:
             msg = self.dBController.addFicheToEntriesIndex(self.ficheId, self.top_panel.getEditPanelContent())
             if msg != None:
@@ -753,13 +756,17 @@ class MainWindow(wx.Frame):
                 return
             else:
                 ok = True
-        if self.hintRegister.addHint(self.top_panel.getEditPanelContent()):
-            self.hintreg_browser.setRegister(self.hintRegister)
+        #print "add fiches", c
+        #if self.hintRegister.addHint(self.top_panel.getEditPanelContent()):
+            #c = Counter()
+            #self.hintreg_browser.setRegister(self.hintRegister)
+            #print "po", c
             # TODO: A typy (np. ponizej jest unicode ktore jest uzywane do znajdywania stringow itemowych)
-            self.hintreg_browser.hintChanged(self.top_panel.getEditPanelContent())
-            self.top_panel.editPanelChanged(None)
+            #self.hintreg_browser.hintChanged(self.top_panel.getEditPanelContent())
+            #self.top_panel.editPanelChanged(None)
         self.dirty = True # TODO: NOTE bo mozemy musiec np. zapisac do pliku dodana powyzej podpowiedz
         self.ignore_entries = True
+        #print "add hint", c
         if self.active_register.allowsNextFiche() and self.active_register.hasSelection() and not self.active_register.binarySearchActive():
             if ok:
                 self.lastEntry = self.top_panel.getEditPanelContent()
@@ -774,6 +781,7 @@ class MainWindow(wx.Frame):
                     # TODO: C zakladamy tutaj ze level jest ENTRY (a zatem allowsNextFiche), ale co jak allowsNextFiche ale nie hasSelection?
             self.update_indices()
         self.ignore_entries = False
+        #print "koncowka", c
         #pass
 
     def on_edit_prefix_accept(self, event):
@@ -799,10 +807,10 @@ class MainWindow(wx.Frame):
             return
         ok = False
         if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive():
-            if self.active_register.hasTarget():
-                self.on_automatic_binary_accept(hint=True)
-                return
             if not binaryOK:
+                if self.active_register.hasTarget():
+                    self.on_automatic_binary_accept(hint=True)
+                    return
                 self.active_register.prepareForActiveBinary()
         if self.dBController != None:
             msg = self.dBController.addFicheToEntriesIndex(self.ficheId, self.top_panel.getHint())
@@ -909,17 +917,20 @@ class MainWindow(wx.Frame):
                 item.SetText(item.GetLabel())
         self.SetAcceleratorTable(mode.getAcceleratorTable())
 
-    def stop_binary_search(self):
-        self.active_register.stopBinarySearch()
-        if self.active_register in [self.strucreg_browser]: # TODO: A zmiany stron w innych wykazach: czy pozwalac?
-            self._enable_page_change()
-        self.SetStatusText("", 2)
+    def stop_binary_search(self, restart=False):
+        #print ":", restart
+        target = self.active_register.stopBinarySearch(restart=restart)
+        if not self.active_register.hasTarget():
+            if self.active_register in [self.strucreg_browser]: # TODO: A zmiany stron w innych wykazach: czy pozwalac?
+                self._enable_page_change()
+            self.SetStatusText("", 2)
+        return target
     
     def start_binary_search(self, target=None):
         if self.active_register in [self.strucreg_browser]:
             self._disable_page_change()
-        self.active_register.startBinarySearch(target=target)
         self.SetStatusText(_("Binary search"), 2)
+        self.active_register.startBinarySearch(target=target)
 
     def on_search_mode(self, event):
         if self.left_control.isSearchMode():
@@ -1318,67 +1329,83 @@ class MainWindow(wx.Frame):
              self.active_register.prevBinary()
 
     def on_automatic_binary_accept(self, hint=False):
-        print "a"
+        #print "a"
+        #from maleks.maleks.useful import Counter
+        #c = Counter()
         if self.active_register.determineNextTarget(self.top_panel.getEditPanelContent()) == "LEFT":
-            print "b"
-            if not self.active_register.prevBinaryAcceptPrepare():
-                print "c"
-                self.stop_binary_search()
-                print "d"
+            #print "determineNextTarget", c
+            if not self.active_register.prevBinaryAcceptPrepare(automatic=True):
+                #print "prevBinaryAcceptPrepare", c
+                target = self.stop_binary_search(restart=True)
+                #print "stop_binary_search", c
+                #print ":::", target
+                #print "d"
                 if hint:
-                    print "e"
                     self.on_hint_accept(None, binaryOK=True)
-                    print "f"
+                    #print "on_hint_accept", c
+                    #print "f"
                 else:
-                    print "g"
                     self.on_edit_accept(None, binaryOK=True)
-                    print "h"
-                print "i"
+                    #print "on_edit_accept", c
+                    #print "h"
                 self.active_register.initialize()
-                print "j"
+                #print "initialize", c
+                if target != None:
+                    self.active_register.startBinarySearch(target=target, right=True)
+                    #print "startBinarySearch", c
+                    #print self.active_register.hasTarget()
+                    #print "ji"
+                #print "j"
             else:
-                print "k"
+                #print "prevBinaryAcceptPrepare", c
+                #print "k"
                 if hint:
-                    print "l"
                     self.on_hint_accept(None, binaryOK=True)
-                    print "m"
+                    #print "on_hint_accept", c
+                    #print "m"
                 else:
-                    print "n"
                     self.on_edit_accept(None, binaryOK=True)
-                    print "o"
-                print "p"
+                    #print "on_edit_accept", c
+                    #print "o"
                 self.active_register.binaryAcceptFinalize()
-                print "q"
+                #print "binaryAcceptFinalize", c
+                #print "q"
         else:
-            print "r"
-            if not self.active_register.nextBinaryAcceptPrepare():
-                print "s"
-                self.stop_binary_search()
-                print "t"
+            #print "determineNextTarget", c
+            if not self.active_register.nextBinaryAcceptPrepare(automatic=True):
+                #print "stop_nextBinaryAcceptPrepare_search", c
+                target = self.stop_binary_search(restart=True)
+                #print "stop_binary_search", c
+                #print ":::", target
+                #print "t"
                 if hint:
-                    print "u"
                     self.on_hint_accept(None, binaryOK=True)
-                    print "v"
+                    #print "on_hint_accept", c
+                    #print "v"
                 else:
-                    print "w"
                     self.on_edit_accept(None, binaryOK=True)
-                    print "x"
-                print "y"
+                    #print "on_edit_accept", c
+                    #print "x"
                 self.active_register.initialize()
-                print "z"
+                #print "initialize", c
+                if target != None:
+                    self.active_register.startBinarySearch(target=target, right=True)
+                    #print self.active_register.hasTarget()
+                    #print "startBinarySearch", c
+                #print "z"
             else:
-                print "za"
+                #print "stop_nextBinaryAcceptPrepare_search", c
+                #print "za"
                 if hint:
-                    print "zb"                
                     self.on_hint_accept(None, binaryOK=True)
-                    print "zc"
+                    #print "on_hint_accept", c
+                    #print "zc"
                 else:
-                    print "zd"
                     self.on_edit_accept(None, binaryOK=True)
-                    print "ze"
-                print "zf"
+                    #print "on_edit_accept", c
+                    #print "ze"
                 self.active_register.binaryAcceptFinalize()
-                print "zg"
+                #print "binaryAcceptFinalize", c
 
     def on_next_binary_accept(self, event):
         if self.active_register != self.new_entryreg_browser:
@@ -1392,7 +1419,7 @@ class MainWindow(wx.Frame):
              else:
                 #print "ok"
                 self.on_edit_accept(None, binaryOK=True)
-                self.active_register.binaryAcceptFinalize()
+                self.active_register.binaryAcceptFinalize(True)
     
     def on_prev_binary_accept(self, event):
         if self.active_register != self.new_entryreg_browser:
@@ -1406,7 +1433,7 @@ class MainWindow(wx.Frame):
              else:
                 #print "ok"
                 self.on_edit_accept(None, binaryOK=True)
-                self.active_register.binaryAcceptFinalize()
+                self.active_register.binaryAcceptFinalize(True)
 
     def invisible_binary_search(self, ficheId):
         self.notify = False
@@ -1421,7 +1448,8 @@ class MainWindow(wx.Frame):
         if self.active_register.binaryAvailable() and not self.active_register.binarySearchActive():
             if self.register_search.GetValue() != "":
                 self.start_binary_search(self.register_search.GetValue())
-            self.start_binary_search()
+            else:
+                self.start_binary_search()
         else:
             self.stop_binary_search()
 
@@ -1663,7 +1691,7 @@ class MainWindow(wx.Frame):
                     # zamiast sprawdzania flagi sprawdzanie czy dBController jest null
                 self.hintRegister = HintRegister(path) # zaladuj wykaz podpowiedzi
                 self.hintRegister.readUserHints(path)
-                self.hintRegister.sort()
+                #self.hintRegister.sort()
                 self.top_panel.setHintRegister(self.hintRegister) # gorna czesc panelu
                     # glownego musi miec referencje do wykazu podpowiedzi zeby
                     # wyswietlac podpowiedzi w panelu podpowiedzi

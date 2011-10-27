@@ -10,6 +10,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 # Library General Public License for more details.
 
+import time
 from xml.dom import Node
 
 def repeat(string, num):
@@ -85,4 +86,24 @@ def getTextContent(domElement):
 		for c in domElement.childNodes:
 			res += getTextContent(c)
 		return res
+
+class Counter:
+
+	def __init__(self):
+		self.__lastReading = time.time()
+	
+	def reset(self):
+		self.__lastReading = time.time()
+	
+	def read(self):
+		nowReading = time.time()
+		res = nowReading - self.__lastReading
+		self.__lastReading = nowReading
+		return res
+
+	def __str__(self):
+		nowReading = time.time()
+		res = nowReading - self.__lastReading
+		self.__lastReading = nowReading
+		return str(res)
 

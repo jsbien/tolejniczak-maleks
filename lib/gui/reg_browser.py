@@ -262,7 +262,7 @@ class RegisterBrowser(wx.ListView):
 	def binarySearchActive(self):
 		return self._binary
 
-	def stopBinarySearch(self):
+	def stopBinarySearch(self, restart=None):
 		self._binary = False
 		self.__unmarkScope()
 	

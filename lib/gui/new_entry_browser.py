@@ -13,7 +13,11 @@
 # TODO: C wyszukiwanie przyrostowe tu i w entry_browserze
 # TODO: C locate w przypadku wyszukiwania przyrostowego
 
+# TODO: !AAA przejscie do pojedynczej fiszki - przez accept+> nie przechodzi,
+# przez ] przechodzi i nie konczy binarnego - poprawic
+
 import wx
+import icu
 from maleks.gui.reg_browser import RegisterBrowser
 from maleks.maleks.useful import nvl
 from maleks.maleks import log
@@ -26,6 +30,7 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		self.__limit = 100
 		self.__localVeto = False
 		self.__binaryType = None
+		self.__collator = icu.Collator.createInstance(icu.Locale('pl_PL.UTF-8'))
 
 	def setLimit(self, limit):
 		self.__limit = limit
@@ -40,6 +45,7 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		self.__noLocate = False
 		self.__binaryTarget = None
 		self.__leftTargetBinary = False
+		self.__rightGuard = None
 		#self.__binaryType = None
 
 	def setDBController(self, controller):
@@ -238,13 +244,51 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 
 	def binaryAvailable(self):
 		return self.__level == "ENTRY"
+	
+	def __determineAutomaticSearchScope(self, right):
+		for i in self._items:
+			elem = self._item2element.get(i)
+			#print elem
+			if elem != None and isinstance(elem, tuple):
+				#print elem
+				#print unicode(nvl(elem[1]), "utf-8"), elem[2], "None" if elem[2] == None else unicode(elem[2], "utf-8")
+				#print self.__collator.compare(unicode(nvl(elem[1]), "utf-8"), self.__binaryTarget)
+				#if elem[2] != None:
+				#	print self.__collator.compare(unicode(elem[2], "utf-8"), self.__binaryTarget)
+				#else:
+				#	print "none"
+				#print self.__binaryTarget
+				#print "---"
+				if right:
+					if self.__collator.compare(unicode(nvl(elem[1]), "utf-8"), self.__binaryTarget) == 0:
+						return elem
+				else:
+					if (self.__collator.compare(unicode(nvl(elem[1]), "utf-8"), self.__binaryTarget) < 0 and (elem[2] == None or self.__collator.compare(unicode(elem[2], "utf-8"), self.__binaryTarget) > 0)) or unicode(nvl(elem[2]), "utf-8") == self.__binaryTarget:
+						return elem
+		return None
 
-	def startBinarySearch(self, target=None):
+	def startBinarySearch(self, target=None, right=False):
 		log.log(["startBinarySearch", self.__selectedElement, self.__binaryType])
 		self.__binaryScopeValid = True
 		self.__binaryTarget = target
+		#assert(self.__binaryTarget != None)
 		if self.__binaryTarget != None:
-			self.__leftTargetBinary = True
+			elem = self.__determineAutomaticSearchScope(right)
+			if elem == None:
+				#print "ojej!"
+				self.__binaryTarget = None
+				return
+			else:
+				self.__selectedElement = elem
+				self.__leftTargetBinary = not right
+				self.__firstIndexedFicheEntry = None
+				self.__rightGuard = None
+				if right:
+					for l in self._listeners:
+						l.on_structure_element_selected(self.__text(self.__selectedElement))
+		#print right, self.__leftTargetBinary			
+		#print self.__selectedElement, self.__binaryTarget
+		assert(self.__selectedElement != None)
 		if isinstance(self.__selectedElement, tuple):
 			(self.__leftFiche, self.__rightFiche, length) = self.__dBController.getGapCount(self.__selectedElement[1], self.__selectedElement[2])
 			self.__binaryType = "GAP"
@@ -256,13 +300,47 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		self.__right = length - 1
 		self.__selectCenter()
 
-	def stopBinarySearch(self):
+	def stopBinarySearch(self, restart=False):
 		log.log(["stopBinarySearch", self.__selectedElement, self.__binaryType])
 		self._binary = False
+		#print "@", restart
+		#print "restartujemy?"
+		#print restart, self.__binaryTarget, self.__leftTargetBinary
+		#if restart and self.__binaryTarget != None and self.__firstIndexedFicheEntry == self.__binaryTarget and self.__leftTargetBinary:
+		if restart and self.__binaryTarget != None and self.__leftTargetBinary:
+			#print "in"
+			#print "restartujemy!"
+			itemId = self.FindItem(-1, self.__binaryTarget, partial=True)
+			assert(itemId) != -1
+			elem = self._item2element.get(itemId + 1)
+			if elem != None and isinstance(elem, tuple) and unicode(nvl(elem[1]), "utf-8") == self.__binaryTarget:
+				#print "o!", elem
+				self.__selectedElement = elem
+				return self.__binaryTarget
+			else:
+				#print "els"
+				for i in self._items:
+					elem = self._item2element.get(i)
+					#print elem, unicode(nvl(elem[1]), "utf-8"), self.__binaryTarget
+					if elem != None and isinstance(elem, tuple) and unicode(nvl(elem[1]), "utf-8") == self.__binaryTarget:
+						self.__selectedElement = elem
+						return self.__binaryTarget
+		#print "ojej, stalo sie cos dziwnego"
 		self.__binaryTarget = None
+		self.__leftBinaryTarget = False
+		return None
 
-	def nextBinaryAcceptPrepare(self):
+	def nextBinaryAcceptPrepare(self, automatic=False):
 		log.log(["nextBinaryAcceptPrepare", self.__selectedElement, self.__binaryType])
+		#print "!", self.__left, self.__center, self.__right
+		#
+		#print "::", self.__left, self.__right
+		if self.__left == self.__right:
+			if not automatic:
+				for l in self._listeners:
+					l.stop_binary_search()
+			return False
+		#
 		self.__left = self.__center + 1
 		if self.__left > self.__right:
 			self.__left = self.__right
@@ -280,9 +358,17 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 			self.__leftFiche = self.__dBController.getFicheForEntryPosition(self.__selectedElement, self.__left)
 		return self.__selectCenterPrepare()
 
-	def prevBinaryAcceptPrepare(self):
+	def prevBinaryAcceptPrepare(self, automatic=False):
 		log.log(["prevBinaryAcceptPrepare", self.__selectedElement, self.__binaryType])
 		#print "!", self.__left, self.__center, self.__right
+		#
+		#print ":", self.__left, self.__right
+		if self.__left == self.__right:
+			if not automatic:
+				for l in self._listeners:
+					l.stop_binary_search()
+			return False
+		#
 		self.__right = self.__center - 1
 		if self.__right < self.__left:
 			self.__right = self.__left
@@ -314,19 +400,20 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		potentialPrevRight = self.__center - 1
 		if potentialPrevRight < potentialPrevLeft:
 			potentialPrevRight = potentialPrevLeft
-		lenn = potentialPrevRight - potentialPrevLeft - 1
-		if potentialPrevRight == potentialPrevLeft:
-			return
+		lenn = potentialPrevRight - potentialPrevLeft + 1
+		#if potentialPrevRight == potentialPrevLeft:
+		#	return
 		#print self.__left, self.__center, self.__right
 		self.__potentialPrevCenter = potentialPrevLeft + lenn / 2
+		assert(self.__potentialPrevCenter >= 0)
 		#print potentialPrevLeft, self.__potentialPrevCenter, potentialPrevRight
 		potentialNextLeft = self.__center + 1
 		potentialNextRight = self.__right
 		if potentialNextLeft > potentialNextRight:
 			potentialNextLeft = potentialNextRight
-		lenn = potentialNextRight - potentialNextLeft - 1
-		if potentialNextRight == potentialNextLeft:
-			return
+		lenn = potentialNextRight - potentialNextLeft + 1
+		#if potentialNextRight == potentialNextLeft:
+		#	return
 		self.__potentialNextCenter = potentialNextLeft + lenn / 2
 		self.__potentialPrevLeftFiche = self.__leftFiche
 		#print self.__selectedElement, potentialPrevRight, self.__potentialPrevCenter, potentialPrevLeft
@@ -354,19 +441,29 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		assert(self.__potentialNextCenterFiche != None and self.__potentialPrevCenterFiche != None)
 		self.__binaryScopeValid = False
 
-	def binaryAcceptFinalize(self):
+	def binaryAcceptFinalize(self, safe=False):
+		#from maleks.maleks.useful import Counter
+		#gc = Counter()
 		log.log(["binaryAcceptFinalize", self.__selectedElement, self.__binaryType])
 		self._selected = None
+		#c = Counter()
 		self.DeleteAllItems()
+		#print "DeleteAllItems", c
 		elements = self.__dBController.getEntriesRegisterWithGaps()
+		#print "getEntriesRegisterWithGaps", c
 		self.__fillRegister(elements)
 		#print "!!!", self.__left, self.__center, self.__right
 		#print "@@@", self.__leftFiche, self.__centerFiche, self.__rightFiche
-		self.__left = None
+		#print "fillRegister", c
+		self.__left = None		
+		#lc = Counter()
 		for (i, el) in self._item2element.iteritems():
 			#print "$$$", el, self.__centerFiche, self.__dBController.hasFiche(el, self.__centerFiche)
 			#print el
-			if self.__dBController.hasFiche(el, self.__centerFiche):
+			#c.reset()
+			has = self.__dBController.hasFiche(el, self.__centerFiche)
+			#print "hasFiche", c
+			if has:#self.__dBController.hasFiche(el, self.__centerFiche):
 				#print "has"
 				self.__selectedElement = el
 				for l in self._listeners:
@@ -374,34 +471,51 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 				if isinstance(el, tuple):
 					#print "tuple"
 					self.__binaryType = "GAP"
+					#c.reset()
 					(self.__left, self.__right, self.__center) = self.__dBController.getPositionsForFichesForGap(el[1], el[2], self.__leftFiche, self.__rightFiche, self.__centerFiche)
+					#print "getPositionsForFichesForGap", c
 				else:
 					#print "entry"
 					self.__binaryType = "ENTRY"
+					#c.reset
 					(self.__left, self.__right, self.__center) = self.__dBController.getPositionsForFichesForEntry(el, self.__leftFiche, self.__rightFiche, self.__centerFiche)
+					#print "getPositionsForFichesForEntry", c
 				#print self.__left, self.__center, self.__right
 				break
 			else:
 				pass
 				#print "not has"
+		#print "loop", lc
+		# TODO: C konczenie wyszukiwania z celem gdy wyladowalismy nie w GAP tylko w ENTRY
 		#print ":::::", self.__centerFiche
 		#print self.__leftFiche, self.__rightFiche, self.__left, self.__right, self.__center
 		assert(self.__left != None)
+		#c.reset()
 		for l in self._listeners:
 			l.invisible_binary_search(self.__centerFiche)
+		if safe and self.__left == self.__right:
+			for l in self._listeners:
+				l.stop_binary_search()
+		#print "loop2", c
+		#print "global", gc
 		
 	def nextBinary(self):
 		log.log(["nextBinary", self.__selectedElement, self.__binaryType])
+		# TODO: NOTE niepotrzebne? (bo w selectCenter)
+		#if self.__left == self.__right:
+		#	for l in self._listeners:
+		#		l.stop_binary_search()
+		#
 		self.__left = self.__center + 1
 		if self.__left > self.__right:
 			self.__left = self.__right
 		if not self.__binaryScopeValid:
 			self.__binaryScopeValid = True
 			self.__leftFiche = self.__potentialNextLeftFiche
-			if self.__left == self.__right:
-				for l in self._listeners:
-					l.stop_binary_search()
-				return
+			#if self.__left == self.__right:
+			#	for l in self._listeners:
+			#		l.stop_binary_search()
+			#	return
 			self.__center = self.__potentialNextCenter
 			self.__centerFiche = self.__potentialNextCenterFiche
 			self.__selectedElement = None
@@ -417,10 +531,15 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 						self.__binaryType = "ENTRY"
 						(self.__left, self.__right, self.__center) = self.__dBController.getPositionsForFichesForEntry(el, self.__leftFiche, self.__rightFiche, self.__centerFiche)
 					break
+			#print self.__left, self.__center, self.__right
+			#print self.__leftFiche, self.__centerFiche, self.__rightFiche
 			assert(self.__selectedElement != None)
 			for l in self._listeners:
 				l.on_structure_element_selected(self.__text(self.__selectedElement))
 				l.invisible_binary_search(self.__centerFiche)
+			if self.__left == self.__right:
+				for l in self._listeners:
+					l.stop_binary_search()
 			return
 		if self.__binaryType == "GAP":
 			self.__leftFiche = self.__dBController.getFicheForGapPosition(self.__selectedElement[1], self.__selectedElement[2], self.__left)
@@ -432,16 +551,21 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		log.log(["prevBinary", self.__selectedElement, self.__binaryType])
 		#print self.__right, self.__center, self.__left
 		#print self.__rightFiche, self.__centerFiche, self.__leftFiche
+		# TODO: NOTE niepotrzebne? (bo w selectCenter)
+		#if self.__left == self.__right:
+		#	for l in self._listeners:
+		#		l.stop_binary_search()
+		#
 		self.__right = self.__center - 1
 		if self.__right < self.__left:
 			self.__right = self.__left
 		if not self.__binaryScopeValid:
 			self.__binaryScopeValid = True
 			self.__rightFiche = self.__potentialPrevRightFiche
-			if self.__left == self.__right:
-				for l in self._listeners:
-					l.stop_binary_search()
-				return
+			#if self.__left == self.__right:
+			#	for l in self._listeners:
+			#		l.stop_binary_search()
+			#	return
 			self.__center = self.__potentialPrevCenter
 			self.__centerFiche = self.__potentialPrevCenterFiche
 			self.__selectedElement = None
@@ -459,10 +583,15 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 						self.__binaryType = "ENTRY"
 						(self.__left, self.__right, self.__center) = self.__dBController.getPositionsForFichesForEntry(el, self.__leftFiche, self.__rightFiche, self.__centerFiche)
 					break
+			#print self.__left, self.__center, self.__right
+			#print self.__leftFiche, self.__centerFiche, self.__rightFiche
 			assert(self.__selectedElement != None)
 			for l in self._listeners:
 				l.on_structure_element_selected(self.__text(self.__selectedElement))
 				l.invisible_binary_search(self.__centerFiche)
+			if self.__left == self.__right:
+				for l in self._listeners:
+					l.stop_binary_search()
 			return
 		if self.__binaryType == "GAP":
 			#print self.__selectedElement
@@ -473,30 +602,33 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		self.__selectCenter()
 		
 	def __selectCenterPrepare(self):
+		#print "select center fired"
 		lenn = self.__right - self.__left + 1
-		if self.__left == self.__right:
-			return False
 		self.__center = self.__left
 		self.__center += lenn // 2
 		if self.__binaryType == "GAP":
 			self.__centerFiche = self.__dBController.getFicheForGapPosition(self.__selectedElement[1], self.__selectedElement[2], self.__center)
 		else:
 			self.__centerFiche = self.__dBController.getFicheForEntryPosition(self.__selectedElement, self.__center)
+		#if self.__left == self.__right:
+		#	#print "ojej!"
+		#	return False
 		#if self.__left == self.__right == self.__center:
 		#	return False
-		return True			
+		return True
 			
 	def __selectCenter(self):
 		lenn = self.__right - self.__left + 1
-		if self.__left == self.__right:# == self.__center:
-			#for l in self._listeners:
-			#	l.on_structure_element_selected("")
-			for l in self._listeners:
-				l.stop_binary_search()
-			return
+		#:if self.__left == self.__right:# == self.__center:
+		#:	#for l in self._listeners:
+		#:	#	l.on_structure_element_selected("")
+		#:	for l in self._listeners:
+		#:		l.stop_binary_search()
+		#:	return
 		self.__center = self.__left
 		self.__center += lenn // 2
 		#print self.__binaryType, self.__center
+		#print ":::", self.__selectedElement, self.__center
 		if self.__binaryType == "GAP":
 			self.__centerFiche = self.__dBController.getFicheForGapPosition(self.__selectedElement[1], self.__selectedElement[2], self.__center)
 		else:
@@ -504,11 +636,13 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		assert(self.__centerFiche != None)
 		for l in self._listeners:
 			l.invisible_binary_search(self.__centerFiche)
-		#if self.__left == self.__right == self.__center:
+		#print self.__left, self.__center, self.__right
+		#print self.__leftFiche, self.__centerFiche, self.__rightFiche
+		if self.__left == self.__right:# == self.__center:
 		#	#for l in self._listeners:
 		#	#	l.on_structure_element_selected("")
-		#	for l in self._listeners:
-		#		l.stop_binary_search()
+			for l in self._listeners:
+				l.stop_binary_search()
 
 	def topLevel(self):
 		return self.__level == "ENTRY"
@@ -552,15 +686,20 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		return self.__binaryTarget != None
 
 	def determineNextTarget(self, entry):
-		# TODO: C co jak jestesmy w niewlasciwym elemencie (nie jestesmy w dziurze z tym celem)?
+		# TODO: C co jak jestesmy w niewlasciwym elemencie (nie jestesmy w dziurze z tym celem)?		
+		#print entry, self.__binaryTarget, self.__leftTargetBinary
 		if self.__leftTargetBinary:
-			if entry >= self.__binaryTarget:
+			if self.__collator.compare(entry, self.__binaryTarget) >= 0:
+				#print "left"
 				return "LEFT"
 			else: # TODO: C obsluga fiszek nie po kolei
+				#print "right"
 				return "RIGHT"
 		else:
-			if entry == self.__binaryTarget:
+			if self.__collator.compare(entry, self.__binaryTarget) <= 0:
+				#print "right2"
 				return "RIGHT"
 			else: # TODO: C j.w.
+				#print "left2"
 				return "LEFT"
 

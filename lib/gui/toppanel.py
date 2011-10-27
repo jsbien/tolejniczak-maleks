@@ -43,6 +43,7 @@ class TopPanel(wx.Panel, Notifier):
 		sizer.Add(wx.Panel(self), 0)
 		self.SetSizerAndFit(sizer)
 		self.__editPanel.Bind(wx.EVT_TEXT, self.editPanelChanged)
+		self.__editPanel.Bind(wx.EVT_KEY_UP, self.__onEditAcceptEnter, self.__editPanel)
 		self.__hintPanel.Bind(wx.EVT_TEXT, self.__hintPanelChanged)
 		self.Bind(wx.EVT_BUTTON, self.__onEditAccept, self.__editPanelAcceptButton)
 		self.Bind(wx.EVT_BUTTON, self.__onEditPrefixAccept, self.__editPanelPrefixAcceptButton)
@@ -52,6 +53,12 @@ class TopPanel(wx.Panel, Notifier):
 
 	def setHintRegister(self, register):
 		self.__hintRegister = register
+
+	def __onEditAcceptEnter(self, event):
+		if event.GetKeyCode() == wx.WXK_RETURN:
+			self.__onEditAccept(event)
+		else:
+			event.Skip()
 
 	def __onEditAccept(self, event):
 		for l in self._listeners:
@@ -66,7 +73,10 @@ class TopPanel(wx.Panel, Notifier):
 			l.on_hint_accept(event)
 
 	def editPanelChanged(self, event):
-		hint = self.__hintRegister.findHint(self.__editPanel.GetValue())
+		if self.__hintRegister == None:
+			hint = None
+		else:
+			hint = self.__hintRegister.findHint(self.__editPanel.GetValue())
 		if hint != None:
 			for l in self._listeners:
 				l.on_hint_changed(hint[0])

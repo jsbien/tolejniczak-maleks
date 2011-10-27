@@ -24,6 +24,8 @@ create table fiches (
 	comment varchar(50)
 );
 
+create index ficheIndex on fiches(fiche);
+
 create table pages (
 	fiche varchar(40) not null primary key,
 	page integer not null,
@@ -86,5 +88,6 @@ create view entries as
 	select position, f.fiche, entry
 	from fiches f left join actual_entries e
 	on f.fiche = e.fiche
+	where entry is not null
 	order by position;
 
