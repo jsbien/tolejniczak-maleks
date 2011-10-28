@@ -263,7 +263,7 @@ class DBEntryController(DBCommon):
 				if prev == None:
 					pos = self.__firstEntry(cursor, el)
 					num = int(self.__single(cursor, "select count(*) from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position < %s", (pos)))
-					num -= 1
+					#num -= 1
 					if num > 0:
 						newres.append((num, None, el))
 					newres.append(el)
@@ -277,7 +277,7 @@ class DBEntryController(DBCommon):
 				prev = el
 			pos = self.__lastEntry(cursor, prev)
 			num = int(self.__single(cursor, "select count(*) from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s", (pos)))
-			num -= 1
+			#num -= 1
 			if num > 0:
 				newres.append((num, prev, None))
 		self._closeDBAndCursor(cursor)

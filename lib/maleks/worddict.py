@@ -67,6 +67,9 @@ class WordDictionary:
 				return (u"", u"")
 			return self.__dict.get(h).findWord(t)
 
+	def neighbourhood(self, word):
+		pass	
+
 	def printYourself(self, level=0):
 		if self.__level == 0:
 			for (k, v) in self.__dict.iteritems():

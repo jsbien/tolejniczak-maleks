@@ -91,3 +91,12 @@ create view entries as
 	where entry is not null
 	order by position;
 
+delimiter /
+create procedure delete_entry(position integer)
+begin
+	delete from original_entries where fiche in (select f.fiche from fiches f where f.position = position);
+	delete from actual_entries where fiche in (select f.fiche from fiches f where f.position = position);
+end;
+/
+delimiter ;
+

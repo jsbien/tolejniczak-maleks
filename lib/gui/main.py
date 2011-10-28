@@ -917,20 +917,19 @@ class MainWindow(wx.Frame):
                 item.SetText(item.GetLabel())
         self.SetAcceleratorTable(mode.getAcceleratorTable())
 
-    def stop_binary_search(self, restart=False):
+    def stop_binary_search(self):
         #print ":", restart
-        target = self.active_register.stopBinarySearch(restart=restart)
+        self.active_register.stopBinarySearch()
         if not self.active_register.hasTarget():
             if self.active_register in [self.strucreg_browser]: # TODO: A zmiany stron w innych wykazach: czy pozwalac?
                 self._enable_page_change()
             self.SetStatusText("", 2)
-        return target
     
-    def start_binary_search(self, target=None):
+    def start_binary_search(self, target=None, restarting=False):
         if self.active_register in [self.strucreg_browser]:
             self._disable_page_change()
         self.SetStatusText(_("Binary search"), 2)
-        self.active_register.startBinarySearch(target=target)
+        self.active_register.startBinarySearch(target=target, restarting=restarting)
 
     def on_search_mode(self, event):
         if self.left_control.isSearchMode():
@@ -1336,7 +1335,8 @@ class MainWindow(wx.Frame):
             #print "determineNextTarget", c
             if not self.active_register.prevBinaryAcceptPrepare(automatic=True):
                 #print "prevBinaryAcceptPrepare", c
-                target = self.stop_binary_search(restart=True)
+                target = self.active_register.getTarget()
+                self.stop_binary_search()
                 #print "stop_binary_search", c
                 #print ":::", target
                 #print "d"
@@ -1349,9 +1349,11 @@ class MainWindow(wx.Frame):
                     #print "on_edit_accept", c
                     #print "h"
                 self.active_register.initialize()
+                target = self.active_register.restartable(target)
                 #print "initialize", c
                 if target != None:
-                    self.active_register.startBinarySearch(target=target, right=True)
+                    #self.active_register.startBinarySearch(target=target, restarting=True)
+                    self.start_binary_search(target=target, restarting=True)
                     #print "startBinarySearch", c
                     #print self.active_register.hasTarget()
                     #print "ji"
@@ -1374,7 +1376,8 @@ class MainWindow(wx.Frame):
             #print "determineNextTarget", c
             if not self.active_register.nextBinaryAcceptPrepare(automatic=True):
                 #print "stop_nextBinaryAcceptPrepare_search", c
-                target = self.stop_binary_search(restart=True)
+                target = self.active_register.getTarget()
+                self.stop_binary_search()
                 #print "stop_binary_search", c
                 #print ":::", target
                 #print "t"
@@ -1387,9 +1390,11 @@ class MainWindow(wx.Frame):
                     #print "on_edit_accept", c
                     #print "x"
                 self.active_register.initialize()
+                target = self.active_register.restartable(target)
                 #print "initialize", c
                 if target != None:
-                    self.active_register.startBinarySearch(target=target, right=True)
+                    #self.active_register.startBinarySearch(target=target, restarting=True)
+                    self.start_binary_search(target=target, restarting=True)
                     #print self.active_register.hasTarget()
                     #print "startBinarySearch", c
                 #print "z"

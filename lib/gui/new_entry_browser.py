@@ -45,7 +45,6 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		self.__noLocate = False
 		self.__binaryTarget = None
 		self.__leftTargetBinary = False
-		self.__rightGuard = None
 		#self.__binaryType = None
 
 	def setDBController(self, controller):
@@ -242,15 +241,18 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 			RegisterBrowser.select(self, elementId)
 			self.__noLocate = False
 
+
+	# --- WYSZUKIWANIE BINARNE --- #
+
 	def binaryAvailable(self):
 		return self.__level == "ENTRY"
 	
-	def __determineAutomaticSearchScope(self, right):
+	def __determineAutomaticSearchScope(self):#, right):
 		for i in self._items:
 			elem = self._item2element.get(i)
 			#print elem
 			if elem != None and isinstance(elem, tuple):
-				#print elem
+				#print elem, self.__binaryTarget
 				#print unicode(nvl(elem[1]), "utf-8"), elem[2], "None" if elem[2] == None else unicode(elem[2], "utf-8")
 				#print self.__collator.compare(unicode(nvl(elem[1]), "utf-8"), self.__binaryTarget)
 				#if elem[2] != None:
@@ -259,31 +261,38 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 				#	print "none"
 				#print self.__binaryTarget
 				#print "---"
-				if right:
-					if self.__collator.compare(unicode(nvl(elem[1]), "utf-8"), self.__binaryTarget) == 0:
-						return elem
-				else:
-					if (self.__collator.compare(unicode(nvl(elem[1]), "utf-8"), self.__binaryTarget) < 0 and (elem[2] == None or self.__collator.compare(unicode(elem[2], "utf-8"), self.__binaryTarget) > 0)) or unicode(nvl(elem[2]), "utf-8") == self.__binaryTarget:
-						return elem
-		return None
+				#:if right:
+				#:	if self.__collator.compare(unicode(nvl(elem[1]), "utf-8"), self.__binaryTarget) == 0:
+				#:		return elem
+				#:else:
+				#:	if (self.__collator.compare(unicode(nvl(elem[1]), "utf-8"), self.__binaryTarget) < 0 and (elem[2] == None or self.__collator.compare(unicode(elem[2], "utf-8"), self.__binaryTarget) > 0)) or unicode(nvl(elem[2]), "utf-8") == self.__binaryTarget:
+				if (elem[1] == None or self.__collator.compare(unicode(elem[1], "utf-8"), self.__binaryTarget) < 0) and (elem[2] == None or self.__collator.compare(unicode(elem[2], "utf-8"), self.__binaryTarget) >= 0):
+					return (elem, False)
+				if (elem[1] != None and self.__collator.compare(unicode(elem[1], "utf-8"), self.__binaryTarget) == 0) and (elem[2] == None or self.__collator.compare(unicode(elem[2], "utf-8"), self.__binaryTarget) > 0):
+					return (elem, True)
+		return (None, None)
 
-	def startBinarySearch(self, target=None, right=False):
+	def startBinarySearch(self, target=None, restarting=False):
 		log.log(["startBinarySearch", self.__selectedElement, self.__binaryType])
 		self.__binaryScopeValid = True
 		self.__binaryTarget = target
 		#assert(self.__binaryTarget != None)
+		#print "tu"
+		#print self.__binaryTarget, restarting
 		if self.__binaryTarget != None:
-			elem = self.__determineAutomaticSearchScope(right)
-			if elem == None:
-				#print "ojej!"
-				self.__binaryTarget = None
-				return
-			else:
-				self.__selectedElement = elem
-				self.__leftTargetBinary = not right
-				self.__firstIndexedFicheEntry = None
-				self.__rightGuard = None
-				if right:
+			if restarting:
+				for l in self._listeners:
+					l.on_structure_element_selected(self.__text(self.__selectedElement))
+			else:				
+				(elem, right) = self.__determineAutomaticSearchScope()
+				if elem == None:
+					#print "ojej!"
+					self.__binaryTarget = None
+					return
+				else:
+					self.__selectedElement = elem
+					self.__leftTargetBinary = not right
+					#self.__firstIndexedFicheEntry = None
 					for l in self._listeners:
 						l.on_structure_element_selected(self.__text(self.__selectedElement))
 		#print right, self.__leftTargetBinary			
@@ -300,31 +309,49 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		self.__right = length - 1
 		self.__selectCenter()
 
-	def stopBinarySearch(self, restart=False):
+	def restartable(self, binaryTarget):
+		#print binaryTarget
+		self.__binaryTarget = binaryTarget
+		(elem, right) = self.__determineAutomaticSearchScope()
+		#print elem, right
+		if elem != None:
+			#print elem, self.__binaryTarget
+			#assert(false)
+			self.__leftTargetBinary = not right
+			self.__selectedElement = elem
+			return self.__binaryTarget
+		self.__binaryTarget = None
+		self.__leftTargetBinary = False
+		return None
+
+	def getTarget(self):
+		return self.__binaryTarget
+
+	def stopBinarySearch(self):
 		log.log(["stopBinarySearch", self.__selectedElement, self.__binaryType])
 		self._binary = False
 		#print "@", restart
 		#print "restartujemy?"
 		#print restart, self.__binaryTarget, self.__leftTargetBinary
 		#if restart and self.__binaryTarget != None and self.__firstIndexedFicheEntry == self.__binaryTarget and self.__leftTargetBinary:
-		if restart and self.__binaryTarget != None and self.__leftTargetBinary:
+		#:if restart and self.__binaryTarget != None and self.__leftTargetBinary:
 			#print "in"
 			#print "restartujemy!"
-			itemId = self.FindItem(-1, self.__binaryTarget, partial=True)
-			assert(itemId) != -1
-			elem = self._item2element.get(itemId + 1)
-			if elem != None and isinstance(elem, tuple) and unicode(nvl(elem[1]), "utf-8") == self.__binaryTarget:
-				#print "o!", elem
-				self.__selectedElement = elem
-				return self.__binaryTarget
-			else:
-				#print "els"
-				for i in self._items:
-					elem = self._item2element.get(i)
-					#print elem, unicode(nvl(elem[1]), "utf-8"), self.__binaryTarget
-					if elem != None and isinstance(elem, tuple) and unicode(nvl(elem[1]), "utf-8") == self.__binaryTarget:
-						self.__selectedElement = elem
-						return self.__binaryTarget
+			#:itemId = self.FindItem(-1, self.__binaryTarget, partial=True)
+			#:assert(itemId) != -1 # TODO: NOTE niekoniecznie (bo binaryTarget mogl byc rozny od pierwszego zaindeksowanego hasla)
+			#:elem = self._item2element.get(itemId + 1)
+			#:if elem != None and isinstance(elem, tuple) and unicode(nvl(elem[1]), "utf-8") == self.__binaryTarget:
+			#:	#print "o!", elem
+			#:	self.__selectedElement = elem
+			#:	return self.__binaryTarget
+			#:else:
+			#:	#print "els"
+			#:	for i in self._items:
+			#:		elem = self._item2element.get(i)
+			#:		#print elem, unicode(nvl(elem[1]), "utf-8"), self.__binaryTarget
+			#:		if elem != None and isinstance(elem, tuple) and unicode(nvl(elem[1]), "utf-8") == self.__binaryTarget:
+			#:			self.__selectedElement = elem
+			#:			return self.__binaryTarget
 		#print "ojej, stalo sie cos dziwnego"
 		self.__binaryTarget = None
 		self.__leftBinaryTarget = False
@@ -335,6 +362,8 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		#print "!", self.__left, self.__center, self.__right
 		#
 		#print "::", self.__left, self.__right
+		if self.__center == self.__right and self.__left == self.__center - 1:
+			return False
 		if self.__left == self.__right:
 			if not automatic:
 				for l in self._listeners:
@@ -344,7 +373,7 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		self.__left = self.__center + 1
 		if self.__left > self.__right:
 			self.__left = self.__right
-		if not self.__binaryScopeValid:
+		if not self.__binaryScopeValid: # TODO: A po co?
 			self.__binaryScopeValid = True
 			self.__leftFiche = self.__potentialNextLeftFiche
 			if self.__left == self.__right:
@@ -372,7 +401,7 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 		self.__right = self.__center - 1
 		if self.__right < self.__left:
 			self.__right = self.__left
-		if not self.__binaryScopeValid:
+		if not self.__binaryScopeValid: # TODO: A po co?
 			self.__binaryScopeValid = True
 			self.__rightFiche = self.__potentialPrevRightFiche
 			if self.__right == self.__left:
@@ -463,6 +492,7 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 			#c.reset()
 			has = self.__dBController.hasFiche(el, self.__centerFiche)
 			#print "hasFiche", c
+			#print has
 			if has:#self.__dBController.hasFiche(el, self.__centerFiche):
 				#print "has"
 				self.__selectedElement = el
