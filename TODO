@@ -1,28 +1,48 @@
-* Komentarze w kodzie
-* Wyszukiwanie z celem i automatyczną zmianą dziury
+* Czy pokazywać w panelu podpowiedzi ostatnio dodany element czy aktualnie widoczną zawartość panelu podpowiedzi?
+
+Dokończyć wyszukiwanie celowe:
+
 * Traktowanie jednoelementowej dziury jako fiszki
 * Wyświetlanie liczby fiszek o danym haśle w wykazie haseł (można zrezygnować w razie gdyby okazało się za kosztowne lub sprawiało inne kłopoty)
-* Dokumentacja formatu kartoteki (katalogu z danymi)
-* Obsługa błędów, zachowanie w nietypowych sytuacjach (np. nie otwarto żadnego pliku)
-* Informacja o rozmiarze danych
 * Wyszukiwanie przyrostowe po dziurach
+* Wykrywanie haseł nie po kolei przy próbie akcpetacji
+* Zaznaczanie odpowiedniej dziury w trakcie wyszukiwania
+* Szacowanie ile zostało kroków w wyszukiwaniu binarnym (odpuścić na razie, liczyć w trakcie ile było i pokazać na końcu)
+* CTRL-ENTER w wykazie edycji przerzuca do niego napis z wykazu podpowiedzi
+* Focus automatycznie do panelu edycji po włączeniu wyszukiwania
+* Napis w pasku ścieżki: "epocha: epitymowy-epoka"
+* ENTER w pustym polu - akceptowanie targetu
+* Domyślnie pokazujemy w polu edycji podświetlony cel, ENTER akceptuje, wpisanie czegokolwiek kasuje
+* Historia wprowadzanych haseł, hasła sąsiednie (skróty klawiszowe do wpisywania w pole edycji)
+* Komunikat że akceptowana fiszka jest w złym miejscu (do przemyślenia)
+* Automatyczne znajdywanie bloku fiszek nie po kolei
+* Po zakończeniu wyszukiwania celowego powinna się wyświetlać ostatnia fiszka targetu
+* Na końcu wyszukiwania celowego komunikat "wyszukiwanie "XXX" zakończone w Y krokach" w panelu ścieżek
+* Zmiana implementacji wykazu podpowiedzi w celu szybkiej aktualiacji i przywrócenie synchronizacji z innymi wykazami
+* Przejście do wyszukiwania celowego z wykazu podpowiedzi (przez ENTER), lub do hasła jeżeli ma ono wpis w wykazie haseł
+
+Inne:
+
+* Komentarze w kodzie
+* Dokumentacja formatu kartoteki (katalogu z danymi), instrukcja i skrypt inicjowania
+* Obsługa błędów, zachowanie w nietypowych sytuacjach (np. nie otwarto żadnego pliku)
+* Informacja o rozmiarze danych (objętość kartoteki?) - kosmetyka
 * Akceptacja napisu w panelu edycji przez ENTER (do przemyślenia)
 * Wyszukiwanie przyrostowe w wykazie haseł powinno obejmować całą listę a nie tylko okienko
 * Tworzenie logów operacji użytkownika (pełna funkcjonalność niekoniecznie od razu - na początek logi potrzebne do usuwania błędów)
 * Testy dla dużych danych (3 miliony fiszek) i odpowiednie modyfikacje w razie pojawienia się problemów
 * Konfigurowalne skróty klawiszowe
+* Chodzenie do przodu po cofniętych fiszkach, możliwość cofania podczas wyszukiwania binarnego, edycja wyłącza binarne
 * Dostosowanie GUI do Windows
 * Przenośna wersja dla Windows
-* Zmiana implementacji wykazu podpowiedzi w celu szybkiej aktualiacji i przywrócenie synchronizacji z innymi wykazami
+* Panel komunikatów/informacyjny: ścieżka fiszki w panelu komunikatów, wyświetlanie skrótów klawiaturowe w panelu komunikatów, komunikaty dla użytkownika, informacje o dostępnych operacjach (do omówienia)
+* Problem z niewyświetlającymi się plikami DjVu
 * Synchronizacja między różnymi wykazami, przejście w każdym wykazie do aktualnie oglądanej fiszki (do omówienia: "aktualna fiszka* powinna być jakoś wyróżniona w każdym dostępnym wykazie (lub element do którego fiszka należy*)" - *czy w takim wypadku zmieniać element którego podelementy wyświetlamy, jeżeli fiszka należy do podelementu będącego w innym podelemencie?)
 * Rozwiązanie problemów zasygnalizowanych w http://fleksem.klf.uw.edu.pl/~jsbien/maleks/maleks.txt - patrz dopisek na końcu listy TODO
 * Zapisywanie wartości indeksów przy wychodzeniu z programu i w innych miejscach (poszukać), w ostateczności dodać przycisk "zapisz indeks"
 * Nawigacja w nowym wykazie haseł: PgUp, PgDn
 * Uporządkowanie spraw związanych z kasztowością
-* Chodzenie do przodu po cofniętych fiszkach
 * Położenie kursora po zakończeniu różnych operacji, inne sprawy związane z focusem (do wcześniejszego omówienia)
-* Wykrywanie haseł nie po kolei przy próbie akcpetacji
-* Panel komunikatów: ścieżka fiszki w panelu komunikatów, wyświetlanie skrótów klawiaturowe w panelu komunikatów, komunikaty dla użytkownika, informacje o dostępnych operacjach (do omówienia)
 * Przejście do następnej i POPRZEDNIEJ fiszki w porządku naturalnym dostępne zawsze, w razie gdy fiszki nie ma na wykazie komunikat "fiszka spoza wykazu" (do przemyślenia)
 * Zamiast panelu źródeł: najniższy wiersz w panelu - wypełniony jeżeli istnieje dokument zawierający tą fiszkę (wyświetlane położenie wyrażenia hasłowego i link do djvu)
 * Liczniki liczby obejrzeń fiszki (w pasku stanów lub panelu komunikatów)

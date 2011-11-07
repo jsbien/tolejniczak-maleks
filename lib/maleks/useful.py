@@ -11,6 +11,7 @@
 # Library General Public License for more details.
 
 import time
+import getpass
 from xml.dom import Node
 
 def repeat(string, num):
@@ -86,6 +87,19 @@ def getTextContent(domElement):
 		for c in domElement.childNodes:
 			res += getTextContent(c)
 		return res
+
+def getUser():
+	try:
+		res = getpass.getuser()
+	except:
+		res = str(_("unknown").encode("utf-8"))
+	return res
+
+def index(li, el):
+	try:
+		return li.index(el)
+	except ValueError:
+		return None
 
 class Counter:
 

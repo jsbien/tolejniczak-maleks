@@ -41,6 +41,7 @@ class RegisterBrowser(wx.ListView):
 			# na fiszce (jezeli odpowiednia informacja jest w indeksie)
 		self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.onSelect, self)
 		self._listeners = []
+		self._itemsNo = 0
 		self.reset()
 
 	# calkowicie resetuje widok - po wywolaniu tej metody jest on w tym samym
@@ -81,6 +82,12 @@ class RegisterBrowser(wx.ListView):
 	# zostala poprawnie otwarta)
 	def isActive(self):
 		return self._initialized
+
+	def _map(self, i):
+		return i
+
+	def _unmap(self, i):
+		return i
 	
 	# wypelnia widok wykazu elementami odpowiadajacymi fiszkom z wykazu zadaniowego reg
 	# getEntry to funkcja ktora dla identyfikatora danej fiszki zwraca haslo na tej fiszce (jezeli indeks hasel dla tej
@@ -91,28 +98,57 @@ class RegisterBrowser(wx.ListView):
 				l.stop_binary_search()
 		self.reset()
 		i = 0
+		self._itemsNo = 0
 		for element in reg: # dla kazdej fiszki w wykazie utworz odpowiedni element i wypelnij slowniki
-			self.InsertStringItem(i, element.getLabel())
+			print element
+			self.InsertStringItem(i, self._label(element))
 			self.SetStringItem(i, 1, "")
 			self.SetStringItem(i, 2, "")
-			self.SetStringItem(i, 3, (lambda x: nvl(getEntry(x)) if getEntry != None else "")(element.getId()))
+			self.SetStringItem(i, 3, self._secondColumn(element, getEntry))
 			self._items.append(i) # identyfikator elementu jest jednoczesnie jego indeksem w tablicy _items
-			self._item2element.setdefault(i, element.getId())
-			self._element2item.setdefault(element.getId(), i)
+			self._itemsNo += 1
+			self._item2element.setdefault(i, self._id(element))
+			self._element2item.setdefault(self._id(element), i)
+			self._customElementInitialization(element, i)
 			i += 1
 		self.SetColumnWidth(0, wx.LIST_AUTOSIZE) # dopasuj szerokosc kolumn do
 		self.SetColumnWidth(3, wx.LIST_AUTOSIZE) # ich zawartosci
 		self._initialized = True
 
+	def _itemsLen(self):
+		return self._itemsNo
+
+	def _itemOf(self, elementId):
+		return self._element2item.get(elementId)
+
+	def _elementOf(self, itemId):
+		return self._item2element.get(itemId)
+
+	def _customElementInitialization(self, element, i):
+		pass
+	
+	def _label(self, element):
+		return element.getLabel()
+	
+	def _id(self, element):
+		return element.getId()
+
+	def _secondColumn(self, element, getEntry):
+		if getEntry == None:
+			return ""
+		else:
+			return nvl(getEntry(self._id(element)))
+
 	# identyfikator fiszki ktorej odpowiada dany element widoku wykazu
 	def __getElementId(self, item):
-		return self._item2element[item.GetId()]
+		return self._elementOf(item.GetId())
 	
 	# zaznaczono element - metoda ta jest wywolywana zarowno w przypadku klikniecia
 	# na element widoku wykazu lub przejscia na element przy uzyciu strzalki jak
 	# rowniez w przypadku zaznaczenia przez wx.ListView.Select() w ktorejs z metod
 	# klasy RegisterBrowser
 	def onSelect(self, event):
+	#mapsafe
 		if self._binary and (not self.__programmaticSelect): # wyszukiwanie binarne jest
 				# aktywne - w takim przypadku nalezy je wylaczyc (zaznaczenie fiszki w czasie
 				# wyszukiwania binarnego przerywa je)
@@ -127,9 +163,9 @@ class RegisterBrowser(wx.ListView):
 			# wiec nie ma potrzeby powiadamiania go o tym fakcie - wtedy ustawiamy flage _veto;
 			# poniewaz w takiej sytuacji self._selected = itemId nie jest wykonywane w
 			# metodzie onSelect trzeba je wykonac w metodzie wywolujacej wx.ListView.Select
-			itemId = event.GetIndex() # TODO: NOTE http://wxpython-users.1045709.n5.nabble.com/wx-ListCtrl-Item-Information-on-Double-Click-td3394264.html
+			itemId = self._unmap(event.GetIndex()) # TODO: NOTE http://wxpython-users.1045709.n5.nabble.com/wx-ListCtrl-Item-Information-on-Double-Click-td3394264.html
 			self._selected = itemId
-			elementId = self._item2element[itemId]
+			elementId = self._elementOf(itemId)
 			self._element_selected(elementId) # TODO: NOTE to wywoluje zmiane strony a
 				# w konsekwencji RegisterBrowser.select - zatem dany element jest zaznaczany
 				# dwa razy (to nie powoduje jakichs duzych problemow)
@@ -143,23 +179,26 @@ class RegisterBrowser(wx.ListView):
 	# ze w pierwszym przypadku wogle nie powiadamiamy okna glownego o zaznaczeniu
 	# fiszki a w drugim powiadamiamy, ale ono nie wywoluje RegisterBrowser.select
 	def _element_selected(self, elementId, notify=True):
+	#mapsafe
 		for l in self._listeners:
 			l.on_reg_select(elementId, notify=notify) # powiadom o zaznaczeniu elementu
 	
 	# odznacz element o danym identyfikatorze
 	def _unselect(self, itemId):
+	#mapsafe
 		self._selected = None
-		self.Select(itemId, on=False)
+		self.Select(self._map(itemId), on=False)
 	
 	# zaznacz element o danym identyfikatorze
 	# jezeli veto = True to nie powiadamiaj glownego okna o zaznaczaniu elementu
 	def _select(self, itemId, veto=False):
+	#mapsafe
 		self.EnsureVisible(itemId)
 		if veto:
 			self._veto = True # ustaw flage dla onSelect
 			self._selected = itemId # TODO: NOTE bo z powodu veto nie bedzie ustawione w onSelect
 				# TODO: C jakos przeniesc do onSelect
-		self.Select(itemId) # powoduje wywolanie onSelect
+		self.Select(self._map(itemId)) # powoduje wywolanie onSelect
 		if self._binary: # TODO: NOTE onSelect (spowodowane przez akcje uzytkownika w GUI)
 			# w trybie binarnym powoduje wyjscie z wyszukiwania binarnego; onSelect spowodowane
 			# przez metode obslugujaca wyszukiwanie binarne nie robi nic (bo _veto i __programmaticSelect)
@@ -167,20 +206,22 @@ class RegisterBrowser(wx.ListView):
 			# okno:
 			# (TODO: C przeniesc do onSelect pod warunkiem if __programmaticSelect)
 			self._selected = itemId
-			self._element_selected(self._item2element[itemId], notify=False) # notify = False
+			self._element_selected(self._elementOf(itemId), notify=False) # notify = False
 				# zeby nie wywolac cyklu
 		if veto:
 			self._veto = False
 
 	# zaznacz fiszke o danym identyfikatorze
 	def select(self, elementId):
+	#mapsafe
 		if self._binary: # jesli binarne aktywne - przerwij
 			#self.stopBinarySearch()
 			for l in self._listeners:
 				l.stop_binary_search()
 		if self._selected != None:
 			self._unselect(self._selected)
-		itemId = self._element2item.get(elementId)
+		itemId = self._itemOf(elementId)
+		#print "select", itemId, elementId
 		if itemId != None:
 			self._select(itemId, veto=True) # veto=True bo ta metoda jest wywolywana
 				# z okna glownego wiec nie ma potrzeby powiadamiac go o zaznaczeniu
@@ -203,7 +244,7 @@ class RegisterBrowser(wx.ListView):
 				self._select(itemId, veto=True) # veto=True - nie chcemy wywolac onSelect
 					# z _veto=False bo spowodowaloby to _element_selected z notify ustawionym
 					# na True
-				self._element_selected(self._item2element[itemId], notify=False) # notify
+				self._element_selected(self._elementOf(itemId), notify=False) # notify
 					# = False bo nie ma potrzeby wywolywania RegisterBrowser.select (bo
 					# odpowiedni element zostal przed chwila zaznaczony)
 			else:
@@ -237,12 +278,12 @@ class RegisterBrowser(wx.ListView):
 	# fiszki) ma prefix rowny text (text - napis w okienku wyszukiwania w panelu
 	# wykazow)
 	# zwraca identyfikator elementu lub -1 jezeli takiego elementu nie ma
-	def findItem(self, column, text):
-		for i in self._items:
-			item = self.GetItem(i, column)
-			if os.path.commonprefix([item.GetText(), text]) == text:
-				return i
-		return -1
+	#def findItem(self, column, text):
+	#	for i in self._items:
+	#		item = self.GetItem(i, column)
+	#		if os.path.commonprefix([item.GetText(), text]) == text:
+	#			return i
+	#	return -1
 
 	# zaznacz element ktorego etykieta (napis w pierwszej kolumnie bedacy opisem
 	# fiszki) ma prefix rowny text (text - napis w okienku wyszukiwania w panelu
@@ -307,7 +348,7 @@ class RegisterBrowser(wx.ListView):
 
 	# zacznij wyszukiwanie binarne i inicjalizuj odpowiednie zmienne
 	# target - wykorzystywany tylko przez NewEntryRegisterBrowser
-	def startBinarySearch(self, target=None):
+	def startBinarySearch(self, target=None, restarting=False):
 		self._binary = True
 		self.__left = 0
 		self.__right = len(self._items) - 1

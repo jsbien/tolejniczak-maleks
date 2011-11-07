@@ -45,6 +45,7 @@ from maleks.gui.page import PageWidget, PercentZoom, OneToOneZoom, StretchZoom, 
 #from djvusmooth.gui.outline_browser import OutlineBrowser
 #from djvusmooth.gui.maparea_browser import MapAreaBrowser
 from maleks.gui.reg_browser import RegisterBrowser
+from maleks.gui.window_reg_browser import WindowRegisterBrowser
 from maleks.gui.struc_browser import StructureRegisterBrowser
 from maleks.gui.entry_browser import EntryRegisterBrowser
 from maleks.gui.new_entry_browser import NewEntryRegisterBrowser
@@ -757,13 +758,13 @@ class MainWindow(wx.Frame):
             else:
                 ok = True
         #print "add fiches", c
-        #if self.hintRegister.addHint(self.top_panel.getEditPanelContent()):
+        if self.hintRegister.addHint(self.top_panel.getEditPanelContent()):
             #c = Counter()
-            #self.hintreg_browser.setRegister(self.hintRegister)
+            self.hintreg_browser.incrementalAdd(self.top_panel.getEditPanelContent())
             #print "po", c
             # TODO: A typy (np. ponizej jest unicode ktore jest uzywane do znajdywania stringow itemowych)
-            #self.hintreg_browser.hintChanged(self.top_panel.getEditPanelContent())
-            #self.top_panel.editPanelChanged(None)
+            self.hintreg_browser.hintChanged(self.top_panel.getEditPanelContent())
+            self.top_panel.editPanelChanged(None)
         self.dirty = True # TODO: NOTE bo mozemy musiec np. zapisac do pliku dodana powyzej podpowiedz
         self.ignore_entries = True
         #print "add hint", c
@@ -864,6 +865,11 @@ class MainWindow(wx.Frame):
         
     # TODO: A flage __fileOpen i sprawdzanie we wszystkich istotnych metodach
 
+    #def on_me(self, evt):
+    #    #self.hintreg_browser.reinitialize()
+    #    if self.hintRegister.addHint(u"inneHaslo"):
+    #        self.hintreg_browser.incrementalAdd(u"inneHaslo")
+
     def _setup_modes(self):
         li = []
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('E'), self.on_edit_accept)
@@ -881,6 +887,7 @@ class MainWindow(wx.Frame):
         self._install_shortcut(li, wx.ACCEL_CTRL, ord(']'), self.on_next_binary_accept)
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('['), self.on_prev_binary_accept)
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('B'), self.on_stop_binary)
+        #self._install_shortcut(li, wx.ACCEL_CTRL, ord('J'), self.on_me)
         mode = Mode(_('Default mode'), accel=wx.AcceleratorTable(li))
         mode.addMenuShortcut(self.on_open, "Ctrl+O")
         mode.addMenuShortcut(self.on_close, "Ctrl+W")

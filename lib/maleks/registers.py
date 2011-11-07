@@ -11,11 +11,10 @@
 # General Public License for more details.
 
 import os
-import getpass
 import icu
 #from maleks.i18n import _
 from maleks.maleks.worddict import WordDictionary
-from maleks.maleks.useful import ustr
+from maleks.maleks.useful import ustr, getUser, Counter
 
 def _(s):
 	return s
@@ -29,13 +28,6 @@ def commonprefix(a, b):
 		pref += a[i] 
 	return pref
 
-def getUser():
-	try:
-		res = getpass.getuser()
-	except:
-		res = str(_("unknown").encode("utf-8"))
-	return res
-
 def anyHint((a, b, c, d)):
 	return a if a != "" else (b if b != "" else c)
 
@@ -43,9 +35,9 @@ class HintRegister(object):
 
 	def __init__(self, abspath):
 		self.__entries = []
-		self.__dict17 = WordDictionary(5)
-		self.__dictLin = WordDictionary(5)
-		self.__dictDor = WordDictionary(5)
+		self.__dict17 = WordDictionary(5, (u"", u""))
+		self.__dictLin = WordDictionary(5, (u"", u""))
+		self.__dictDor = WordDictionary(5, (u"", u""))
 		self.__new = []
 		self.__path = abspath
 		if os.path.exists(abspath + "/hint.reg"):
@@ -59,12 +51,14 @@ class HintRegister(object):
 					els[i] = els[i].replace('\\;', ',').replace('\\\\', '\\')
 				siglum = self.__computeSiglum(els)
 				self.__entries.append((els[0], els[1], els[2], siglum))
+				#c = Counter()
 				if els[0] != '':
 					self.__dict17.addWord(ustr(els[0]), (els[0], siglum))
 				if els[1] != '':
 					self.__dictLin.addWord(ustr(els[1]), (els[1], siglum))
 				if els[2] != '':
 					self.__dictDor.addWord(ustr(els[2]), (els[2], siglum))
+				#print c
 			f.close()
 
 	def __computeSiglum(self, els):
@@ -91,6 +85,7 @@ class HintRegister(object):
 				self.__entries.append((els[0], "", "", "(" + els[1] + ")"))
 				self.__dict17.addWord(ustr(els[0]), (els[0], "(" + els[1] + ")"))
 			f.close()
+			self.sort()
 
 	# TODO: A dokladnie omowic kasztowosc (tutaj i w innych przypadkach)
 	def findHint(self, entry):
@@ -135,12 +130,12 @@ class HintRegister(object):
 		(lcp17, sig17) = self.__dict17.findWord(ustr(hint))
 		(lcpLin, sigLin) = self.__dictLin.findWord(ustr(hint))
 		(lcpDor, sigDor) = self.__dictDor.findWord(ustr(hint))
-		#print lcp17, lcpLin, lcpDor, hint
-		if lcp17 == ustr(hint) or lcpLin == ustr(hint) or lcpDor == ustr(hint):
+		if ustr(lcp17) == ustr(hint) or ustr(lcpLin) == ustr(hint) or ustr(lcpDor) == ustr(hint):
 			return False
 			self.__new.append(str(hint.encode("utf-8")) + "\t" + getUser())
 		self.__dict17.addWord(ustr(hint), (str(hint.encode("utf-8")), "(" + getUser() + ")"))
 		self.__entries.append((str(hint.encode("utf-8")), "", "", "(" + getUser() + ")"))
+		self.sort()
 		self.__new.append(str(hint.encode("utf-8")) + "\t" + getUser())
 		return True
 	#def addHint(self, hint):
@@ -170,6 +165,9 @@ class HintRegister(object):
 	def __getitem__(self, ind):
 		return self.__entries[ind]
 
+	def __len__(self):
+		return len(self.__entries)
+
 class TaskRegister(object):
 
 	def __init__(self, abspath, index, empty=False):
@@ -188,6 +186,9 @@ class TaskRegister(object):
 	
 	def __getitem__(self, ind):
 		return self.__ids[ind]
+	
+	def __len__(self):
+		return len(self.__ids)
 
 	def saveToFile(self, path):
 		f = open(path, "w")

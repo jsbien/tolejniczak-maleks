@@ -283,6 +283,18 @@ class DBEntryController(DBCommon):
 		self._closeDBAndCursor(cursor)
 		return newres
 
+	#def getPartialEntriesRegisterWithGaps(self, entries);
+	#	cursor = self._openDBWithCursor()
+	#	res = []
+	#	self._execute(cursor, "select distinct entry from actual_entries order by entry")
+	#	row = cursor.fetchone()
+	#	while row != None:
+	#		res.append(str(row[0]))
+	#		row = cursor.fetchone()
+	#	prev = ""
+	#	self._execute(cursor, "select distinct entry from actual_entries order by entry")
+	#	pass
+
 	def __smartLimit(self, cursor, query, pars, limitStart, atleast, limit):
 		if atleast != None:
 			self._execute(cursor, query.replace("#", "count(*)"), pars)
