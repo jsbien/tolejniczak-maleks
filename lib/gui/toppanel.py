@@ -50,6 +50,10 @@ class TopPanel(wx.Panel, Notifier):
 		self.Bind(wx.EVT_BUTTON, self.__onHintAccept, self.__hintPanelAcceptButton)
 		self.__hintRegister = None
 		self.__hint = None
+		self.__browsingHistory = False
+
+	def focus(self):
+		self.__editPanel.SetFocus()
 
 	def setHintRegister(self, register):
 		self.__hintRegister = register
@@ -73,6 +77,9 @@ class TopPanel(wx.Panel, Notifier):
 			l.on_hint_accept(event)
 
 	def editPanelChanged(self, event):
+		if not self.__browsingHistory:
+			for l in self._listeners:
+				l.stop_browsing_entry_history(event)
 		if self.__hintRegister == None:
 			hint = None
 		else:
@@ -106,7 +113,16 @@ class TopPanel(wx.Panel, Notifier):
 		self.__editPanel.SetValue(content)
 		self.editPanelChanged(None)
 
-	def setEntry(self, entry):
+	def setEntry(self, entry, browsingHistory=False):
+		if browsingHistory:
+			self.__browsingHistory = True
 		self.__editPanel.SetValue(entry)
 		self.editPanelChanged(None)
+		if browsingHistory:
+			self.__browsingHistory = False
+
+	def refreshForAutomaticBinary(self, target):
+		self.setEntry(target)
+		self.__hintPanel.SetFocus()
+		self.focus()
 

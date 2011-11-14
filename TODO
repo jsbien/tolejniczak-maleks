@@ -3,33 +3,38 @@ Ostatnio wykonane:
 * Wyszukiwanie przyrostowe po dziurach
 * Zerowanie bazy danych w programie
 * Skasowanie w panelu indeksów trybu wyszukiwania
+* Efektywne odświeżanie wykazu haseł w wyszukiwaniu binarnym
+* Focus automatycznie do panelu edycji po włączeniu wyszukiwania
+* Zmiana implementacji wykazu podpowiedzi w celu szybkiej aktualizacji i przywrócenie synchronizacji z innymi wykazami
+* Domyślnie pokazujemy w polu edycji podświetlony cel, ENTER akceptuje, wpisanie czegokolwiek kasuje
+* Historia wprowadzanych haseł (skróty klawiszowe do wpisywania w pole edycji)
+* ENTER w pustym polu - akceptowanie targetu
 
 Dokończyć wyszukiwanie celowe:
 
+* Rozpoczynanie wyszukiwania celowego na dziurze jednoelementowej
 * Traktowanie jednoelementowej dziury jako fiszki
 * Wyświetlanie liczby fiszek o danym haśle w wykazie haseł (można zrezygnować w razie gdyby okazało się za kosztowne lub sprawiało inne kłopoty)
 * Wykrywanie haseł nie po kolei przy próbie akceptacji
 * Zaznaczanie odpowiedniej dziury w trakcie wyszukiwania
 * Szacowanie ile zostało kroków w wyszukiwaniu binarnym (odpuścić na razie, liczyć w trakcie ile było i pokazać na końcu)
 * CTRL-ENTER w wykazie edycji przerzuca do niego napis z wykazu podpowiedzi
-* Focus automatycznie do panelu edycji po włączeniu wyszukiwania
 * Napis w pasku ścieżki: "epocha: epitymowy-epoka"
-* ENTER w pustym polu - akceptowanie targetu
-* Domyślnie pokazujemy w polu edycji podświetlony cel, ENTER akceptuje, wpisanie czegokolwiek kasuje
-* Historia wprowadzanych haseł, hasła sąsiednie (skróty klawiszowe do wpisywania w pole edycji)
+* Hasła sąsiednie (skróty klawiszowe do wpisywania w pole edycji)
 * Komunikat że akceptowana fiszka jest w złym miejscu (do przemyślenia)
 * Automatyczne znajdywanie bloku fiszek nie po kolei
 * Po zakończeniu wyszukiwania celowego powinna się wyświetlać ostatnia fiszka targetu
-* Na końcu wyszukiwania celowego komunikat "wyszukiwanie "XXX" zakończone w Y krokach" w panelu ścieżek
-* Zmiana implementacji wykazu podpowiedzi w celu szybkiej aktualiacji i przywrócenie synchronizacji z innymi wykazami
+* Na końcu wyszukiwania celowego komunikat "wyszukiwanie "XXX" zakończone w Y krokach" w panelu ścieżek (a może do panelu komunikatów?)
 * Przejście do wyszukiwania celowego z wykazu podpowiedzi (przez ENTER), lub do hasła jeżeli ma ono wpis w wykazie haseł
 
-Inne na już:
+Inne na teraz:
 
-* Efektywność
+* Sprawdzić zachowanie się panelu hipotezy w wyszukiwaniu celowym.
+* Wyszukiwanie prefiksowe w wykazie podpowiedzi
 
 Inne:
 
+* Efektywne odświeżanie wykazu haseł przy modyfikacji nie w wyszykiwaniu binarnym
 * Czy pokazywać w panelu podpowiedzi ostatnio dodany element czy aktualnie widoczną zawartość panelu podpowiedzi (do omówienia)
 * Komentarze w kodzie
 * Dokumentacja formatu kartoteki (katalogu z danymi), instrukcja i skrypt inicjowania

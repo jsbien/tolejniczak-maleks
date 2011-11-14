@@ -10,7 +10,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 # General Public License for more details.
 
-# TODO: !!!A sprawdzic czy naprawde potrzeba drzewa i nie wystarczy plaski slownik
+# TODO: !!!A sprawdzic czy naprawde potrzeba drzewa i nie wystarczy plaski slownik / wyszukiwanie binarne?
 # TODO: !!!A zrobic porzadne wyszukiwanie przyrostowe dla panelu podpowiedzi i wykazu okienkowego
 
 import icu

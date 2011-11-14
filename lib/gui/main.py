@@ -535,6 +535,8 @@ class MainWindow(wx.Frame):
         
         self.page_widget.zoom = FitPageZoom()
         self.history = []
+        self.actual_entry = None
+        self.entry_history_index = 0
         self._ficheId = None
         self.goingBack = False
         self.fiche_for_locate = None
@@ -733,6 +735,44 @@ class MainWindow(wx.Frame):
         li.append((accel, key, idd))
         return li
 
+    ENTRY_HISTORY_LIMIT = 100
+
+    def addToHistory(self, entry):
+        if len(self.entry_history) > MainWindow.ENTRY_HISTORY_LIMIT:
+            self.entry_history = self.entry_history[1:]
+        self.entry_history.append(entry)
+
+    def on_nav_history_prev(self, event):
+        if len(self.entry_history) != 0:
+            if not self.browsing_entry_history:
+                self.browsing_entry_history = True
+                self.actual_entry = self.top_panel.getEditPanelContent()
+                self.entry_history_index = len(self.entry_history) - 1
+                #print "started", "show", self.entry_history_index, "of", self.entry_history, self.actual_entry
+            elif self.entry_history_index > 0:
+                #print "decrease", self.entry_history_index
+                self.entry_history_index -= 1
+                #print "show", self.entry_history_index, "of", self.entry_history, self.actual_entry
+            self.top_panel.setEntry(self.entry_history[self.entry_history_index], browsingHistory=True)
+
+    def on_nav_history_next(self, event):
+        if len(self.entry_history) != 0 and self.browsing_entry_history:
+            if self.entry_history_index < len(self.entry_history):
+                #print "increase", self.entry_history_index
+                self.entry_history_index += 1
+            if self.entry_history_index < len(self.entry_history):
+                #print "show", self.entry_history_index, "of", self.entry_history, self.actual_entry
+                self.top_panel.setEntry(self.entry_history[self.entry_history_index], browsingHistory=True)
+            else:
+                #print "show actual entry", self.entry_history, self.actual_entry
+                self.top_panel.setEntry(self.actual_entry, browsingHistory=True)
+            
+
+    def stop_browsing_entry_history(self, event):
+        if self.browsing_entry_history:
+            self.browsing_entry_history = False
+        #print "invalidated"
+
     def on_reset_db(self, event):
         if self.dBController != None:
             if wx.MessageDialog(self, "Are you sure?", "Exit", wx.YES_NO).ShowModal() == wx.ID_YES:
@@ -740,15 +780,23 @@ class MainWindow(wx.Frame):
 
     # TODO: A rozne przypadki bledow:
     
-    def on_edit_accept(self, event, binaryOK = False):
+    def on_edit_accept(self, event, binaryOK=False, target=None):
         #print "edit"
         #if self.active_register.binarySearchActive() and not binaryOK:
         #    return
         #from maleks.maleks.useful import Counter
         #c = Counter()
         if self.top_panel.getEditPanelContent() == '':
-            self.error_box(_('Empty edit panel'))
-            return
+            if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive() and (not binaryOK) and self.active_register.hasTarget():
+                self.on_automatic_binary_accept(emptyPanel=True)
+                return
+            elif binaryOK:
+                entry = target if target != None else self.active_register.getTarget()
+            else:
+                self.error_box(_('Empty edit panel'))
+                return
+        else:
+            entry = self.top_panel.getEditPanelContent()
         ok = False
         #print "ok"
         if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive():
@@ -765,30 +813,30 @@ class MainWindow(wx.Frame):
                 #print "F"
         #print "po"
         #print "poczatek", c
-        entry = self.top_panel.getEditPanelContent()
         if self.dBController != None:
-            msg = self.dBController.addFicheToEntriesIndex(self.ficheId, self.top_panel.getEditPanelContent())
+            msg = self.dBController.addFicheToEntriesIndex(self.ficheId, entry)
             if msg != None:
                 self.error_box(msg)
                 return
             else:
+                self.addToHistory(entry)
                 ok = True
         #print "add fiches", c
-        if self.hintRegister.addHint(self.top_panel.getEditPanelContent()):
+        if self.hintRegister.addHint(entry):
             #c = Counter()
-            self.hintreg_browser.incrementalAdd(self.top_panel.getEditPanelContent())
+            self.hintreg_browser.incrementalAdd(entry)
             #print "po", c
             # TODO: A typy (np. ponizej jest unicode ktore jest uzywane do znajdywania stringow itemowych)
-            self.hintreg_browser.hintChanged(self.top_panel.getEditPanelContent())
+            self.hintreg_browser.hintChanged(entry)
             self.top_panel.editPanelChanged(None)
         self.dirty = True # TODO: NOTE bo mozemy musiec np. zapisac do pliku dodana powyzej podpowiedz
         self.ignore_entries = True
         #print "add hint", c
         if self.active_register.allowsNextFiche() and self.active_register.hasSelection() and not self.active_register.binarySearchActive():
             if ok:
-                self.lastEntry = self.top_panel.getEditPanelContent()
+                self.lastEntry = entry
                 self.wasEditAccept = True
-            self.active_register.getNextFiche(self.top_panel.getEditPanelContent())
+            self.active_register.getNextFiche(entry)
         else:
             if not binaryOK and self.active_register == self.new_entryreg_browser:
                 if self.active_register.binarySearchActive():
@@ -816,12 +864,20 @@ class MainWindow(wx.Frame):
     def on_structure_element_selected(self, path):
         self.regbar.setPath(path)
 
-    def on_hint_accept(self, event, binaryOK=False):
+    def on_hint_accept(self, event, binaryOK=False, target=None):
         #if self.active_register.binarySearchActive():
         #    return
         if self.top_panel.getHint() == '':
-            self.error_box(_('Empty hint panel'))
-            return
+            if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive() and (not binaryOK) and self.active_register.hasTarget():
+                self.on_automatic_binary_accept(hint=True, emptyPanel=True)
+                return
+            elif binaryOK:
+                entry = target if target != None else self.active_register.getTarget()
+            else:
+                self.error_box(_('Empty hint panel'))
+                return
+        else:
+            entry = self.top_panel.getHint()
         ok = False
         if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive():
             if not binaryOK:
@@ -829,18 +885,18 @@ class MainWindow(wx.Frame):
                     self.on_automatic_binary_accept(hint=True)
                     return
                 self.active_register.prepareForActiveBinary()
-        entry = self.top_panel.getHint()
         if self.dBController != None:
-            msg = self.dBController.addFicheToEntriesIndex(self.ficheId, self.top_panel.getHint())
+            msg = self.dBController.addFicheToEntriesIndex(self.ficheId, entry)
             if msg != None:
                 self.error_box(msg)
                 return
             else:
+                self.addToHistory(entry)
                 ok = True
         self.ignore_entries = True
         if self.active_register.allowsNextFiche() and self.active_register.hasSelection() and not self.active_register.binarySearchActive():
             if ok:
-                self.lastEntry = self.top_panel.getHint()
+                self.lastEntry = entry
                 self.wasEditAccept = True
             self.active_register.getNextFiche()
         else:
@@ -904,6 +960,8 @@ class MainWindow(wx.Frame):
         self._install_shortcut(li, wx.ACCEL_CTRL, ord(']'), self.on_next_binary_accept)
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('['), self.on_prev_binary_accept)
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('B'), self.on_stop_binary)
+        self._install_shortcut(li, wx.ACCEL_CTRL, wx.WXK_LEFT, self.on_nav_history_prev)
+        self._install_shortcut(li, wx.ACCEL_CTRL, wx.WXK_RIGHT, self.on_nav_history_next)
         #self._install_shortcut(li, wx.ACCEL_CTRL, ord('J'), self.on_me)
         mode = Mode(_('Default mode'), accel=wx.AcceleratorTable(li))
         mode.addMenuShortcut(self.on_open, "Ctrl+O")
@@ -954,6 +1012,10 @@ class MainWindow(wx.Frame):
             self._disable_page_change()
         self.SetStatusText(_("Binary search"), 2)
         self.active_register.startBinarySearch(target=target, restarting=restarting)
+        if self.active_register == self.new_entryreg_browser and self.active_register.hasTarget():
+            self.top_panel.refreshForAutomaticBinary(self.active_register.getTarget())
+        elif self.active_register == self.new_entryreg_browser:
+            self.top_panel.focus()
 
     def on_search_mode(self, event):
         if self.left_control.isSearchMode():
@@ -1351,12 +1413,17 @@ class MainWindow(wx.Frame):
          if self.active_register.binarySearchActive() and not self.active_register.hasTarget():
              self.active_register.prevBinary()
 
-    def on_automatic_binary_accept(self, hint=False):
+    def on_automatic_binary_accept(self, hint=False, emptyPanel=False):
         #print "a"
         #from maleks.maleks.useful import Counter
         #c = Counter()
-        entry = self.top_panel.getEditPanelContent()
-        if self.active_register.determineNextTarget(self.top_panel.getEditPanelContent()) == "LEFT":
+        if emptyPanel:
+            entry = self.active_register.getTarget()
+        elif hint:
+            entry = self.top_panel.getHint()
+        else:
+            entry = self.top_panel.getEditPanelContent()
+        if self.active_register.determineNextTarget(entry) == "LEFT":
             #print "determineNextTarget", c
             if not self.active_register.prevBinaryAcceptPrepare(automatic=True):
                 #print "prevBinaryAcceptPrepare", c
@@ -1366,11 +1433,11 @@ class MainWindow(wx.Frame):
                 #print ":::", target
                 #print "d"
                 if hint:
-                    self.on_hint_accept(None, binaryOK=True)
+                    self.on_hint_accept(None, binaryOK=True, target=target)
                     #print "on_hint_accept", c
                     #print "f"
                 else:
-                    self.on_edit_accept(None, binaryOK=True)
+                    self.on_edit_accept(None, binaryOK=True, target=target)
                     #print "on_edit_accept", c
                     #print "h"
                 self.active_register.initialize(entry)
@@ -1395,6 +1462,7 @@ class MainWindow(wx.Frame):
                     #print "on_edit_accept", c
                     #print "o"
                 self.active_register.binaryAcceptFinalize(entry)
+                self.top_panel.refreshForAutomaticBinary(self.active_register.getTarget())
                 #print "binaryAcceptFinalize", c
                 #print "q"
         else:
@@ -1407,11 +1475,11 @@ class MainWindow(wx.Frame):
                 #print ":::", target
                 #print "t"
                 if hint:
-                    self.on_hint_accept(None, binaryOK=True)
+                    self.on_hint_accept(None, binaryOK=True, target=target)
                     #print "on_hint_accept", c
                     #print "v"
                 else:
-                    self.on_edit_accept(None, binaryOK=True)
+                    self.on_edit_accept(None, binaryOK=True, target=target)
                     #print "on_edit_accept", c
                     #print "x"
                 self.active_register.initialize(entry)
@@ -1435,6 +1503,7 @@ class MainWindow(wx.Frame):
                     #print "on_edit_accept", c
                     #print "ze"
                 self.active_register.binaryAcceptFinalize(entry)
+                self.top_panel.refreshForAutomaticBinary(self.active_register.getTarget())
                 #print "binaryAcceptFinalize", c
 
     def on_next_binary_accept(self, event):
@@ -1668,6 +1737,9 @@ class MainWindow(wx.Frame):
         self.lastEntry = None
         self.fiche_for_locate = None
         self.locate = 0
+        self.entry_history = []
+        self.entry_index = -1
+        self.browsing_entry_history = False
 
     # zamkniecie aktualnie otwartej karotetki i otwarcie nowej (jezeli path != None)
     def do_open(self, path):

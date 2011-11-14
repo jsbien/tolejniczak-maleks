@@ -100,7 +100,7 @@ class RegisterBrowser(wx.ListView):
 		i = 0
 		self._itemsNo = 0
 		for element in reg: # dla kazdej fiszki w wykazie utworz odpowiedni element i wypelnij slowniki
-			print element
+			#print element
 			self.InsertStringItem(i, self._label(element))
 			self.SetStringItem(i, 1, "")
 			self.SetStringItem(i, 2, "")
