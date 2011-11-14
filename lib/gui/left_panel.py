@@ -426,21 +426,21 @@ class ControlPanel(wx.Panel, Notifier):
 		wx.Panel.__init__(self, *args, **kwargs)
 		Notifier.__init__(self)
 		sizer = wx.BoxSizer(wx.HORIZONTAL)
-		self.__button = wx.CheckBox(self, wx.ID_ANY)
+		#:self.__button = wx.CheckBox(self, wx.ID_ANY)
 		#self.__down = wx.ComboBox(self, wx.ID_ANY)
-		sizer.Add(self.__button, 0, wx.EXPAND)
-		sizer.Add(wx.StaticText(self, label=_("Search mode")), 0, wx.EXPAND)
+		#:sizer.Add(self.__button, 0, wx.EXPAND)
+		#:sizer.Add(wx.StaticText(self, label=_("Search mode")), 0, wx.EXPAND)
 		self.SetSizer(sizer)
-		self.Bind(wx.EVT_CHECKBOX, self.__onClick)
+		#:self.Bind(wx.EVT_CHECKBOX, self.__onClick)
 
 	def __onClick(self, event):
 		for l in self._listeners:
 			l.on_search_mode(event)
 
-	def stopSearch(self):
-		self.__button.SetValue(False)
-		self.__onClick(None)
+	#def stopSearch(self):
+	#	self.__button.SetValue(False)
+	#	self.__onClick(None)
 
-	def isSearchMode(self):
-		return self.__button.GetValue()
+	#def isSearchMode(self):
+	#	return self.__button.GetValue()
 

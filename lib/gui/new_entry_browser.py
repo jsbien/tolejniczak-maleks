@@ -135,6 +135,7 @@ class NewEntryRegisterBrowser(RegisterBrowser):
 			ind = self.__index + self._items.index(itemId) - self.__limit / 2
 			if ind < 0:
 				ind = 0
+			#print self._items.index(itemId), len(self._items), itemId
 			if (self._items.index(itemId) / float(len(self._items)) < 0.25 or self._items.index(itemId) / float(len(self._items)) > 0.75) and len(self._items) > 1:
 				if self.__level == "FICHE-GAP":
 					(elements, self.__index, self.__next) = self.__dBController.getFichesForGap(self.__selectedElement[1], self.__selectedElement[2], self.__limit, ind, len(self._items))

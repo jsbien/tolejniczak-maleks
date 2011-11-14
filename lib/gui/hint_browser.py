@@ -66,6 +66,7 @@ class HintRegisterBrowser(WindowRegisterBrowser):
 			#self._items.insert(ind, ind)
 			self._elements.insert(ind, stru(hint))
 			self._elementLabels.insert(ind, ustr(hint))
+		self._itemsNo += 1
 		#print c
 		self._reloadSelect(ind, veto=True)
 
@@ -83,6 +84,7 @@ class HintRegisterBrowser(WindowRegisterBrowser):
 
 	# TODO: C warunki brzegowe?
 	# TODO: A sprawdzanie czy rowne?
+	# TODO: A zintegrowac z _findItem
 	def __binaryFind(self, what):
 		collator = icu.Collator.createInstance(icu.Locale('pl_PL.UTF-8'))
 		def __pom(left, right):

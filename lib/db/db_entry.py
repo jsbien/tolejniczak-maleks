@@ -12,8 +12,12 @@
 
 import MySQLdb
 import time
-from maleks.i18n import _
+import icu
+#from maleks.i18n import _
 from maleks.maleks.useful import ustr
+
+def _(x):
+	return x
 
 class DBCommon(object):
 
@@ -22,14 +26,23 @@ class DBCommon(object):
 			return None
 		return obj
 
-	def __init__(self, config):
-		self.__user = config.read('dbuser', '')
-		self.__globalUser = self.__user
-		self.__passwd = config.read('dbpass', '')
-		self.__globalPasswd = self.__passwd
-		self.__db = config.read('db', '')
-		self.__globalDb = self.__db
+	def __init__(self, config=None):
+		if config != None:
+			self.__user = config.read('dbuser', '')
+			self.__globalUser = self.__user
+			self.__passwd = config.read('dbpass', '')
+			self.__globalPasswd = self.__passwd
+			self.__db = config.read('db', '')
+			self.__globalDb = self.__db
 		self.__conn = None
+
+	def configure(self, user, passwd, db):
+		self.__user = user
+		self.__globalUser = self.__user
+		self.__passwd = passwd
+		self.__globalPasswd = passwd
+		self.__db = db
+		self.__globalDB = db
 
 	def setPerDocumentConnection(self, db, user, passwd):
 		self.__user = user if user != None else self.__globalUser
@@ -81,8 +94,8 @@ INF = 10000000000
 
 class DBEntryController(DBCommon):
 
-	def __init__(self, config):
-		DBCommon.__init__(self, config)
+	def __init__(self, config=None):
+		DBCommon.__init__(self, config=config)
 
 	def __firstEntry(self, cursor, entry):
 		self._execute(cursor, "select max(position) from fiches f, actual_entries e where f.fiche = e.fiche and entry < %s", (entry))
@@ -227,7 +240,7 @@ class DBEntryController(DBCommon):
 		self._closeDBAndCursor(cursor)
 		return (leftFiche, rightFiche, centerFiche)
 
-	def getEntriesRegisterWithGaps(self):
+	def getEntriesRegisterWithGaps(self, preloadedEntries=None):
 		cursor = self._openDBWithCursor()
 		#self._execute(cursor, "select distinct entry from fiches f, actual_entries e where f.fiche = e.fiche and position = 0")
 		##self._execute(cursor, "select min(position) from fiches")
@@ -236,14 +249,17 @@ class DBEntryController(DBCommon):
 		##if cursor.fetchone() == None:
 		##	res = [_("First fiche")]
 		##else:
-		res = []
-		#&self._execute(cursor, "select distinct entry from fiches f, actual_entries e where f.fiche = e.fiche order by position")
-		self._execute(cursor, "select distinct entry from actual_entries order by entry")
-		row = cursor.fetchone()
-		while row != None:
-			res.append(str(row[0]))
+		if preloadedEntries == None:
+			res = []
+			#&self._execute(cursor, "select distinct entry from fiches f, actual_entries e where f.fiche = e.fiche order by position")
+			self._execute(cursor, "select distinct entry from actual_entries order by entry")
 			row = cursor.fetchone()
-		prev = ""
+			while row != None:
+				res.append(str(row[0]))
+				row = cursor.fetchone()
+			prev = ""
+		else:
+			res = preloadedEntries
 		##self._execute(cursor, "select entry from actual_entries where fiche = (select fiche from fiches where position <> %s order by position desc limit 1)", (minPos))
 		##if cursor.fetchone() == None:
 		##	res.append(_("Last fiche"))
@@ -283,17 +299,159 @@ class DBEntryController(DBCommon):
 		self._closeDBAndCursor(cursor)
 		return newres
 
-	#def getPartialEntriesRegisterWithGaps(self, entries);
-	#	cursor = self._openDBWithCursor()
-	#	res = []
-	#	self._execute(cursor, "select distinct entry from actual_entries order by entry")
-	#	row = cursor.fetchone()
-	#	while row != None:
-	#		res.append(str(row[0]))
-	#		row = cursor.fetchone()
-	#	prev = ""
-	#	self._execute(cursor, "select distinct entry from actual_entries order by entry")
-	#	pass
+	NEIGHBOURHOOD = 3
+	
+	def __zero(self, i):
+		if i < 0:
+			return 0
+		else:
+			return i
+
+	def __max(self, i, m):
+		if i > m:
+			return m
+		else:
+			return i
+			
+	SMART_LIMIT = 2
+	
+	def __binaryFind(self, text, li): # jesli nie ma zwraca nastepne haslo, poprzednie w razie gdy osiagnieto koniec listy
+		collator = icu.Collator.createInstance(icu.Locale('pl_PL.UTF-8'))
+		def __pom(left, right):
+			#print left, right, stru(text)
+			#print stru(self._elementLabels[left]), stru(self._elementLabels[right])
+			if left == right:
+				if collator.compare(li[left], text) >= 0:
+					return left
+				else:
+					return left + 1
+			elif left + 1 == right:
+				if collator.compare(li[left], text) >= 0:
+					return left
+				elif collator.compare(li[right], text) >= 0:
+					return right
+				else:
+					return right + 1
+			lenn = right - left
+			center = left + lenn // 2
+			#print center, stru(self._elementLabels[center])
+			if collator.compare(li[center], text) == 0:
+				return center
+			elif collator.compare(li[center], text) > 0:
+				return __pom(left, center - 1)
+			else:
+				return __pom(center + 1, right)
+		res = __pom(0, len(li) - 1)
+		if res == len(li):
+			res -= 1
+		return res
+
+	def getPartialEntriesRegisterWithGaps(self, entries):
+		cursor = self._openDBWithCursor()
+		res = []
+		neighbourhoods = []
+		myEntries = []
+		self._execute(cursor, "select distinct entry from actual_entries order by entry")
+		row = cursor.fetchone()
+		while row != None:
+			myEntries.append(str(row[0]))
+			row = cursor.fetchone()
+		if len(myEntries) < DBEntryController.SMART_LIMIT:
+			self._closeDBAndCursor(cursor)
+			return (self.getEntriesRegisterWithGaps(myEntries), False)
+		hasFirstNone = int(self.__single(cursor, "select count(*) from entries where position = (select min(position) from fiches)", ())) == 0
+		hasLastNone = int(self.__single(cursor, "select count(*) from entries where position = (select max(position) from fiches)", ())) == 0
+		inds = []
+		for e in entries:
+			#ind = myEntries.index(e)
+			ind = self.__binaryFind(e, myEntries) # bo dziury
+			inds.append(self.__zero(ind - DBEntryController.NEIGHBOURHOOD))
+			inds.append(self.__max(ind + DBEntryController.NEIGHBOURHOOD, len(myEntries)))
+		fromm  = min(inds)
+		too = max(inds)
+		if True:
+		#for e in entries:
+			neighbours = []
+		#	for i in range(self.__zero(ind - DBEntryController.NEIGHBOURHOOD), self.__max(ind + DBEntryController.NEIGHBOURHOOD, len(myEntries))):
+			for i in range(fromm, too):
+				neighbours.append(myEntries[i])
+		#	#fromm = self._execute(cursor, "select min(position) from entries where entry = %s", (neighbours[0]))
+		#	#too = self._execute(cursor, "select max(position) from entries where entry = %s", (neighbours[-1]))
+			prev = None
+			newres = []
+			for el in neighbours:
+				firstEntry = self.__firstEntry(cursor, el)
+				if firstEntry == INF:
+					newres.append(el)
+					continue
+				if prev == None and el == myEntries[0]:
+					pos = self.__firstEntry(cursor, el)
+					num = int(self.__single(cursor, "select count(*) from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position < %s", (pos)))
+					if num > 0:
+						newres.append((num, None, el))
+					newres.append(el)
+				elif prev == None:
+					newres.append(el)
+				elif prev != None:
+					posa = self.__firstEntry(cursor, el)
+					posb = self.__lastEntry(cursor, prev)
+					num = int(self.__single(cursor, "select count(*) from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and position < %s", (posb, posa)))
+					if num > 0:
+						newres.append((num, prev, el))
+					newres.append(el)
+				prev = el
+			if neighbours[-1] == myEntries[-1]:
+				pos = self.__lastEntry(cursor, prev)
+				num = int(self.__single(cursor, "select count(*) from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s", (pos)))
+				if num > 0:
+					newres.append((num, prev, None))
+			neighbourhoods.append((ustr(e), newres))
+		#neighbourhoods = self.__combine(neighbourhoods)
+		self._closeDBAndCursor(cursor)
+		return (neighbourhoods, True, hasFirstNone, hasLastNone)
+
+	#def __eq(self, a, b):
+	#	if isinstance(a, tuple) and isinstance(b, tuple):
+	#		return a[1] == b[1] and a[2] == b[2]
+	#	elif isinstance(a, str) and isinstance(b, str):
+	#		return a == b
+	#	else:
+	#		return False
+
+	#def __join(self, n1, n2):
+	#	for i in range(0, len(n1)):
+	#		for j in range(0, len(n2)):
+	#			if len(n1[i + 1:]) < len(n2[j + 1:]) and self.__eq(n1[i], n2[j]):
+	#				res = n1[0:i + 1]
+	#			for k in range(j + 1, len(n2)):
+	#					res.append(n2[k])
+	#				return res
+	#	return None
+
+	#def __combine(self, neighbourhoods):
+	#	was = True
+	#	while was:
+	#		was = False
+	#		newNeys = neighbourhoods
+	#		for n1 in neighbourhoods:
+	#			#print type(n1[0])
+	#			ok = True
+	#			for n2 in neighbourhoods:
+	#				#print type(n2[0])
+	#				#print n1, n2
+	#				if n2 != n1:
+	#					new = self.__join(n1[1], n2[1])
+	#					if new != None:
+	#						newNeys.remove(n1)
+	#						newNeys.remove(n2)
+	#						newNeys.append((n1[0], new))
+	#						was = True
+	#						ok = False
+	#						break
+	#			if not ok:
+	#				break
+	#		neighbourhoods = newNeys
+	#	return neighbourhoods			
 
 	def __smartLimit(self, cursor, query, pars, limitStart, atleast, limit):
 		if atleast != None:

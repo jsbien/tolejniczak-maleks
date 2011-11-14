@@ -1,11 +1,14 @@
-* Czy pokazywać w panelu podpowiedzi ostatnio dodany element czy aktualnie widoczną zawartość panelu podpowiedzi?
+Ostatnio wykonane:
+
+* Wyszukiwanie przyrostowe po dziurach
+* Zerowanie bazy danych w programie
+* Skasowanie w panelu indeksów trybu wyszukiwania
 
 Dokończyć wyszukiwanie celowe:
 
 * Traktowanie jednoelementowej dziury jako fiszki
 * Wyświetlanie liczby fiszek o danym haśle w wykazie haseł (można zrezygnować w razie gdyby okazało się za kosztowne lub sprawiało inne kłopoty)
-* Wyszukiwanie przyrostowe po dziurach
-* Wykrywanie haseł nie po kolei przy próbie akcpetacji
+* Wykrywanie haseł nie po kolei przy próbie akceptacji
 * Zaznaczanie odpowiedniej dziury w trakcie wyszukiwania
 * Szacowanie ile zostało kroków w wyszukiwaniu binarnym (odpuścić na razie, liczyć w trakcie ile było i pokazać na końcu)
 * CTRL-ENTER w wykazie edycji przerzuca do niego napis z wykazu podpowiedzi
@@ -21,8 +24,13 @@ Dokończyć wyszukiwanie celowe:
 * Zmiana implementacji wykazu podpowiedzi w celu szybkiej aktualiacji i przywrócenie synchronizacji z innymi wykazami
 * Przejście do wyszukiwania celowego z wykazu podpowiedzi (przez ENTER), lub do hasła jeżeli ma ono wpis w wykazie haseł
 
+Inne na już:
+
+* Efektywność
+
 Inne:
 
+* Czy pokazywać w panelu podpowiedzi ostatnio dodany element czy aktualnie widoczną zawartość panelu podpowiedzi (do omówienia)
 * Komentarze w kodzie
 * Dokumentacja formatu kartoteki (katalogu z danymi), instrukcja i skrypt inicjowania
 * Obsługa błędów, zachowanie w nietypowych sytuacjach (np. nie otwarto żadnego pliku)

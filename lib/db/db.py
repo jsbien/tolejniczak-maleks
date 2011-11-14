@@ -12,14 +12,23 @@
 
 import _mysql_exceptions
 from maleks.db.db_work import DBWorkController
-from maleks.i18n import _
+#from maleks.i18n import _
 from maleks.maleks.registers import TaskRegister
 from maleks.maleks.fiche import Fiche
 
+def _(x):
+	return x
+
 class DBController(DBWorkController):
 
-	def __init__(self, config):
-		DBWorkController.__init__(self, config)
+	def __init__(self, config=None):
+		DBWorkController.__init__(self, config=config)
+
+	def reset(self):
+		cursor = self._openDBWithCursor()
+		cursor.execute("truncate actual_entries");
+		cursor.execute("truncate original_entries");
+		self._closeDBAndCursor(cursor)
 
 	def addFicheToFichesIndex(self, ficheId):
 		cursor = self._openDBWithCursor()

@@ -126,6 +126,9 @@ msgstr ""
 "programu.\n"
 "\n"
 
+msgid "Are you sure?"
+msgstr "Na pewno?"
+
 msgid "Arrow"
 msgstr "Strzałka"
 
@@ -225,6 +228,9 @@ msgstr "Wklęsły"
 
 msgid "Etched out"
 msgstr "Wypukły"
+
+msgid "Exit"
+msgstr "Wyjście"
 
 msgid "Export bookmarks"
 msgstr "Eksportuj zakładki"
@@ -356,6 +362,9 @@ msgstr "Otwórz plik: "
 msgid "Open task register"
 msgstr "Otwórz wykaz zadaniowy"
 
+msgid "&Operations"
+msgstr "&Operacje"
+
 msgid "Original entry"
 msgstr "Hasło oryginalne"
 
@@ -395,6 +404,12 @@ msgstr "Prostokąt"
 
 msgid "Remove details"
 msgstr "Usuń szczegóły"
+
+msgid "Remove entries from database"
+msgstr "Usuń hasła z bazy danych"
+
+msgid "&Reset database"
+msgstr "&Zrestartuj bazę danych"
 
 msgid "Scope"
 msgstr "Zakres"

@@ -11,14 +11,17 @@
 # General Public License for more details.
 
 import MySQLdb
-from maleks.i18n import _
+#from maleks.i18n import _
 from maleks.maleks.useful import ustr
 from maleks.db.db_entry import DBEntryController, INF
 
+def _(x):
+	return x
+
 class DBWorkController(DBEntryController):
 
-	def __init__(self, config):
-		DBEntryController.__init__(self, config)
+	def __init__(self, config=None):
+		DBEntryController.__init__(self, config=config)
 
 	"""def __firstEntry(self, cursor, entry):
 		cursor.execute("select max(position) from fiches f, actual_entries e where f.fiche = e.fiche and entry < %s", (entry))

@@ -48,7 +48,7 @@ from maleks.gui.reg_browser import RegisterBrowser
 from maleks.gui.window_reg_browser import WindowRegisterBrowser
 from maleks.gui.struc_browser import StructureRegisterBrowser
 from maleks.gui.entry_browser import EntryRegisterBrowser
-from maleks.gui.new_entry_browser import NewEntryRegisterBrowser
+from maleks.gui.new_entry_browser2 import NewEntryRegisterBrowser
 from maleks.gui.hint_browser import HintRegisterBrowser
 from maleks.gui.toppanel import TopPanel
 from maleks.gui.regbar import RegisterToolbar
@@ -552,9 +552,10 @@ class MainWindow(wx.Frame):
         menu_bar.Append(self._create_file_menu(), _('&File'))
         #menu_bar.Append(self._create_edit_menu(), _('&Edit'))
         menu_bar.Append(self._create_view_menu(), _('&View'))
-        menu_bar.Append(self._create_go_menu(), _('&Go'));
-        menu_bar.Append(self._create_settings_menu(), _('&Settings'));
-        menu_bar.Append(self._create_help_menu(), _('&Help'));
+        menu_bar.Append(self._create_go_menu(), _('&Go'))
+        menu_bar.Append(self._create_operations_menu(), _('&Operations'))
+        menu_bar.Append(self._create_settings_menu(), _('&Settings'))
+        menu_bar.Append(self._create_help_menu(), _('&Help'))
         self.SetMenuBar(menu_bar)
 
     def _create_file_menu(self):
@@ -672,6 +673,15 @@ class MainWindow(wx.Frame):
             self._menu_item(menu, caption, help, method, icon = icon)
         return menu
 
+    def _create_operations_menu(self):
+        menu = wx.Menu()
+        for caption, help, method, icon in \
+        [
+            (_(u'&Reset database'), _(u'Remove entries from database'), self.on_reset_db, None)
+        ]:
+            self._menu_item(menu, caption, help, method, icon = icon)
+        return menu
+
     def _create_settings_menu(self):
         menu = wx.Menu()
         #sidebar_menu_item = self._menu_item(menu, _('Show &sidebar') + '\tF9', _('Show/hide the sidebar'), self.on_show_sidebar, style=wx.ITEM_CHECK)
@@ -723,6 +733,11 @@ class MainWindow(wx.Frame):
         li.append((accel, key, idd))
         return li
 
+    def on_reset_db(self, event):
+        if self.dBController != None:
+            if wx.MessageDialog(self, "Are you sure?", "Exit", wx.YES_NO).ShowModal() == wx.ID_YES:
+                self.dBController.reset()
+
     # TODO: A rozne przypadki bledow:
     
     def on_edit_accept(self, event, binaryOK = False):
@@ -750,6 +765,7 @@ class MainWindow(wx.Frame):
                 #print "F"
         #print "po"
         #print "poczatek", c
+        entry = self.top_panel.getEditPanelContent()
         if self.dBController != None:
             msg = self.dBController.addFicheToEntriesIndex(self.ficheId, self.top_panel.getEditPanelContent())
             if msg != None:
@@ -776,9 +792,9 @@ class MainWindow(wx.Frame):
         else:
             if not binaryOK and self.active_register == self.new_entryreg_browser:
                 if self.active_register.binarySearchActive():
-                    self.active_register.initializeForActiveBinary()
+                    self.active_register.initializeForActiveBinary(entry)
                 else:
-                    self.active_register.initialize()
+                    self.active_register.initialize(entry)
                     # TODO: C zakladamy tutaj ze level jest ENTRY (a zatem allowsNextFiche), ale co jak allowsNextFiche ale nie hasSelection?
             self.update_indices()
         self.ignore_entries = False
@@ -813,6 +829,7 @@ class MainWindow(wx.Frame):
                     self.on_automatic_binary_accept(hint=True)
                     return
                 self.active_register.prepareForActiveBinary()
+        entry = self.top_panel.getHint()
         if self.dBController != None:
             msg = self.dBController.addFicheToEntriesIndex(self.ficheId, self.top_panel.getHint())
             if msg != None:
@@ -829,9 +846,9 @@ class MainWindow(wx.Frame):
         else:
             if self.active_register == self.new_entryreg_browser:
                 if self.active_register.binarySearchActive():
-                    self.active_register.initializeForActiveBinary()
+                    self.active_register.initializeForActiveBinary(entry)
                 else:
-                    self.active_register.initialize()
+                    self.active_register.initialize(entry)
             self.update_indices()
         self.ignore_entries = False
 
@@ -1338,6 +1355,7 @@ class MainWindow(wx.Frame):
         #print "a"
         #from maleks.maleks.useful import Counter
         #c = Counter()
+        entry = self.top_panel.getEditPanelContent()
         if self.active_register.determineNextTarget(self.top_panel.getEditPanelContent()) == "LEFT":
             #print "determineNextTarget", c
             if not self.active_register.prevBinaryAcceptPrepare(automatic=True):
@@ -1355,7 +1373,7 @@ class MainWindow(wx.Frame):
                     self.on_edit_accept(None, binaryOK=True)
                     #print "on_edit_accept", c
                     #print "h"
-                self.active_register.initialize()
+                self.active_register.initialize(entry)
                 target = self.active_register.restartable(target)
                 #print "initialize", c
                 if target != None:
@@ -1376,7 +1394,7 @@ class MainWindow(wx.Frame):
                     self.on_edit_accept(None, binaryOK=True)
                     #print "on_edit_accept", c
                     #print "o"
-                self.active_register.binaryAcceptFinalize()
+                self.active_register.binaryAcceptFinalize(entry)
                 #print "binaryAcceptFinalize", c
                 #print "q"
         else:
@@ -1396,7 +1414,7 @@ class MainWindow(wx.Frame):
                     self.on_edit_accept(None, binaryOK=True)
                     #print "on_edit_accept", c
                     #print "x"
-                self.active_register.initialize()
+                self.active_register.initialize(entry)
                 target = self.active_register.restartable(target)
                 #print "initialize", c
                 if target != None:
@@ -1416,36 +1434,38 @@ class MainWindow(wx.Frame):
                     self.on_edit_accept(None, binaryOK=True)
                     #print "on_edit_accept", c
                     #print "ze"
-                self.active_register.binaryAcceptFinalize()
+                self.active_register.binaryAcceptFinalize(entry)
                 #print "binaryAcceptFinalize", c
 
     def on_next_binary_accept(self, event):
         if self.active_register != self.new_entryreg_browser:
             return
         if self.active_register.binarySearchActive() and not self.active_register.hasTarget():
+             entry = self.top_panel.getEditPanelContent()
              if not self.active_register.nextBinaryAcceptPrepare():
                 #print "ojej"
                 self.stop_binary_search()
                 self.on_edit_accept(None, binaryOK=True)
-                self.active_register.initialize()
+                self.active_register.initialize(entry)
              else:
                 #print "ok"
                 self.on_edit_accept(None, binaryOK=True)
-                self.active_register.binaryAcceptFinalize(True)
+                self.active_register.binaryAcceptFinalize(entry, True)
     
     def on_prev_binary_accept(self, event):
         if self.active_register != self.new_entryreg_browser:
             return
         if self.active_register.binarySearchActive() and not self.active_register.hasTarget():
+             entry = self.top_panel.getEditPanelContent()
              if not self.active_register.prevBinaryAcceptPrepare():
                 #print "ojej"
                 self.stop_binary_search()
                 self.on_edit_accept(None, binaryOK=True)
-                self.active_register.initialize()
+                self.active_register.initialize(entry)
              else:
                 #print "ok"
                 self.on_edit_accept(None, binaryOK=True)
-                self.active_register.binaryAcceptFinalize(True)
+                self.active_register.binaryAcceptFinalize(entry, True)
 
     def invisible_binary_search(self, ficheId):
         self.notify = False
@@ -1827,8 +1847,8 @@ class MainWindow(wx.Frame):
             return
         # TODO: C co jak dBController == None (co z thaw/freeze? w indeksach itp.)
         if self.dBController != None:
-            if self.left_control.isSearchMode(): # TODO: C j.w.
-                self.left_control.stopSearch()
+            #if self.left_control.isSearchMode(): # TODO: C j.w.
+            #    self.left_control.stopSearch()
             if self.secind_panel.isDirty():
                 self.dBController.setSecondaryIndicesForFiche(self.secind_panel.getValues(), self.secind_panel.getFicheId())
             if self.mainind_panel.isDirty():
