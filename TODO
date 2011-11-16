@@ -2,30 +2,32 @@ Ostatnio wykonane:
 
 * Wyszukiwanie przyrostowe po dziurach
 * Zerowanie bazy danych w programie
-* Skasowanie w panelu indeksów trybu wyszukiwania
+* Skasowanie w panelu indeksów z trybu wyszukiwania
 * Efektywne odświeżanie wykazu haseł w wyszukiwaniu binarnym
 * Focus automatycznie do panelu edycji po włączeniu wyszukiwania
 * Zmiana implementacji wykazu podpowiedzi w celu szybkiej aktualizacji i przywrócenie synchronizacji z innymi wykazami
 * Domyślnie pokazujemy w polu edycji podświetlony cel, ENTER akceptuje, wpisanie czegokolwiek kasuje
 * Historia wprowadzanych haseł (skróty klawiszowe do wpisywania w pole edycji)
 * ENTER w pustym polu - akceptowanie targetu
+* Wyświetlanie liczby fiszek o danym haśle w wykazie haseł
+* Napis w pasku ścieżki: "epocha: epitymowy-epoka"
+* Przejście do wyszukiwania celowego z wykazu podpowiedzi (przez ENTER), lub do hasła jeżeli ma ono wpis w wykazie haseł
+* Liczenie i pokazywanie na bieżąco ile było kroków w wyszukiwaniu binarnym
 
 Dokończyć wyszukiwanie celowe:
 
 * Rozpoczynanie wyszukiwania celowego na dziurze jednoelementowej
 * Traktowanie jednoelementowej dziury jako fiszki
-* Wyświetlanie liczby fiszek o danym haśle w wykazie haseł (można zrezygnować w razie gdyby okazało się za kosztowne lub sprawiało inne kłopoty)
 * Wykrywanie haseł nie po kolei przy próbie akceptacji
 * Zaznaczanie odpowiedniej dziury w trakcie wyszukiwania
-* Szacowanie ile zostało kroków w wyszukiwaniu binarnym (odpuścić na razie, liczyć w trakcie ile było i pokazać na końcu)
 * CTRL-ENTER w wykazie edycji przerzuca do niego napis z wykazu podpowiedzi
-* Napis w pasku ścieżki: "epocha: epitymowy-epoka"
 * Hasła sąsiednie (skróty klawiszowe do wpisywania w pole edycji)
 * Komunikat że akceptowana fiszka jest w złym miejscu (do przemyślenia)
 * Automatyczne znajdywanie bloku fiszek nie po kolei
-* Po zakończeniu wyszukiwania celowego powinna się wyświetlać ostatnia fiszka targetu
+* Po zakończeniu wyszukiwania celowego powinna się wyświetlać ostatnia fiszka targetu a zaznaczenie powinno być ustawione gdzieś w pobliżu targetu
+* Na końcu niecelowego wyszukiwania binarnego zerowanie panelu ścieżek
+* Na końcu wyszukiwania binarnego pokazywanie ile było kroków (ale patrz niżej)
 * Na końcu wyszukiwania celowego komunikat "wyszukiwanie "XXX" zakończone w Y krokach" w panelu ścieżek (a może do panelu komunikatów?)
-* Przejście do wyszukiwania celowego z wykazu podpowiedzi (przez ENTER), lub do hasła jeżeli ma ono wpis w wykazie haseł
 
 Inne na teraz:
 
@@ -34,7 +36,7 @@ Inne na teraz:
 
 Inne:
 
-* Efektywne odświeżanie wykazu haseł przy modyfikacji nie w wyszykiwaniu binarnym
+* Efektywne odświeżanie wykazu haseł przy modyfikacji nie w wyszukiwaniu binarnym
 * Czy pokazywać w panelu podpowiedzi ostatnio dodany element czy aktualnie widoczną zawartość panelu podpowiedzi (do omówienia)
 * Komentarze w kodzie
 * Dokumentacja formatu kartoteki (katalogu z danymi), instrukcja i skrypt inicjowania
@@ -48,6 +50,7 @@ Inne:
 * Chodzenie do przodu po cofniętych fiszkach, możliwość cofania podczas wyszukiwania binarnego, edycja wyłącza binarne
 * Dostosowanie GUI do Windows
 * Przenośna wersja dla Windows
+* Wersja dla słowników (do przemyślenia i omówienia)
 * Panel komunikatów/informacyjny: ścieżka fiszki w panelu komunikatów, wyświetlanie skrótów klawiaturowe w panelu komunikatów, komunikaty dla użytkownika, informacje o dostępnych operacjach (do omówienia)
 * Problem z niewyświetlającymi się plikami DjVu
 * Synchronizacja między różnymi wykazami, przejście w każdym wykazie do aktualnie oglądanej fiszki (do omówienia: "aktualna fiszka* powinna być jakoś wyróżniona w każdym dostępnym wykazie (lub element do którego fiszka należy*)" - *czy w takim wypadku zmieniać element którego podelementy wyświetlamy, jeżeli fiszka należy do podelementu będącego w innym podelemencie?)
@@ -59,6 +62,7 @@ Inne:
 * Przejście do następnej i POPRZEDNIEJ fiszki w porządku naturalnym dostępne zawsze, w razie gdy fiszki nie ma na wykazie komunikat "fiszka spoza wykazu" (do przemyślenia)
 * Zamiast panelu źródeł: najniższy wiersz w panelu - wypełniony jeżeli istnieje dokument zawierający tą fiszkę (wyświetlane położenie wyrażenia hasłowego i link do djvu)
 * Liczniki liczby obejrzeń fiszki (w pasku stanów lub panelu komunikatów)
+* Szacowanie ile zostało kroków w wyszukiwaniu binarnym
 * Łączenie ze zdalną bazą danych (do omówienia)
 * Optymalizacja bazy
 * Zmiana schematu bazy danych
@@ -94,6 +98,10 @@ Sprawy o "priorytecie przyzerowym":
 * Inne porządki sortowania (do omówienia)
 * Wyświetlanie liczby fiszek o danym haśle w wykazach innych niż wykaz haseł (można zrezygnować w razie gdyby okazało się za kosztowne lub sprawiało inne kłopoty)
 * Wykaz źródeł z dziurami
+
+Można zrezygnować jeżeli okaże się za kosztowne:
+
+* Wyświetlanie liczby fiszek o danym haśle w wykazie haseł
 
 Anulowane:
 

@@ -435,8 +435,9 @@ class MainWindow(wx.Frame):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.register_search = wx.TextCtrl(self.sidepanel, wx.ID_ANY)
         self.register_search.Bind(wx.EVT_TEXT, self.register_search_input)
+        self.register_search.Bind(wx.EVT_KEY_UP, self.register_search_key)
         self.regbar = RegisterToolbar(self.sidepanel, wx.ID_ANY)
-        self.regbar.addListener(self)      
+        self.regbar.addListener(self) 
         
         #self.sidebar = wx.Choicebook(self.splitter, wx.ID_ANY)
         self.sidebar = wx.Choicebook(self.sidepanel, wx.ID_ANY)
@@ -1010,12 +1011,25 @@ class MainWindow(wx.Frame):
     def start_binary_search(self, target=None, restarting=False):
         if self.active_register in [self.strucreg_browser]:
             self._disable_page_change()
-        self.SetStatusText(_("Binary search"), 2)
         self.active_register.startBinarySearch(target=target, restarting=restarting)
-        if self.active_register == self.new_entryreg_browser and self.active_register.hasTarget():
-            self.top_panel.refreshForAutomaticBinary(self.active_register.getTarget())
-        elif self.active_register == self.new_entryreg_browser:
-            self.top_panel.focus()
+        if self.active_register.binarySearchActive():
+            if not restarting:
+                self.SetStatusText(_("Binary search"), 2)
+            if self.active_register == self.new_entryreg_browser and self.active_register.hasTarget():
+                self.top_panel.refreshForAutomaticBinary(self.active_register.getTarget())
+            elif self.active_register == self.new_entryreg_browser:
+                self.top_panel.focus()
+
+    def next_step(self, steps):
+        self.SetStatusText(_("Binary search") + u", " + _("steps") + u":" + unicode(steps), 2)
+                
+    def find_in_entry_register(self, entry):
+        if self.new_entryreg_browser.allowsNextFiche():
+            self.new_entryreg_browser.onUp(None)
+        self.sidebar.SetSelection(3)
+        self.new_entryreg_browser.find(entry)
+        if self.new_entryreg_browser.gapSelected():
+            self.start_binary_search(target=entry)
 
     def on_search_mode(self, event):
         if self.left_control.isSearchMode():
@@ -1048,7 +1062,7 @@ class MainWindow(wx.Frame):
         self.page_widget.SetFocus()
 
     def on_level_down(self, event):
-        if self.active_register in [self.entryreg_browser, self.strucreg_browser, self.new_entryreg_browser]:
+        if self.active_register in [self.entryreg_browser, self.strucreg_browser, self.new_entryreg_browser, self.hintreg_browser]:
             self.active_register.levelDown()
 
     def on_splitter_sash_changed(self, event):
@@ -1236,6 +1250,10 @@ class MainWindow(wx.Frame):
 
     def register_search_input(self, event):
         self.active_register.find(self.register_search.GetValue())
+
+    def register_search_key(self, event):
+        if event.GetKeyCode() == wx.WXK_RETURN and self.active_register == self.hintreg_browser:
+            self.active_register.levelDown()
     
     def on_undisplay(self):
         if self.active_register.binarySearchActive():
@@ -1544,7 +1562,10 @@ class MainWindow(wx.Frame):
     def on_stop_binary(self, event):
     #    if self.mode == _('Browsing mode'):
         #print self.active_register.binaryAvailable(), self.active_register.binarySearchActive()
-        if not self.active_register.isActive(): # TODO: C zdecydowac sie czy to sprawdzac explicite tu czy schowac w implementacji rejestru
+        if not self.active_register.isActive(): # TODO: C po co?, zdecydowac sie czy to sprawdzac explicite tu czy schowac w implementacji rejestru
+            return
+        if self.active_register == self.hintreg_browser:
+            self.active_register.levelDown()
             return
         if self.active_register.binaryAvailable() and not self.active_register.binarySearchActive():
             if self.register_search.GetValue() != "":

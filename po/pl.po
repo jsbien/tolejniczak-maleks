@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-20 00:48+0200\n"
+"POT-Creation-Date: 2011-11-16 22:55+0100\n"
 "PO-Revision-Date: 2009-05-31 14:45+CEST\n"
 "Last-Translator: Tomasz Olejniczak <tomek.87@poczta.onet.pl>\n"
 "Language-Team: none\n"
@@ -66,6 +66,9 @@ msgstr "&Brak"
 msgid "&Open"
 msgstr "&Otwórz"
 
+msgid "&Operations"
+msgstr "&Operacje"
+
 msgid "&Previous page"
 msgstr "&Poprzednia strona"
 
@@ -80,6 +83,9 @@ msgstr "Ostanio &używane pliki"
 
 msgid "&Remove"
 msgstr "&Usuń"
+
+msgid "&Reset database"
+msgstr "&Zrestartuj bazę danych"
 
 msgid "&Settings"
 msgstr "&Ustawienia"
@@ -125,9 +131,6 @@ msgstr ""
 "Wystąpił nieoczekiwany błąd. Jeśli ta sytuacja się powtórzy, powiadom autora "
 "programu.\n"
 "\n"
-
-msgid "Are you sure?"
-msgstr "Na pewno?"
 
 msgid "Arrow"
 msgstr "Strzałka"
@@ -228,9 +231,6 @@ msgstr "Wklęsły"
 
 msgid "Etched out"
 msgstr "Wypukły"
-
-msgid "Exit"
-msgstr "Wyjście"
 
 msgid "Export bookmarks"
 msgstr "Eksportuj zakładki"
@@ -362,9 +362,6 @@ msgstr "Otwórz plik: "
 msgid "Open task register"
 msgstr "Otwórz wykaz zadaniowy"
 
-msgid "&Operations"
-msgstr "&Operacje"
-
 msgid "Original entry"
 msgstr "Hasło oryginalne"
 
@@ -408,14 +405,8 @@ msgstr "Usuń szczegóły"
 msgid "Remove entries from database"
 msgstr "Usuń hasła z bazy danych"
 
-msgid "&Reset database"
-msgstr "&Zrestartuj bazę danych"
-
 msgid "Scope"
 msgstr "Zakres"
-
-msgid "Search mode"
-msgstr "Tryb wyszukiwania"
 
 msgid "Secondary Indices"
 msgstr "Indeksy pomocnicze"
@@ -556,6 +547,9 @@ msgstr "region"
 msgid "regions"
 msgstr "regiony"
 
+msgid "steps"
+msgstr "kroków"
+
 msgid "unknown"
 msgstr "nieznany"
 
@@ -567,6 +561,15 @@ msgstr "słowo"
 
 msgid "words"
 msgstr "słowa"
+
+#~ msgid "Are you sure?"
+#~ msgstr "Na pewno?"
+
+#~ msgid "Exit"
+#~ msgstr "Wyjście"
+
+#~ msgid "Search mode"
+#~ msgstr "Tryb wyszukiwania"
 
 #~ msgid "Fiche already indexed"
 #~ msgstr "Fiszka została już zaindeksowana"

@@ -249,13 +249,16 @@ class DBEntryController(DBCommon):
 		##if cursor.fetchone() == None:
 		##	res = [_("First fiche")]
 		##else:
+		entryLens = {}
 		if preloadedEntries == None:
 			res = []
 			#&self._execute(cursor, "select distinct entry from fiches f, actual_entries e where f.fiche = e.fiche order by position")
-			self._execute(cursor, "select distinct entry from actual_entries order by entry")
+			#:self._execute(cursor, "select distinct entry from actual_entries order by entry")
+			self._execute(cursor, "select count(position), entry from entries group by entry order by entry")
 			row = cursor.fetchone()
 			while row != None:
-				res.append(str(row[0]))
+				res.append(str(row[1]))
+				entryLens.setdefault(str(row[1]), int(row[0]))
 				row = cursor.fetchone()
 			prev = ""
 		else:
@@ -297,7 +300,7 @@ class DBEntryController(DBCommon):
 			if num > 0:
 				newres.append((num, prev, None))
 		self._closeDBAndCursor(cursor)
-		return newres
+		return (newres, entryLens)
 
 	NEIGHBOURHOOD = 3
 	
@@ -351,14 +354,16 @@ class DBEntryController(DBCommon):
 		res = []
 		neighbourhoods = []
 		myEntries = []
-		self._execute(cursor, "select distinct entry from actual_entries order by entry")
+		entryLens = {}
+		#:self._execute(cursor, "select distinct entry from actual_entries order by entry")
+		self._execute(cursor, "select count(position), entry from entries group by entry order by entry")
 		row = cursor.fetchone()
 		while row != None:
-			myEntries.append(str(row[0]))
+			myEntries.append(str(row[1]))
+			entryLens.setdefault(str(row[1]), int(row[0]))
 			row = cursor.fetchone()
 		if len(myEntries) < DBEntryController.SMART_LIMIT:
-			self._closeDBAndCursor(cursor)
-			return (self.getEntriesRegisterWithGaps(myEntries), False)
+			return (None, False, None, None, None)
 		hasFirstNone = int(self.__single(cursor, "select count(*) from entries where position = (select min(position) from fiches)", ())) == 0
 		hasLastNone = int(self.__single(cursor, "select count(*) from entries where position = (select max(position) from fiches)", ())) == 0
 		inds = []
@@ -408,7 +413,7 @@ class DBEntryController(DBCommon):
 			neighbourhoods.append((ustr(e), newres))
 		#neighbourhoods = self.__combine(neighbourhoods)
 		self._closeDBAndCursor(cursor)
-		return (neighbourhoods, True, hasFirstNone, hasLastNone)
+		return (neighbourhoods, True, hasFirstNone, hasLastNone, entryLens)
 
 	#def __eq(self, a, b):
 	#	if isinstance(a, tuple) and isinstance(b, tuple):

@@ -100,3 +100,12 @@ end;
 /
 delimiter ;
 
+delimiter /
+create procedure delete_entries(fromm integer, too integer)
+begin
+	delete from original_entries where fiche in (select f.fiche from fiches f where f.position >= fromm and f.position <= too);
+	delete from actual_entries where fiche in (select f.fiche from fiches f where f.position >= fromm and f.position <= too);
+end;
+/
+delimiter ;
+

@@ -101,7 +101,7 @@ class RegisterBrowser(wx.ListView):
 		self._itemsNo = 0
 		for element in reg: # dla kazdej fiszki w wykazie utworz odpowiedni element i wypelnij slowniki
 			#print element
-			self.InsertStringItem(i, self._label(element))
+			self.InsertStringItem(i, self._shownLabel(element))
 			self.SetStringItem(i, 1, "")
 			self.SetStringItem(i, 2, "")
 			self.SetStringItem(i, 3, self._secondColumn(element, getEntry))
@@ -129,6 +129,9 @@ class RegisterBrowser(wx.ListView):
 	
 	def _label(self, element):
 		return element.getLabel()
+
+	def _shownLabel(self, element):
+		return self._label(element)
 	
 	def _id(self, element):
 		return element.getId()

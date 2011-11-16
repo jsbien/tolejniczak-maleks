@@ -25,7 +25,19 @@ class HintRegisterBrowser(WindowRegisterBrowser):
 	
 	def reset(self):
 		WindowRegisterBrowser.reset(self)
+		self.Bind(wx.EVT_KEY_UP, self.__onKey, self)
 		self.__hints = []
+
+	def __onKey(self, event):
+		if event.GetKeyCode() == wx.WXK_RETURN:
+			self.levelDown()
+		else:
+			event.Skip()
+
+	def levelDown(self):
+		if self._selected != None:
+			for l in self._listeners:
+				l.find_in_entry_register(self._elementOf(self._selected))
 
 	#def setRegister(self, reg, getEntry=None):
 	#	self.reset()

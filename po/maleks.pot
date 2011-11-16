@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-20 00:48+0200\n"
+"POT-Creation-Date: 2011-11-16 22:55+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,6 +68,9 @@ msgstr ""
 msgid "&Open"
 msgstr ""
 
+msgid "&Operations"
+msgstr ""
+
 msgid "&Previous page"
 msgstr ""
 
@@ -81,6 +84,9 @@ msgid "&Recently used files"
 msgstr ""
 
 msgid "&Remove"
+msgstr ""
+
+msgid "&Reset database"
 msgstr ""
 
 msgid "&Settings"
@@ -394,10 +400,10 @@ msgstr ""
 msgid "Remove details"
 msgstr ""
 
-msgid "Scope"
+msgid "Remove entries from database"
 msgstr ""
 
-msgid "Search mode"
+msgid "Scope"
 msgstr ""
 
 msgid "Secondary Indices"
@@ -537,6 +543,9 @@ msgid "region"
 msgstr ""
 
 msgid "regions"
+msgstr ""
+
+msgid "steps"
 msgstr ""
 
 msgid "unknown"
