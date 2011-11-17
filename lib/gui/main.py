@@ -51,6 +51,7 @@ from maleks.gui.entry_browser import EntryRegisterBrowser
 from maleks.gui.new_entry_browser2 import NewEntryRegisterBrowser
 from maleks.gui.hint_browser import HintRegisterBrowser
 from maleks.gui.toppanel import TopPanel
+from maleks.gui.msg_panel import MessagePanel
 from maleks.gui.regbar import RegisterToolbar
 from maleks.gui import dialogs
 from maleks.gui.left_panel import MainIndicesPanel, SecondaryIndicesPanel, ControlPanel
@@ -328,11 +329,28 @@ class MainWindow(wx.Frame):
         return property(get, set)
 
     @apply
+    def default_top_splitter_sash():
+        def get(self):
+            return self._config.read_int('main_window_splitter_sash_top', 100)
+        def set(self, value):
+            #self._config['main_window_splitter_sash_left'] = value
+            pass
+        return property(get, set)
+
+    @apply
     def default_sidebar_shown():
         def get(self):
             return self._config.read_bool('main_window_sidebar_shown', True)
         def set(self, value):
             self._config['main_window_sidebar_shown'] = value
+        return property(get, set)
+
+    @apply
+    def default_topbar_shown():
+        def get(self):
+            return self._config.read_bool('main_window_topbar_shown', True)
+        def set(self, value):
+            self._config['main_window_topbar_shown'] = value
         return property(get, set)
 
     @apply
@@ -404,11 +422,17 @@ class MainWindow(wx.Frame):
         ##self.super_splitter = wx.SplitterWindow(self, style = wx.SP_LIVE_UPDATE)
         ##self.super_splitter.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_left_splitter_sash_changed)
         
+        self.super_splitter = wx.SplitterWindow(self, style=wx.SP_LIVE_UPDATE)
+        self.super_splitter.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_top_splitter_sash_changed)
+        
         #self.splitter = wx.SplitterWindow(self, style = wx.SP_LIVE_UPDATE)
         ##self.splitter = wx.SplitterWindow(self.super_splitter)#, style = wx.SP_LIVE_UPDATE)
         ##self.splitter.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_splitter_sash_changed)
         
-        self.splitter = splitter.MultiSplitterWindow(self, style = wx.SP_LIVE_UPDATE)
+        self.msg_panel = MessagePanel(self.super_splitter)
+        
+        self.splitter = splitter.MultiSplitterWindow(self.super_splitter, style = wx.SP_LIVE_UPDATE)
+        #self.splitter = splitter.MultiSplitterWindow(self, style = wx.SP_LIVE_UPDATE)
         self.splitter.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_splitter_sash_changed)
         self.sidebar_shown = False
 
@@ -505,12 +529,15 @@ class MainWindow(wx.Frame):
         #self.Bind(wx.EVT_KEY_DOWN, self.on_char)
         
         self.splitter.InsertWindow(0, self.main_panel)
+        self.do_show_topbar()
         self.do_show_left_sidebar()
         self.do_show_sidebar()
         if not self.default_left_sidebar_shown:
             self.do_hide_left_sidebar()
         if not self.default_sidebar_shown:
             self.do_hide_sidebar()
+        if not self.default_topbar_shown:
+            self.do_hide_topbar()
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.scrolled_panel.SetSizer(sizer)
         self.scrolled_panel.SetupScrolling()
@@ -802,6 +829,12 @@ class MainWindow(wx.Frame):
         #print "ok"
         if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive():
             #print "A"
+            if binaryOK or (not self.active_register.hasTarget()):
+                (thisWrong, othersWrong) = self.active_register.wrongOrder(entry)
+                if thisWrong:
+                    self.msg_panel.wrongFiche(entry)
+                elif othersWrong:
+                    self.msg_panel.wrongOrder(entry)
             if not binaryOK:
                 #print "B"
                 if self.active_register.hasTarget():
@@ -842,6 +875,7 @@ class MainWindow(wx.Frame):
             if not binaryOK and self.active_register == self.new_entryreg_browser:
                 if self.active_register.binarySearchActive():
                     self.active_register.initializeForActiveBinary(entry)
+                    self.active_register.selectElementContaining(self.ficheId)
                 else:
                     self.active_register.initialize(entry)
                     # TODO: C zakladamy tutaj ze level jest ENTRY (a zatem allowsNextFiche), ale co jak allowsNextFiche ale nie hasSelection?
@@ -881,6 +915,12 @@ class MainWindow(wx.Frame):
             entry = self.top_panel.getHint()
         ok = False
         if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive():
+            if binaryOK or (not self.active_register.hasTarget()):
+                (thisWrong, othersWrong) = self.active_register.wrongOrder(entry)
+                if thisWrong:
+                    self.msg_panel.wrongFiche(entry)
+                elif othersWrong:
+                    self.msg_panel.wrongOrder(entry)
             if not binaryOK:
                 if self.active_register.hasTarget():
                     self.on_automatic_binary_accept(hint=True)
@@ -904,6 +944,7 @@ class MainWindow(wx.Frame):
             if self.active_register == self.new_entryreg_browser:
                 if self.active_register.binarySearchActive():
                     self.active_register.initializeForActiveBinary(entry)
+                    self.active_register.selectElementContaining(self.ficheId)
                 else:
                     self.active_register.initialize(entry)
             self.update_indices()
@@ -1000,13 +1041,17 @@ class MainWindow(wx.Frame):
                 item.SetText(item.GetLabel())
         self.SetAcceleratorTable(mode.getAcceleratorTable())
 
-    def stop_binary_search(self):
+    def stop_binary_search(self, user=False):
         #print ":", restart
+        hasTarget = self.active_register.hasTarget()
         self.active_register.stopBinarySearch()
-        if not self.active_register.hasTarget():
-            if self.active_register in [self.strucreg_browser]: # TODO: A zmiany stron w innych wykazach: czy pozwalac?
-                self._enable_page_change()
-            self.SetStatusText("", 2)
+        if self.active_register in [self.strucreg_browser]: # TODO: A zmiany stron w innych wykazach: czy pozwalac?
+            self._enable_page_change()
+        self.SetStatusText("", 2)
+        if self.active_register in [self.new_entryreg_browser]:
+            self.regbar.setPath(self.active_register.getElementPath())
+            if (not user) and (not hasTarget):
+                self.msg_panel.binaryStopped(self.active_register.getSteps())
     
     def start_binary_search(self, target=None, restarting=False):
         if self.active_register in [self.strucreg_browser]:
@@ -1028,7 +1073,7 @@ class MainWindow(wx.Frame):
             self.new_entryreg_browser.onUp(None)
         self.sidebar.SetSelection(3)
         self.new_entryreg_browser.find(entry)
-        if self.new_entryreg_browser.gapSelected():
+        if self.new_entryreg_browser.gapSelected(): # TODO: C czy potrzebne sprawdzanie czy wyszukiwanie juz wlaczone?
             self.start_binary_search(target=entry)
 
     def on_search_mode(self, event):
@@ -1062,7 +1107,9 @@ class MainWindow(wx.Frame):
         self.page_widget.SetFocus()
 
     def on_level_down(self, event):
-        if self.active_register in [self.entryreg_browser, self.strucreg_browser, self.new_entryreg_browser, self.hintreg_browser]:
+        if self.top_panel.editPanelHasFocus():
+            self.top_panel.copyHintToEditPanel()
+        elif self.active_register in [self.entryreg_browser, self.strucreg_browser, self.new_entryreg_browser, self.hintreg_browser]:
             self.active_register.levelDown()
 
     def on_splitter_sash_changed(self, event):
@@ -1075,6 +1122,9 @@ class MainWindow(wx.Frame):
 
     #def on_left_splitter_sash_changed(self, event):
     #    self.default_left_splitter_sash = event.GetSashPosition()
+
+    def on_top_splitter_sash_changed(self, event):
+        self.default_top_splitter_sash = event.GetSashPosition()
         
     #def on_sidebar_page_changed(self, event):
     #    pass
@@ -1228,6 +1278,11 @@ class MainWindow(wx.Frame):
         self.sidebar_shown = True
         self.splitter.InsertWindow(0, self.sidepanel, self.default_splitter_sash)
 
+    def do_show_topbar(self):
+        self.default_topbar_shown = True
+        self.topbar_shown = True
+        self.super_splitter.SplitHorizontally(self.msg_panel, self.splitter, self.default_top_splitter_sash)
+
     def do_show_left_sidebar(self):
         #self.super_splitter.SplitVertically(self.splitter, self.left_sidepanel, self.default_left_splitter_sash)
         self.default_left_sidebar_shown = True
@@ -1242,6 +1297,11 @@ class MainWindow(wx.Frame):
         self.splitter.DetachWindow(self.sidepanel)
         self.default_sidebar_shown = False
         self.sidebar_shown = False
+
+    def do_hide_topbar(self):
+        self.super_splitter.Unsplit(self.msg_panel)
+        self.default_topbar_shown = False
+        self.topbar_shown = False
 
     def do_hide_left_sidebar(self):
         #self.super_splitter.Unsplit(self.left_sidebar)
@@ -1441,88 +1501,82 @@ class MainWindow(wx.Frame):
             entry = self.top_panel.getHint()
         else:
             entry = self.top_panel.getEditPanelContent()
+        target = self.active_register.getTarget()
+        #assert(target != None)
         if self.active_register.determineNextTarget(entry) == "LEFT":
-            #print "determineNextTarget", c
+            #print "determineNextTarget"#, c
             if not self.active_register.prevBinaryAcceptPrepare(automatic=True):
-                #print "prevBinaryAcceptPrepare", c
-                target = self.active_register.getTarget()
+                #print "prevBinaryAcceptPrepare"#, c
                 self.stop_binary_search()
-                #print "stop_binary_search", c
+                #print "stop_binary_search"#, c
                 #print ":::", target
                 #print "d"
                 if hint:
                     self.on_hint_accept(None, binaryOK=True, target=target)
-                    #print "on_hint_accept", c
-                    #print "f"
+                    #print "on_hint_accept"#, c
                 else:
                     self.on_edit_accept(None, binaryOK=True, target=target)
-                    #print "on_edit_accept", c
-                    #print "h"
+                    #print "on_edit_accept"#, c
                 self.active_register.initialize(entry)
-                target = self.active_register.restartable(target)
-                #print "initialize", c
-                if target != None:
+                #print "initialize"#, c
+                if self.active_register.restartable(target):
                     #self.active_register.startBinarySearch(target=target, restarting=True)
                     self.start_binary_search(target=target, restarting=True)
-                    #print "startBinarySearch", c
+                    #print "startBinarySearch"#, c
                     #print self.active_register.hasTarget()
-                    #print "ji"
+                else:
+                    self.msg_panel.automaticBinaryStopped(target, self.active_register.getSteps())
+                    self.active_register.find(target)
+                    self.page_no = self.index.getFicheNoById(self.active_register.getLastFicheOfSelected())
                 #print "j"
             else:
-                #print "prevBinaryAcceptPrepare", c
-                #print "k"
+                #print "prevBinaryAcceptPrepare"#, c
                 if hint:
                     self.on_hint_accept(None, binaryOK=True)
-                    #print "on_hint_accept", c
-                    #print "m"
+                    #print "on_hint_accept"#, c
                 else:
                     self.on_edit_accept(None, binaryOK=True)
-                    #print "on_edit_accept", c
-                    #print "o"
+                    #print "on_edit_accept"#, c
                 self.active_register.binaryAcceptFinalize(entry)
-                self.top_panel.refreshForAutomaticBinary(self.active_register.getTarget())
-                #print "binaryAcceptFinalize", c
-                #print "q"
+                self.top_panel.refreshForAutomaticBinary(target)
+                #print "binaryAcceptFinalize"#, c
         else:
-            #print "determineNextTarget", c
+            #print "else"
+            #print "determineNextTarget"#, c
             if not self.active_register.nextBinaryAcceptPrepare(automatic=True):
-                #print "stop_nextBinaryAcceptPrepare_search", c
-                target = self.active_register.getTarget()
+                #print "stop_nextBinaryAcceptPrepare_search"#, c
                 self.stop_binary_search()
-                #print "stop_binary_search", c
+                #print "stop_binary_search"#, c
                 #print ":::", target
-                #print "t"
                 if hint:
                     self.on_hint_accept(None, binaryOK=True, target=target)
-                    #print "on_hint_accept", c
-                    #print "v"
+                    #print "on_hint_accept"#, c
                 else:
                     self.on_edit_accept(None, binaryOK=True, target=target)
-                    #print "on_edit_accept", c
-                    #print "x"
+                    #print "on_edit_accept"#, c
                 self.active_register.initialize(entry)
-                target = self.active_register.restartable(target)
-                #print "initialize", c
-                if target != None:
+                #print "initialize"#, c
+                if self.active_register.restartable(target):
                     #self.active_register.startBinarySearch(target=target, restarting=True)
                     self.start_binary_search(target=target, restarting=True)
                     #print self.active_register.hasTarget()
-                    #print "startBinarySearch", c
+                    #print "startBinarySearch"#, c
+                else:
+                    self.msg_panel.automaticBinaryStopped(target, self.active_register.getSteps())
+                    self.active_register.find(target)
+                    self.page_no = self.index.getFicheNoById(self.active_register.getLastFicheOfSelected())
                 #print "z"
             else:
-                #print "stop_nextBinaryAcceptPrepare_search", c
-                #print "za"
+                #print "stop_nextBinaryAcceptPrepare_search"#, c
                 if hint:
                     self.on_hint_accept(None, binaryOK=True)
-                    #print "on_hint_accept", c
-                    #print "zc"
+                    #print "on_hint_accept"#, c
                 else:
                     self.on_edit_accept(None, binaryOK=True)
-                    #print "on_edit_accept", c
-                    #print "ze"
+                    #print "on_edit_accept"#, c
                 self.active_register.binaryAcceptFinalize(entry)
-                self.top_panel.refreshForAutomaticBinary(self.active_register.getTarget())
-                #print "binaryAcceptFinalize", c
+                self.top_panel.refreshForAutomaticBinary(target)
+                #print "binaryAcceptFinalize"#, c
 
     def on_next_binary_accept(self, event):
         if self.active_register != self.new_entryreg_browser:
@@ -1534,6 +1588,7 @@ class MainWindow(wx.Frame):
                 self.stop_binary_search()
                 self.on_edit_accept(None, binaryOK=True)
                 self.active_register.initialize(entry)
+                self.active_register.selectElementContaining(self.ficheId)
              else:
                 #print "ok"
                 self.on_edit_accept(None, binaryOK=True)
@@ -1549,6 +1604,7 @@ class MainWindow(wx.Frame):
                 self.stop_binary_search()
                 self.on_edit_accept(None, binaryOK=True)
                 self.active_register.initialize(entry)
+                self.active_register.selectElementContaining(self.ficheId)
              else:
                 #print "ok"
                 self.on_edit_accept(None, binaryOK=True)
@@ -1573,7 +1629,7 @@ class MainWindow(wx.Frame):
             else:
                 self.start_binary_search()
         else:
-            self.stop_binary_search()
+            self.stop_binary_search(user=True)
 
     def on_hint_changed(self, hint):
         self.hintreg_browser.hintChanged(hint)

@@ -13,11 +13,11 @@
 import MySQLdb
 import time
 import icu
-#from maleks.i18n import _
+from maleks.i18n import _
 from maleks.maleks.useful import ustr
 
-def _(x):
-	return x
+#def _(x):
+#	return x
 
 class DBCommon(object):
 
@@ -153,6 +153,35 @@ class DBEntryController(DBCommon):
 		(first, last) = self.__entryLimits(cursor, entry)
 		#&res = self.__single(cursor, "select fiche from fiches f where position >= %s and position <= %s and not exists (select * from actual_entries e where f.fiche = e.fiche and entry <> %s) order by position limit %s,1", (first, last, entry, pos))
 		res = self.__single(cursor, "select fiche from fiches f where (position >= %s and position <= %s and not exists (select * from actual_entries e where f.fiche = e.fiche and entry <> %s)) or ((position < %s or position > %s) and exists (select * from actual_entries e where e.fiche = f.fiche and entry = %s)) order by position limit %s,1", (first, last, entry, first, last, entry, pos))
+		self._closeDBAndCursor(cursor)
+		return res
+
+	def getLastFicheOfElement(self, el):
+		if isinstance(el, tuple):
+			return self.__getLastFicheOfGap(el)
+		else:
+			return self.__getLastFicheOfEntry(el)
+
+	def __getLastFicheOfEntry(self, entry):
+		cursor = self._openDBWithCursor()
+		res = self.__single(cursor, "select fiche from entries where entry = %s order by position desc limit 1", (entry))
+		self._closeDBAndCursor(cursor)
+		return res
+
+	def __getLastFicheOfGap(self, (num, before, after)):
+		cursor = self._openDBWithCursor()
+		if before == None and after == None:
+			res = self.__single(cursor, "select fiche from fiches order by position desc limit 1", ())
+		elif before == None:
+			num = self.__firstEntry(cursor, after)
+			res = self.__single(cursor, "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position < %s order by position desc limit 1", (num))
+		elif after == None:
+			num = self.__lastEntry(cursor, before)
+			res = self.__single(cursor, "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s order by position desc limit 1", (num))
+		else:
+			numa = self.__firstEntry(cursor, after)
+			numb = self.__lastEntry(cursor, before)
+			res = self.__single(cursor, "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and position < %s order by position desc limit 1", (numb, numa))
 		self._closeDBAndCursor(cursor)
 		return res
 		

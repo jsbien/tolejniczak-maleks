@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-16 22:55+0100\n"
+"POT-Creation-Date: 2011-11-17 22:15+0100\n"
 "PO-Revision-Date: 2010-06-26 18:05+0300\n"
 "Last-Translator: Kyrill Detinov <lazy.kent.suse@gmail.com>\n"
 "Language-Team: openSUSE Translation Team\n"
@@ -413,6 +413,9 @@ msgstr "Уменьшить детализацию текста"
 msgid "Scope"
 msgstr "Область"
 
+msgid "Search for"
+msgstr ""
+
 msgid "Secondary Indices"
 msgstr ""
 
@@ -452,6 +455,9 @@ msgid "Solid color"
 msgstr "Сплошная заливка"
 
 msgid "Start/stop binary search"
+msgstr ""
+
+msgid "Steps:"
 msgstr ""
 
 msgid "Stretch the image to the window size"
@@ -527,8 +533,17 @@ msgstr "столбец"
 msgid "columns"
 msgstr "столбцы"
 
+msgid "corrupted alphabetic order"
+msgstr ""
+
 msgid "current page"
 msgstr "текущая страница"
+
+msgid "fiche not in order"
+msgstr ""
+
+msgid "finished"
+msgstr ""
 
 msgid "key"
 msgstr "ключ"

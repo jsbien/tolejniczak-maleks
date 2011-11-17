@@ -43,7 +43,7 @@ class TopPanel(wx.Panel, Notifier):
 		sizer.Add(wx.Panel(self), 0)
 		self.SetSizerAndFit(sizer)
 		self.__editPanel.Bind(wx.EVT_TEXT, self.editPanelChanged)
-		self.__editPanel.Bind(wx.EVT_KEY_UP, self.__onEditAcceptEnter, self.__editPanel)
+		self.__editPanel.Bind(wx.EVT_KEY_DOWN, self.__onEditAcceptEnter, self.__editPanel)
 		self.__hintPanel.Bind(wx.EVT_TEXT, self.__hintPanelChanged)
 		self.Bind(wx.EVT_BUTTON, self.__onEditAccept, self.__editPanelAcceptButton)
 		self.Bind(wx.EVT_BUTTON, self.__onEditPrefixAccept, self.__editPanelPrefixAcceptButton)
@@ -55,13 +55,18 @@ class TopPanel(wx.Panel, Notifier):
 	def focus(self):
 		self.__editPanel.SetFocus()
 
+	def editPanelHasFocus(self):
+		return wx.Window.FindFocus() == self.__editPanel
+
 	def setHintRegister(self, register):
 		self.__hintRegister = register
 
 	def __onEditAcceptEnter(self, event):
-		if event.GetKeyCode() == wx.WXK_RETURN:
+		if event.GetKeyCode() == wx.WXK_RETURN and not event.ControlDown():
+			#print "Enter"
 			self.__onEditAccept(event)
 		else:
+			#print "Not"
 			event.Skip()
 
 	def __onEditAccept(self, event):
@@ -97,6 +102,13 @@ class TopPanel(wx.Panel, Notifier):
 
 	def __hintPanelChanged(self, event):
 		self.__hint = self.__hintPanel.GetValue()
+		
+	def __stripSiglum(self, text):
+		ind = text.rfind("(")
+		return text[:ind - 1]
+
+	def copyHintToEditPanel(self):
+		self.setEntry(self.__stripSiglum(self.__hintPanel.GetValue()))
 
 	def getHint(self):
 		return self.__hint

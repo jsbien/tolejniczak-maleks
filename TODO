@@ -9,35 +9,33 @@ Ostatnio wykonane:
 * Domyślnie pokazujemy w polu edycji podświetlony cel, ENTER akceptuje, wpisanie czegokolwiek kasuje
 * Historia wprowadzanych haseł (skróty klawiszowe do wpisywania w pole edycji)
 * ENTER w pustym polu - akceptowanie targetu
-* Wyświetlanie liczby fiszek o danym haśle w wykazie haseł
 * Napis w pasku ścieżki: "epocha: epitymowy-epoka"
 * Przejście do wyszukiwania celowego z wykazu podpowiedzi (przez ENTER), lub do hasła jeżeli ma ono wpis w wykazie haseł
 * Liczenie i pokazywanie na bieżąco ile było kroków w wyszukiwaniu binarnym
+* CTRL-ENTER w wykazie edycji przerzuca do niego napis z wykazu podpowiedzi
+* Na końcu wyszukiwania celowego komunikat "wyszukiwanie "XXX" zakończone w Y krokach"
+* Rozpoczynanie wyszukiwania celowego na dziurze jednoelementowej
+* Po zakończeniu wyszukiwania celowego powinna się wyświetlać ostatnia fiszka targetu a zaznaczenie powinno być ustawione gdzieś w pobliżu targetu
+* Zaznaczanie odpowiedniej dziury w trakcie wyszukiwania
+* Na końcu niecelowego wyszukiwania binarnego zaznaczanie jakiegoś odpowiedniego elementu
+* Na końcu wyszukiwania binarnego pokazywanie ile było kroków
+* Wyszukiwanie prefiksowe w wykazie podpowiedzi
+* Wykrywanie haseł nie po kolei przy próbie akceptacji - komunikat że akceptowana fiszka jest w złym miejscu
 
 Dokończyć wyszukiwanie celowe:
 
-* Rozpoczynanie wyszukiwania celowego na dziurze jednoelementowej
-* Traktowanie jednoelementowej dziury jako fiszki
-* Wykrywanie haseł nie po kolei przy próbie akceptacji
-* Zaznaczanie odpowiedniej dziury w trakcie wyszukiwania
-* CTRL-ENTER w wykazie edycji przerzuca do niego napis z wykazu podpowiedzi
-* Hasła sąsiednie (skróty klawiszowe do wpisywania w pole edycji)
-* Komunikat że akceptowana fiszka jest w złym miejscu (do przemyślenia)
-* Automatyczne znajdywanie bloku fiszek nie po kolei
-* Po zakończeniu wyszukiwania celowego powinna się wyświetlać ostatnia fiszka targetu a zaznaczenie powinno być ustawione gdzieś w pobliżu targetu
-* Na końcu niecelowego wyszukiwania binarnego zerowanie panelu ścieżek
-* Na końcu wyszukiwania binarnego pokazywanie ile było kroków (ale patrz niżej)
-* Na końcu wyszukiwania celowego komunikat "wyszukiwanie "XXX" zakończone w Y krokach" w panelu ścieżek (a może do panelu komunikatów?)
+* Wyświetlanie liczby fiszek o danym haśle w wykazie haseł (można zrezygnować jeżeli okaże się za kosztowne)
 
 Inne na teraz:
 
-* Sprawdzić zachowanie się panelu hipotezy w wyszukiwaniu celowym.
-* Wyszukiwanie prefiksowe w wykazie podpowiedzi
+* Sprawdzić zachowanie się panelu hipotezy w wyszukiwaniu celowym
 
 Inne:
 
-* Efektywne odświeżanie wykazu haseł przy modyfikacji nie w wyszukiwaniu binarnym
+* CTRL-C CTRL-C i włączanie wyszukiwania binarnego dla haseł zaindeksowanych
+* Efektywne odświeżanie wykazu haseł przy modyfikacji nie w wyszukiwaniu binarnym i traktowanie jednoelementowej dziury jako fiszki
 * Czy pokazywać w panelu podpowiedzi ostatnio dodany element czy aktualnie widoczną zawartość panelu podpowiedzi (do omówienia)
+* Automatyczne znajdywanie bloku fiszek nie po kolei
 * Komentarze w kodzie
 * Dokumentacja formatu kartoteki (katalogu z danymi), instrukcja i skrypt inicjowania
 * Obsługa błędów, zachowanie w nietypowych sytuacjach (np. nie otwarto żadnego pliku)
@@ -53,6 +51,7 @@ Inne:
 * Wersja dla słowników (do przemyślenia i omówienia)
 * Panel komunikatów/informacyjny: ścieżka fiszki w panelu komunikatów, wyświetlanie skrótów klawiaturowe w panelu komunikatów, komunikaty dla użytkownika, informacje o dostępnych operacjach (do omówienia)
 * Problem z niewyświetlającymi się plikami DjVu
+* Efektywność indeksu struktury dla dużych danych (do sprawdzenia i przemyślenia)
 * Synchronizacja między różnymi wykazami, przejście w każdym wykazie do aktualnie oglądanej fiszki (do omówienia: "aktualna fiszka* powinna być jakoś wyróżniona w każdym dostępnym wykazie (lub element do którego fiszka należy*)" - *czy w takim wypadku zmieniać element którego podelementy wyświetlamy, jeżeli fiszka należy do podelementu będącego w innym podelemencie?)
 * Rozwiązanie problemów zasygnalizowanych w http://fleksem.klf.uw.edu.pl/~jsbien/maleks/maleks.txt - patrz dopisek na końcu listy TODO
 * Zapisywanie wartości indeksów przy wychodzeniu z programu i w innych miejscach (poszukać), w ostateczności dodać przycisk "zapisz indeks"
@@ -99,14 +98,10 @@ Sprawy o "priorytecie przyzerowym":
 * Wyświetlanie liczby fiszek o danym haśle w wykazach innych niż wykaz haseł (można zrezygnować w razie gdyby okazało się za kosztowne lub sprawiało inne kłopoty)
 * Wykaz źródeł z dziurami
 
-Można zrezygnować jeżeli okaże się za kosztowne:
-
-* Wyświetlanie liczby fiszek o danym haśle w wykazie haseł
-
 Anulowane:
 
 * Fork służący do scalania kartotek
-* Obsługa fiszek Knapskiego
+* Obsługa fiszek Knapskiego (w szczególności nowy wykaz haseł nie sprawdza, czy fiszki są w porządku alfabetycznym)
 * Knapski jako dzieło w fiszkach z Ratuszowej
 * Wyszukiwanie z użyciem panelu indeksów
 

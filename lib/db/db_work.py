@@ -11,12 +11,12 @@
 # General Public License for more details.
 
 import MySQLdb
-#from maleks.i18n import _
+from maleks.i18n import _
 from maleks.maleks.useful import ustr
 from maleks.db.db_entry import DBEntryController, INF
 
-def _(x):
-	return x
+#def _(x):
+#	return x
 
 class DBWorkController(DBEntryController):
 

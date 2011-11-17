@@ -60,6 +60,9 @@ class RegisterBrowser(wx.ListView):
 	def binaryAvailable(self):
 		return True
 
+	def hasTarget(self):
+		return False
+
 	# w widoku jest zaznaczona jakas fiszka i pojecie 'nastepnej fiszki' ktora
 	# zostanie wyswietlona w panelu glownym po zaakceptowaniu aktualnie zaznaczonej
 	# fiszki

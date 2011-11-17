@@ -12,12 +12,12 @@
 
 import _mysql_exceptions
 from maleks.db.db_work import DBWorkController
-#from maleks.i18n import _
+from maleks.i18n import _
 from maleks.maleks.registers import TaskRegister
 from maleks.maleks.fiche import Fiche
 
-def _(x):
-	return x
+#def _(x):
+#	return x
 
 class DBController(DBWorkController):
 

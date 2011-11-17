@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-16 22:55+0100\n"
+"POT-Creation-Date: 2011-11-17 22:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -406,6 +406,9 @@ msgstr ""
 msgid "Scope"
 msgstr ""
 
+msgid "Search for"
+msgstr ""
+
 msgid "Secondary Indices"
 msgstr ""
 
@@ -443,6 +446,9 @@ msgid "Solid color"
 msgstr ""
 
 msgid "Start/stop binary search"
+msgstr ""
+
+msgid "Steps:"
 msgstr ""
 
 msgid "Stretch the image to the window size"
@@ -518,7 +524,16 @@ msgstr ""
 msgid "columns"
 msgstr ""
 
+msgid "corrupted alphabetic order"
+msgstr ""
+
 msgid "current page"
+msgstr ""
+
+msgid "fiche not in order"
+msgstr ""
+
+msgid "finished"
 msgstr ""
 
 msgid "key"

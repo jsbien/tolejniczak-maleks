@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-16 22:55+0100\n"
+"POT-Creation-Date: 2011-11-17 22:15+0100\n"
 "PO-Revision-Date: 2009-05-31 14:45+CEST\n"
 "Last-Translator: Tomasz Olejniczak <tomek.87@poczta.onet.pl>\n"
 "Language-Team: none\n"
@@ -408,6 +408,9 @@ msgstr "Usuń hasła z bazy danych"
 msgid "Scope"
 msgstr "Zakres"
 
+msgid "Search for"
+msgstr "Wyszukiwanie"
+
 msgid "Secondary Indices"
 msgstr "Indeksy pomocnicze"
 
@@ -446,6 +449,9 @@ msgstr "Jednolity kolor"
 
 msgid "Start/stop binary search"
 msgstr "Włącz/wyłącz wyszukiwanie binarne"
+
+msgid "Steps:"
+msgstr "Kroków:"
 
 msgid "Stretch the image to the window size"
 msgstr "Rozciągnij obraz do rozmiarów okna"
@@ -520,8 +526,17 @@ msgstr "łam"
 msgid "columns"
 msgstr "łamy"
 
+msgid "corrupted alphabetic order"
+msgstr "zaburzona kolejność alfabetyczna"
+
 msgid "current page"
 msgstr "bieżąca strona"
+
+msgid "fiche not in order"
+msgstr "fiszka nie po kolei"
+
+msgid "finished"
+msgstr "zakończone"
 
 msgid "key"
 msgstr "klucz"
