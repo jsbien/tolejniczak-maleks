@@ -10,7 +10,7 @@ Ostatnio wykonane:
 * Historia wprowadzanych haseł (skróty klawiszowe do wpisywania w pole edycji)
 * ENTER w pustym polu - akceptowanie targetu
 * Napis w pasku ścieżki: "epocha: epitymowy-epoka"
-* Przejście do wyszukiwania celowego z wykazu podpowiedzi (przez ENTER), lub do hasła jeżeli ma ono wpis w wykazie haseł
+* Przejście do wyszukiwania celowego z wykazu podpowiedzi (przez ENTER/CTRL-ENTER/rozpoczęcie wyszukiwania binarnego), lub do hasła jeżeli ma ono wpis w wykazie haseł
 * Liczenie i pokazywanie na bieżąco ile było kroków w wyszukiwaniu binarnym
 * CTRL-ENTER w wykazie edycji przerzuca do niego napis z wykazu podpowiedzi
 * Na końcu wyszukiwania celowego komunikat "wyszukiwanie "XXX" zakończone w Y krokach"
