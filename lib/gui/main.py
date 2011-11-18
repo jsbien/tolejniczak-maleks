@@ -65,7 +65,7 @@ from maleks import config
 from maleks.maleks import log
 from maleks.maleks.fiche import StructureIndex, Configuration
 from maleks.maleks.registers import HintRegister
-from maleks.maleks.useful import stru, ustr
+from maleks.maleks.useful import stru, ustr, Counter
 from maleks.gui.mode import Mode
 from maleks.db.db import DBController
 
@@ -866,6 +866,7 @@ class MainWindow(wx.Frame):
         self.dirty = True # TODO: NOTE bo mozemy musiec np. zapisac do pliku dodana powyzej podpowiedz
         self.ignore_entries = True
         #print "add hint", c
+        self.lastEntry = None
         if self.active_register.allowsNextFiche() and self.active_register.hasSelection() and not self.active_register.binarySearchActive():
             if ok:
                 self.lastEntry = entry
@@ -935,6 +936,7 @@ class MainWindow(wx.Frame):
                 self.addToHistory(entry)
                 ok = True
         self.ignore_entries = True
+        self.lastEntry = None
         if self.active_register.allowsNextFiche() and self.active_register.hasSelection() and not self.active_register.binarySearchActive():
             if ok:
                 self.lastEntry = entry
@@ -1530,19 +1532,20 @@ class MainWindow(wx.Frame):
                     self.page_no = self.index.getFicheNoById(self.active_register.getLastFicheOfSelected())
                 #print "j"
             else:
-                #print "prevBinaryAcceptPrepare"#, c
+                #print "prevBinaryAcceptPrepare", c
                 if hint:
                     self.on_hint_accept(None, binaryOK=True)
-                    #print "on_hint_accept"#, c
+                    #print "on_hint_accept", c
                 else:
                     self.on_edit_accept(None, binaryOK=True)
-                    #print "on_edit_accept"#, c
+                    #print "on_edit_accept", c
                 self.active_register.binaryAcceptFinalize(entry)
+                #print "binaryAcceptFinalize", c
                 self.top_panel.refreshForAutomaticBinary(target)
-                #print "binaryAcceptFinalize"#, c
+                #print "refreshForAutomaticBinary", c
         else:
             #print "else"
-            #print "determineNextTarget"#, c
+            #print "determineNextTarget", c
             if not self.active_register.nextBinaryAcceptPrepare(automatic=True):
                 #print "stop_nextBinaryAcceptPrepare_search"#, c
                 self.stop_binary_search()
@@ -1567,16 +1570,17 @@ class MainWindow(wx.Frame):
                     self.page_no = self.index.getFicheNoById(self.active_register.getLastFicheOfSelected())
                 #print "z"
             else:
-                #print "stop_nextBinaryAcceptPrepare_search"#, c
+                #print "stop_nextBinaryAcceptPrepare_search", c
                 if hint:
                     self.on_hint_accept(None, binaryOK=True)
-                    #print "on_hint_accept"#, c
+                    #print "on_hint_accept", c
                 else:
                     self.on_edit_accept(None, binaryOK=True)
-                    #print "on_edit_accept"#, c
+                    #print "on_edit_accept", c
                 self.active_register.binaryAcceptFinalize(entry)
+                #print "binaryAcceptFinalize", c
                 self.top_panel.refreshForAutomaticBinary(target)
-                #print "binaryAcceptFinalize"#, c
+                #print "refreshForAutomaticBinary", c
 
     def on_next_binary_accept(self, event):
         if self.active_register != self.new_entryreg_browser:
@@ -1611,9 +1615,11 @@ class MainWindow(wx.Frame):
                 self.active_register.binaryAcceptFinalize(entry, True)
 
     def invisible_binary_search(self, ficheId):
+        #c = Counter()
         self.notify = False
         self.page_no = self.index.getFicheNoById(ficheId)
         self.notify = True
+        #print " invi", c
 
     def on_stop_binary(self, event):
     #    if self.mode == _('Browsing mode'):
@@ -1906,6 +1912,7 @@ class MainWindow(wx.Frame):
 
     # wyswielt fiszke o numerze kolejnym page_no
     def switch_document(self, page_no):
+        c = Counter()
         if self.wasEditAccept:
             self.wasEditAccept = False
         else:
@@ -1918,15 +1925,22 @@ class MainWindow(wx.Frame):
             # TODO: A to powinno powodowac blad!
             self.reset()
             self.page_no = 0
+        #print "  loaded", c
         self.update_title()
+        #print "  title", c
         self.update_page_widget(new_document = True, new_page = True)
+        #print "  widget", c
         self.update_registers()
+        #print "  registers", c
         self.update_indices()
+        #print "  indices", c
         self.update_panels()
+        #print "  panels", c
         #import time
         #time.sleep(0.5)
         for i in range(0, 200):
             self.update_page_widget()
+        #print "  update", c
         #self.Refresh()
         #self.Update()
         return True
@@ -2020,21 +2034,28 @@ class MainWindow(wx.Frame):
         self.locate = 0
 
     def update_panels(self):
+        #c = Counter()
         if self.ficheId != None: # TODO: NOTE jest otwarty jakis dokument
             if self.dBController != None:
                 hypothesis = self.dBController.getHypothesisForFiche(self.ficheId, self.active_register in [self.strucreg_browser, self.new_entryreg_browser] and self.index.isAlphabetic())
+                #print "hypo", c
                 if hypothesis == None:
                     if self.lastEntry != None and self.index.isAlphabetic():
                         hypothesis = self.lastEntry
                     else:
                         hypothesis = self.index.getFicheById(self.ficheId).getHOCREntry(float(self.config.get("hocr_cut", default="0.1")))
+                #print "hyponone", c
                 if hypothesis != None:
                     self.top_panel.setHypothesis(hypothesis)
                 else:
                     self.top_panel.setHypothesis("")
+                #print "set", c
                 entry = self.dBController.getOriginalEntryForFiche(self.ficheId)
+                #print "entry", c
                 if entry != None:
                     self.top_panel.setEntry(entry)
+        #print "finish", c
+        #print
 
     def update_title(self):
         if self.path is None:

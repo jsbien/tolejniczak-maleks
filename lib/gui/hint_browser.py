@@ -22,6 +22,9 @@ class HintRegisterBrowser(WindowRegisterBrowser):
 
 	def __init__(self, *args, **kwargs):
 		WindowRegisterBrowser.__init__(self, *args, **kwargs)
+
+	def LIMIT(self):
+		return 50
 	
 	def reset(self):
 		WindowRegisterBrowser.reset(self)

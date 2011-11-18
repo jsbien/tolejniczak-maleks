@@ -14,6 +14,12 @@ import time
 import getpass
 from xml.dom import Node
 
+def copy(l):
+	res = []
+	for el in l:
+		res.append(el)
+	return res
+
 def repeat(string, num):
 	res = ""
 	for _ in range(0, num):

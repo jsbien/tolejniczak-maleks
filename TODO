@@ -22,20 +22,14 @@ Ostatnio wykonane:
 * Wyszukiwanie prefiksowe w wykazie podpowiedzi
 * Wykrywanie haseł nie po kolei przy próbie akceptacji - komunikat że akceptowana fiszka jest w złym miejscu
 
-Dokończyć wyszukiwanie celowe:
-
-* Wyświetlanie liczby fiszek o danym haśle w wykazie haseł (można zrezygnować jeżeli okaże się za kosztowne)
-
-Inne na teraz:
-
-* Sprawdzić zachowanie się panelu hipotezy w wyszukiwaniu celowym
-
 Inne:
 
+* Hipotezy dla fiszek zaindeksowanych i nie po kolei (do przemyślenia)
 * CTRL-C CTRL-C i włączanie wyszukiwania binarnego dla haseł zaindeksowanych
 * Efektywne odświeżanie wykazu haseł przy modyfikacji nie w wyszukiwaniu binarnym i traktowanie jednoelementowej dziury jako fiszki
 * Czy pokazywać w panelu podpowiedzi ostatnio dodany element czy aktualnie widoczną zawartość panelu podpowiedzi (do omówienia)
 * Automatyczne znajdywanie bloku fiszek nie po kolei
+* Wyświetlanie liczby fiszek o danym haśle w wykazie haseł (można zrezygnować jeżeli okaże się za kosztowne)
 * Komentarze w kodzie
 * Dokumentacja formatu kartoteki (katalogu z danymi), instrukcja i skrypt inicjowania
 * Obsługa błędów, zachowanie w nietypowych sytuacjach (np. nie otwarto żadnego pliku)

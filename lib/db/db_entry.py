@@ -134,13 +134,17 @@ class DBEntryController(DBCommon):
 		##elif ustr(entry) == _("Last fiche"):
 		##	last = self.__single(cursor, "select fiche from fiches order by position desc limit 1")
 		##	return (last, last, 1)
+		(first, last, res) = self.__getEntriesCount(cursor, entry)
+		self._closeDBAndCursor(cursor)
+		return (first, last, res)
+
+	def __getEntriesCount(self, cursor, entry):
 		assert(entry != None)
 		(firstpos, lastpos) = self.__entryLimits(cursor, entry)
 		#&res = int(self.__single(cursor, "select count(*) from fiches f where position >= %s and position <= %s and not exists (select * from actual_entries e where f.fiche = e.fiche and entry <> %s)", (firstpos, lastpos, entry)))
 		res = int(self.__single(cursor, "select count(*) from fiches f where (position >= %s and position <= %s and not exists (select * from actual_entries e where f.fiche = e.fiche and entry <> %s)) or ((position < %s or position > %s) and exists (select * from actual_entries e where e.fiche = f.fiche and entry = %s))", (firstpos, lastpos, entry, firstpos, lastpos, entry)))
 		first = self.__single(cursor, "select fiche from fiches where position = %s", (firstpos))
 		last = self.__single(cursor, "select fiche from fiches where position = %s", (lastpos))
-		self._closeDBAndCursor(cursor)
 		return (first, last, res)
 
 	def getFicheForEntryPosition(self, entry, pos):
@@ -282,14 +286,16 @@ class DBEntryController(DBCommon):
 		if preloadedEntries == None:
 			res = []
 			#&self._execute(cursor, "select distinct entry from fiches f, actual_entries e where f.fiche = e.fiche order by position")
-			#:self._execute(cursor, "select distinct entry from actual_entries order by entry")
-			self._execute(cursor, "select count(position), entry from entries group by entry order by entry")
+			self._execute(cursor, "select distinct entry from actual_entries order by entry")
+			#:self._execute(cursor, "select count(position), entry from entries group by entry order by entry")
 			row = cursor.fetchone()
 			while row != None:
-				res.append(str(row[1]))
-				entryLens.setdefault(str(row[1]), int(row[0]))
+				res.append(str(row[0]))
 				row = cursor.fetchone()
 			prev = ""
+			#:for entry in res:
+			#:	(first, last, num) = self.__getEntriesCount(cursor, entry)
+			#:	entryLens.setdefault(entry, num)
 		else:
 			res = preloadedEntries
 		##self._execute(cursor, "select entry from actual_entries where fiche = (select fiche from fiches where position <> %s order by position desc limit 1)", (minPos))
@@ -384,13 +390,15 @@ class DBEntryController(DBCommon):
 		neighbourhoods = []
 		myEntries = []
 		entryLens = {}
-		#:self._execute(cursor, "select distinct entry from actual_entries order by entry")
-		self._execute(cursor, "select count(position), entry from entries group by entry order by entry")
+		self._execute(cursor, "select distinct entry from actual_entries order by entry")
+		#:self._execute(cursor, "select count(position), entry from entries group by entry order by entry")
 		row = cursor.fetchone()
 		while row != None:
-			myEntries.append(str(row[1]))
-			entryLens.setdefault(str(row[1]), int(row[0]))
+			myEntries.append(str(row[0]))
 			row = cursor.fetchone()
+		#:for entry in myEntries:
+		#:	(first, last, num) = self.__getEntriesCount(cursor, entry)
+		#:	entryLens.setdefault(entry, num)
 		if len(myEntries) < DBEntryController.SMART_LIMIT:
 			return (None, False, None, None, None)
 		hasFirstNone = int(self.__single(cursor, "select count(*) from entries where position = (select min(position) from fiches)", ())) == 0

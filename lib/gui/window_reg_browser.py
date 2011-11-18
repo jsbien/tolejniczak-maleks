@@ -19,13 +19,14 @@ from maleks.maleks.registers import anyHint, commonprefix
 
 class WindowRegisterBrowser(RegisterBrowser):
 
-	LIMIT = 10
-
 	def __init__(self, *args, **kwargs):
 		RegisterBrowser.__init__(self, *args, **kwargs)
 		self._reg = None
 		self.__entryGetter = None
 		self._smart = True
+
+	def LIMIT(self):
+		return 96
 
 	def _map(self, i):
 		return i - self._window
@@ -52,7 +53,7 @@ class WindowRegisterBrowser(RegisterBrowser):
 		#from maleks.maleks.useful import Counter
 		#c = Counter()
 		#g = Counter()
-		if len(reg) < 2 * WindowRegisterBrowser.LIMIT:
+		if len(reg) < 2 * self.LIMIT():
 			#TODO: !A nie obsluguje hint_browsera?"
 			self._smart = False
 			RegisterBrowser.setRegister(self, reg, getEntry=getEntry)
@@ -66,7 +67,7 @@ class WindowRegisterBrowser(RegisterBrowser):
 			#print "init", c
 			self._itemsNo = 0
 			for element in reg: # dla kazdej fiszki w wykazie utworz odpowiedni element i wypelnij slowniki
-				if i < WindowRegisterBrowser.LIMIT:
+				if i < self.LIMIT():
 					self.InsertStringItem(i, self._shownLabel(element))
 					self.SetStringItem(i, 1, "")
 					self.SetStringItem(i, 2, "")
@@ -109,8 +110,8 @@ class WindowRegisterBrowser(RegisterBrowser):
 		#print itemId, stru(self._elementLabels[itemId]), stru(self._elements[itemId])
 		#self.__check()
 		wx.ListCtrl.DeleteAllItems(self)
-		halfBefore = WindowRegisterBrowser.LIMIT / 2
-		halfAfter = WindowRegisterBrowser.LIMIT - halfBefore
+		halfBefore = self.LIMIT() / 2
+		halfAfter = self.LIMIT() - halfBefore
 		if itemId + halfAfter > self._itemsLen():#len(self._items):
 			halfBefore += itemId + halfAfter - self._itemsLen()#len(self._items)
 			halfAfter -= itemId + halfAfter - self._itemsLen()#len(self._items)
@@ -119,7 +120,7 @@ class WindowRegisterBrowser(RegisterBrowser):
 			halfBefore -= halfBefore - itemId
 		#print itemId, self._window, self.__len
 		#print halfBefore, halfAfter
-		for i in range(0, WindowRegisterBrowser.LIMIT):
+		for i in range(0, self.LIMIT()):
 			self.InsertStringItem(i, self._shownLabel(self._reg[itemId - halfBefore + i]))
 			self.SetStringItem(i, 1, "")
 			self.SetStringItem(i, 2, "")
@@ -135,7 +136,7 @@ class WindowRegisterBrowser(RegisterBrowser):
 		else:
 			rawItemId = event.GetIndex()
 			itemId = self._unmap(rawItemId)
-			if rawItemId / float(WindowRegisterBrowser.LIMIT) < 0.25 or rawItemId / float(WindowRegisterBrowser.LIMIT) > 0.75:
+			if rawItemId / float(self.LIMIT()) < 0.25 or rawItemId / float(self.LIMIT()) > 0.75:
 				self._scrollBrowser(itemId)
 				self._windowVeto = True
 				self._select(itemId)
@@ -154,7 +155,7 @@ class WindowRegisterBrowser(RegisterBrowser):
 	def _select(self, itemId, veto=False):
 	#mapsafe
 		#print itemId, self._window, self.__len
-		if self._smart and (itemId < self._window or itemId >= WindowRegisterBrowser.LIMIT + self._window):
+		if self._smart and (itemId < self._window or itemId >= self.LIMIT() + self._window):
 			#print "tu"
 			self._scrollBrowser(itemId)
 		#print "ok"
