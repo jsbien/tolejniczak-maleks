@@ -39,6 +39,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		self.__limit = limit
 
 	def reset(self):
+		#print "reset"
 		WindowRegisterBrowser.reset(self)
 		self.__level = "ENTRY"
 		self.__selectedElement = None
@@ -88,6 +89,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 
 	def __fillRegister(self, elements, goingDown=True):
 		self._itemsNo = 0
+		#print len(elements)
 		if len(elements) < 2 * self.LIMIT() or self.__level in ["FICHE-ENTRY", "FICHE-GAP"]:
 			#print "smart"
 			self._smart = False
@@ -95,7 +97,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			self._reg = copy(elements)
 			#print len(elements)
 			#print type(elements)
-			for element in elements:
+			for element in self._reg:
 				#print element
 				self.InsertStringItem(i, self._shownLabel(element))
 				self.SetStringItem(i, 1, "")
@@ -118,7 +120,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			self._reg = copy(elements)
 			#print len(elements)
 			#print type(elements)
-			for element in elements:
+			for element in self._reg:
 				#print element
 				if i < self.LIMIT():
 					self.InsertStringItem(i, self._shownLabel(element))
@@ -135,6 +137,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 				i += 1
 			self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
 			self._window = 0
+		#print len(self._elements)
 
 	def _incrementalUpdate(self, entries):
 		#print "::::", entries
@@ -144,6 +147,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		(neighbourhoods, ok, hasFirstNone, hasLastNone, self.__entryLens) = self.__dBController.getPartialEntriesRegisterWithGaps(entries)
 		#print neighbourhoods
 		if not ok:
+			#print "blad"
 			return False
 		for (entry, elements) in neighbourhoods:
 			#print elements
@@ -183,6 +187,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 					self.__elementObjects.insert(indf + i, elements[i])
 					self._itemsNo += 1
 			self._reg = copy(self.__elementObjects)
+		#print ":", len(self._elements), self._itemsNo
 		if len(self._elements) < 2 * self.LIMIT():
 			self._smart = False
 		else:
@@ -202,13 +207,14 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
 			self._window = 0
 		else:
-			wx.ListCtrl.DeleteAllItems(self)
+			self.DeleteAllItems()
 			self.__fillRegister(self._reg)
 
 	def _scrollBrowser(self, itemId):
 	#mapsafe
 		#print itemId, stru(self._elementLabels[itemId]), stru(self._elements[itemId])
 		#self.__check()
+		#print self._smart
 		if self._smart:
 			wx.ListCtrl.DeleteAllItems(self)
 			halfBefore = self.LIMIT() / 2
@@ -229,7 +235,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			self._window = itemId - halfBefore
 		else:
 			c = Counter()
-			wx.ListCtrl.DeleteAllItems(self)
+			self.DeleteAllItems()
 			#print "delete", c
 			self.__fillRegister(self._reg)
 
@@ -557,12 +563,16 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		return res
 
 	def find(self, text):
-		if not self._smart or self.__level in ["FICHE-ENTRY", "FICHE-GAP"]:
+		if self.__level in ["FICHE-ENTRY", "FICHE-GAP"]:
 			RegisterBrowser.find(self, text)
 		else:
+			#print "szukamy"
 			itemId = self._findItem(text)
+			#print "mamy", itemId
 			#assert(itemId != -1)
 			if itemId != -1:
+				#print "czyli", self._elementOf(itemId)
+				#print self._elements
 				if self._selected != None:
 					self._unselect(self._selected)
 				self._select(itemId)
@@ -1069,11 +1079,11 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			self.__centerFiche = self.__dBController.getFicheForGapPosition(self.__selectedElement[1], self.__selectedElement[2], self.__center)
 		else:
 			self.__centerFiche = self.__dBController.getFicheForEntryPosition(self.__selectedElement, self.__center)
-		if self.__centerFiche == None:
-			print self.__selectedElement
-			print self.__left, self.__center, self.__right
-			print self.__leftFiche, self.__centerFiche, self.__rightFiche
-			print self._elements
+		#if self.__centerFiche == None:
+		#	print self.__selectedElement
+		#	print self.__left, self.__center, self.__right
+		#	print self.__leftFiche, self.__centerFiche, self.__rightFiche
+		#	print self._elements
 		assert(self.__centerFiche != None)
 		for l in self._listeners:
 			l.invisible_binary_search(self.__centerFiche)

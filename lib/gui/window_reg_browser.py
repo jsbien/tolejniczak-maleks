@@ -26,7 +26,7 @@ class WindowRegisterBrowser(RegisterBrowser):
 		self._smart = True
 
 	def LIMIT(self):
-		return 96
+		return 100
 
 	def _map(self, i):
 		return i - self._window

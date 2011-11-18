@@ -199,7 +199,7 @@ class RegisterBrowser(wx.ListView):
 	# jezeli veto = True to nie powiadamiaj glownego okna o zaznaczaniu elementu
 	def _select(self, itemId, veto=False):
 	#mapsafe
-		self.EnsureVisible(itemId)
+		self.EnsureVisible(self._map(itemId))
 		if veto:
 			self._veto = True # ustaw flage dla onSelect
 			self._selected = itemId # TODO: NOTE bo z powodu veto nie bedzie ustawione w onSelect

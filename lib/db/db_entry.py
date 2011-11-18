@@ -170,6 +170,8 @@ class DBEntryController(DBCommon):
 		cursor = self._openDBWithCursor()
 		res = self.__single(cursor, "select fiche from entries where entry = %s order by position desc limit 1", (entry))
 		self._closeDBAndCursor(cursor)
+		#if res == None:
+		#	print "select fiche from entries where entry = %s order by position desc limit 1", entry
 		return res
 
 	def __getLastFicheOfGap(self, (num, before, after)):
@@ -187,6 +189,12 @@ class DBEntryController(DBCommon):
 			numb = self.__lastEntry(cursor, before)
 			res = self.__single(cursor, "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and position < %s order by position desc limit 1", (numb, numa))
 		self._closeDBAndCursor(cursor)
+		#if res == None:
+		#	print before, after
+		#	print "select fiche from fiches order by position desc limit 1"
+		#	print "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position < %s order by position desc limit 1", num
+		#	print "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s order by position desc limit 1", num
+		#	print "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and position < %s order by position desc limit 1", numb, numa
 		return res
 		
 	def __getPositions(self, cursor, query, pars, left, right, center):

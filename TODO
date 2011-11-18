@@ -29,6 +29,7 @@ Inne:
 * Efektywne odświeżanie wykazu haseł przy modyfikacji nie w wyszukiwaniu binarnym i traktowanie jednoelementowej dziury jako fiszki
 * Czy pokazywać w panelu podpowiedzi ostatnio dodany element czy aktualnie widoczną zawartość panelu podpowiedzi (do omówienia)
 * Automatyczne znajdywanie bloku fiszek nie po kolei
+* Dodanie do wykazu haseł i podpowiedzi pomocy nawigacyjnych użytych na poziomie fiszek wykazu haseł
 * Wyświetlanie liczby fiszek o danym haśle w wykazie haseł (można zrezygnować jeżeli okaże się za kosztowne)
 * Komentarze w kodzie
 * Dokumentacja formatu kartoteki (katalogu z danymi), instrukcja i skrypt inicjowania
