@@ -108,7 +108,7 @@ class StructureRegisterBrowser(RegisterBrowser):
 		return self.__path
 	
 	def binaryAvailable(self):
-		return self.__binaryAvailable
+		return self.__binaryAvailable and self._itemsLen() > 0
 
 	def allowsNextFiche(self):
 		return self.__ficheLevel

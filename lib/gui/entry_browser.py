@@ -132,7 +132,7 @@ class EntryRegisterBrowser(RegisterBrowser):
 		return self.__level == "ENTRY"
 			
 	def binaryAvailable(self):
-		return self.__level == "ENTRY"
+		return self.__level == "ENTRY" and self._itemsLen() > 0
 
 	def allowsNextFiche(self):
 		return False

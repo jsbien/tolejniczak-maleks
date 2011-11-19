@@ -963,9 +963,9 @@ class MainWindow(wx.Frame):
     def on_bookmark(self, event):
         if self.dBController != None:
             self.dBController.bookmarkFiche(self.ficheId)
-            if self.active_register == self.bookreg_browser:
-                self.bookreg_browser.setRegister(self.dBController.getBookmarksTaskRegister(), self.dBController.getActualEntryForFiche if self.dBController != None else None)
-                self.bookreg_browser.select(self.ficheId)
+            #if self.active_register == self.bookreg_browser:
+            self.bookreg_browser.setRegister(self.dBController.getBookmarksTaskRegister(), self.dBController.getActualEntryForFiche if self.dBController != None else None)
+            self.bookreg_browser.select(self.ficheId)
 
     def on_default_register(self, event):
         self.taskreg_browser.setRegister(self.taskRegister, self.dBController.getActualEntryForFiche if self.dBController != None else None)

@@ -58,7 +58,7 @@ class RegisterBrowser(wx.ListView):
 		self._initialized = False # patrz isActive()
 
 	def binaryAvailable(self):
-		return True
+		return self._itemsLen() > 0
 
 	def hasTarget(self):
 		return False
