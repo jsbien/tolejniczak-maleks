@@ -1,5 +1,6 @@
 Ostatnio wykonane:
 
+* Akceptacja napisu w panelu edycji przez ENTER
 * Wyszukiwanie przyrostowe po dziurach
 * Zerowanie bazy danych w programie
 * Skasowanie w panelu indeksów z trybu wyszukiwania
@@ -22,6 +23,11 @@ Ostatnio wykonane:
 * Wyszukiwanie prefiksowe w wykazie podpowiedzi
 * Wykrywanie haseł nie po kolei przy próbie akceptacji - komunikat że akceptowana fiszka jest w złym miejscu
 
+Nowa wersja:
+
+* Dostosowanie GUI do Windows
+* Przenośna wersja dla Windows
+
 Inne:
 
 * Hipotezy dla fiszek zaindeksowanych i nie po kolei (do przemyślenia)
@@ -29,20 +35,18 @@ Inne:
 * Efektywne odświeżanie wykazu haseł przy modyfikacji nie w wyszukiwaniu binarnym i traktowanie jednoelementowej dziury jako fiszki
 * Czy pokazywać w panelu podpowiedzi ostatnio dodany element czy aktualnie widoczną zawartość panelu podpowiedzi (do omówienia)
 * Automatyczne znajdywanie bloku fiszek nie po kolei
+* Nadawanie identyfikatorów fiszkom obsługujące powtarzające się nazwy plików
 * Dodanie do wykazu haseł i podpowiedzi pomocy nawigacyjnych użytych na poziomie fiszek wykazu haseł
 * Wyświetlanie liczby fiszek o danym haśle w wykazie haseł (można zrezygnować jeżeli okaże się za kosztowne)
 * Komentarze w kodzie
 * Dokumentacja formatu kartoteki (katalogu z danymi), instrukcja i skrypt inicjowania
 * Obsługa błędów, zachowanie w nietypowych sytuacjach (np. nie otwarto żadnego pliku)
 * Informacja o rozmiarze danych (objętość kartoteki?) - kosmetyka
-* Akceptacja napisu w panelu edycji przez ENTER (do przemyślenia)
-* Wyszukiwanie przyrostowe w wykazie haseł powinno obejmować całą listę a nie tylko okienko
+* Wyszukiwanie przyrostowe w wykazie haseł na poziomie fiszek powinno obejmować całą listę a nie tylko okienko
 * Tworzenie logów operacji użytkownika (pełna funkcjonalność niekoniecznie od razu - na początek logi potrzebne do usuwania błędów)
 * Testy dla dużych danych (3 miliony fiszek) i odpowiednie modyfikacje w razie pojawienia się problemów
 * Konfigurowalne skróty klawiszowe
 * Chodzenie do przodu po cofniętych fiszkach, możliwość cofania podczas wyszukiwania binarnego, edycja wyłącza binarne
-* Dostosowanie GUI do Windows
-* Przenośna wersja dla Windows
 * Wersja dla słowników (do przemyślenia i omówienia)
 * Panel komunikatów/informacyjny: ścieżka fiszki w panelu komunikatów, wyświetlanie skrótów klawiaturowe w panelu komunikatów, komunikaty dla użytkownika, informacje o dostępnych operacjach (do omówienia)
 * Problem z niewyświetlającymi się plikami DjVu

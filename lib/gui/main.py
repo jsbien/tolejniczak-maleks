@@ -877,9 +877,8 @@ class MainWindow(wx.Frame):
                 if self.active_register.binarySearchActive():
                     self.active_register.initializeForActiveBinary(entry)
                     self.active_register.selectElementContaining(self.ficheId)
-                else:
-                    self.active_register.initialize(entry)
-                    # TODO: C zakladamy tutaj ze level jest ENTRY (a zatem allowsNextFiche), ale co jak allowsNextFiche ale nie hasSelection?
+                #else:
+                #    self.active_register.initialize(entry)
             self.update_indices()
         self.ignore_entries = False
         #print "koncowka", c
@@ -947,8 +946,8 @@ class MainWindow(wx.Frame):
                 if self.active_register.binarySearchActive():
                     self.active_register.initializeForActiveBinary(entry)
                     self.active_register.selectElementContaining(self.ficheId)
-                else:
-                    self.active_register.initialize(entry)
+                #else:
+                #    self.active_register.initialize(entry)
             self.update_indices()
         self.ignore_entries = False
 
