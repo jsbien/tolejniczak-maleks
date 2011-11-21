@@ -16,6 +16,7 @@
 import wx
 import os
 from maleks.maleks.useful import nvl
+from maleks.maleks import log
 
 # elementy: wx.ListItem, item, itemId
 # fiszki: maleks.maleks.fiche.Fiche, element, elementId
@@ -47,6 +48,7 @@ class RegisterBrowser(wx.ListView):
 	# calkowicie resetuje widok - po wywolaniu tej metody jest on w tym samym
 	# stanie co zaraz po utworzeniu przez konstruktor
 	def reset(self):
+		log.log("RegisterBrowser.reset", [], 0)
 		self.DeleteAllItems()
 		self._veto = False # patrz onSelect()
 		self._selected = None # identyfikator aktualnie zaznaczonego elementu
@@ -56,6 +58,7 @@ class RegisterBrowser(wx.ListView):
 		self.__center = 0
 		self.__programmaticSelect = False # patrz onSelect()
 		self._initialized = False # patrz isActive()
+		log.log("RegisterBrowser.reset return", [], 1)
 
 	def binaryAvailable(self):
 		return self._itemsLen() > 0
@@ -76,10 +79,12 @@ class RegisterBrowser(wx.ListView):
 	
 	# usuwa wszystkie elementy widoku
 	def DeleteAllItems(self):
+		log.log("RegisterBrowser.DeleteAllItems", [], 0)
 		wx.ListCtrl.DeleteAllItems(self)
 		self._items = []
 		self._item2element = {} # mapowanie z identyfikatorow elementow na identyfikatory fiszek
 		self._element2item = {} # vice versa
+		log.log("RegisterBrowser.DeleteAllItems return", [], 1)
 
 	# czy widok wykazu zostal wypelniony jakimis elementami (jest tak jezeli kartoteka
 	# zostala poprawnie otwarta)
@@ -96,6 +101,7 @@ class RegisterBrowser(wx.ListView):
 	# getEntry to funkcja ktora dla identyfikatora danej fiszki zwraca haslo na tej fiszce (jezeli indeks hasel dla tej
 	# fiszki jest wypelniony)
 	def setRegister(self, reg, getEntry=None):
+		log.log("RegisterBrowser.setRegister", [reg, getEntry], 0)
 		if self._binary:
 			for l in self._listeners:
 				l.stop_binary_search()
@@ -117,6 +123,7 @@ class RegisterBrowser(wx.ListView):
 		self.SetColumnWidth(0, wx.LIST_AUTOSIZE) # dopasuj szerokosc kolumn do
 		self.SetColumnWidth(3, wx.LIST_AUTOSIZE) # ich zawartosci
 		self._initialized = True
+		log.log("RegisterBrowser.setRegister return", [], 1)
 
 	def _itemsLen(self):
 		return self._itemsNo
@@ -125,7 +132,11 @@ class RegisterBrowser(wx.ListView):
 		return self._element2item.get(elementId)
 
 	def _elementOf(self, itemId):
-		return self._item2element.get(itemId)
+		try:
+			res = self._item2element[itemId]
+			return res
+		except IndexError:
+			return None
 
 	def _customElementInitialization(self, element, i):
 		pass
@@ -155,6 +166,7 @@ class RegisterBrowser(wx.ListView):
 	# klasy RegisterBrowser
 	def onSelect(self, event):
 	#mapsafe
+		log.op("RegisterBrowser.onSelect", [self._elementOf(self._unmap(event.GetIndex())), self._veto], 0)
 		if self._binary and (not self.__programmaticSelect): # wyszukiwanie binarne jest
 				# aktywne - w takim przypadku nalezy je wylaczyc (zaznaczenie fiszki w czasie
 				# wyszukiwania binarnego przerywa je)
@@ -175,6 +187,7 @@ class RegisterBrowser(wx.ListView):
 			self._element_selected(elementId) # TODO: NOTE to wywoluje zmiane strony a
 				# w konsekwencji RegisterBrowser.select - zatem dany element jest zaznaczany
 				# dwa razy (to nie powoduje jakichs duzych problemow)
+		log.opr("RegisterBrowser.onSelect return", [], 1)
 
 	# zaznaczono fiszke o identyfikatorze elementId
 	# wydzielone w osobna metode od onSelect glownie po to, zeby mozna nadpisywac w podklasach - jest
@@ -186,19 +199,24 @@ class RegisterBrowser(wx.ListView):
 	# fiszki a w drugim powiadamiamy, ale ono nie wywoluje RegisterBrowser.select
 	def _element_selected(self, elementId, notify=True):
 	#mapsafe
+		log.log("RegisterBrowser._element_selected", [elementId, notify], 0)
 		for l in self._listeners:
 			l.on_reg_select(elementId, notify=notify) # powiadom o zaznaczeniu elementu
+		log.log("RegisterBrowser._element_selected return", [], 1)
 	
 	# odznacz element o danym identyfikatorze
 	def _unselect(self, itemId):
 	#mapsafe
+		log.log("RegisterBrowser._unselect", [itemId], 0)
 		self._selected = None
 		self.Select(self._map(itemId), on=False)
+		log.log("RegisterBrowser._unselect return", [], 1)
 	
 	# zaznacz element o danym identyfikatorze
 	# jezeli veto = True to nie powiadamiaj glownego okna o zaznaczaniu elementu
 	def _select(self, itemId, veto=False):
 	#mapsafe
+		log.log("RegisterBrowser._select", [itemId, veto, self._binary], 0)
 		self.EnsureVisible(self._map(itemId))
 		if veto:
 			self._veto = True # ustaw flage dla onSelect
@@ -216,10 +234,12 @@ class RegisterBrowser(wx.ListView):
 				# zeby nie wywolac cyklu
 		if veto:
 			self._veto = False
+		log.log("RegisterBrowser._select return", [], 1)
 
 	# zaznacz fiszke o danym identyfikatorze
 	def select(self, elementId):
 	#mapsafe
+		log.log("RegisterBrowser.select", [elementId], 0)
 		if self._binary: # jesli binarne aktywne - przerwij
 			#self.stopBinarySearch()
 			for l in self._listeners:
@@ -232,6 +252,7 @@ class RegisterBrowser(wx.ListView):
 			self._select(itemId, veto=True) # veto=True bo ta metoda jest wywolywana
 				# z okna glownego wiec nie ma potrzeby powiadamiac go o zaznaczeniu
 				# elementu (bo to ono go zaznacza wiec wie o tym)
+		log.log("RegisterBrowser.select return", [], 1)
 
 	# jakis element jest zaznaczony
 	def hasSelection(self):
@@ -239,6 +260,7 @@ class RegisterBrowser(wx.ListView):
 
 	# zwroc nastepna fiszke po zaznaczonej
 	def getNextFiche(self, entry=None):
+		log.log("RegisterBrowser.getNextFiche", [entry], 0)
 		if self._binary: # jezeli binarne jest wlaczane to wylaczamy
 			#self.stopBinarySearch()
 			for l in self._listeners:
@@ -255,6 +277,7 @@ class RegisterBrowser(wx.ListView):
 					# odpowiedni element zostal przed chwila zaznaczony)
 			else:
 				self._nextFicheNotFound()
+		log.log("RegisterBrowser.getNextFiche return", [], 1)
 
 	# co robic jesli nie znaleziono fiszki w getNextFiche?
 	# (metoda przeslaniana w niektorych podklasach, np. wykaz struktury moze
@@ -295,6 +318,7 @@ class RegisterBrowser(wx.ListView):
 	# fiszki) ma prefix rowny text (text - napis w okienku wyszukiwania w panelu
 	# wykazow)
 	def find(self, text):
+		log.log("RegisterBrowser.find", [text], 0)
 		if self._binary: # jezeli binarne to przerywamy je
 			#self.stopBinarySearch()
 			for l in self._listeners:
@@ -305,17 +329,21 @@ class RegisterBrowser(wx.ListView):
 			if self._selected != None:
 				self._unselect(self._selected)
 			self._select(itemId)
+		log.log("RegisterBrowser.find return", [], 1)
 
 	def binarySearchActive(self):
 		return self._binary
 
 	def stopBinarySearch(self, restart=None):
+		log.log("RegisterBrowser.stopBinarySearch", [restart], 0)
 		self._binary = False
 		self.__unmarkScope()
+		log.log("RegisterBrowser.stopBinarySearch return", [], 1)
 	
 	# zaznacz srodkowy element w wyszukiwaniu binarnym
 	def __selectCenter(self):
 		# TODO: D co jak lenn == 0?
+		log.log("RegisterBrowser.__selectCenter", [self.__left, self.__right], 0)
 		lenn = self.__right - self.__left + 1
 		if self.__left == self.__right == self.__center: # przedzial ograniczony do
 			# jednego elementu - konczymy wyszukiwanie
@@ -336,6 +364,7 @@ class RegisterBrowser(wx.ListView):
 			# jednego elementu - konczymy wyszukiwanie
 			for l in self._listeners:
 				l.stop_binary_search()
+		log.log("RegisterBrowser.__selectCenter return", [self.__center], 1)
 
 	# wyswietla aktualnie aktywny przedzial w wyszukiwaniu binarnym
 	def __markScope(self):
@@ -355,26 +384,33 @@ class RegisterBrowser(wx.ListView):
 	# zacznij wyszukiwanie binarne i inicjalizuj odpowiednie zmienne
 	# target - wykorzystywany tylko przez NewEntryRegisterBrowser
 	def startBinarySearch(self, target=None, restarting=False):
+		log.log("RegisterBrowser.startBinarySearch", [target, restarting], 0)
 		self._binary = True
 		self.__left = 0
 		self.__right = len(self._items) - 1
 		self.__markScope()
 		self.__selectCenter()
+		log.log("RegisterBrowser.startBinarySearch return", [], 1)
 
 	def nextBinary(self):
+		log.log("RegisterBrowser.nextBinary", [], 0)
 		self.__left = self.__center
 		self.SetStringItem(self.__center, 2, ">") # zaznacz historie wyszukiwania
 		self.__markScope()
 		self.__selectCenter()
+		log.log("RegisterBrowser.nextBinary return", [], 1)
 
 	def prevBinary(self):
+		log.log("RegisterBrowser.prevBinary", [], 0)
 		if self.__left == self.__right: # przedzial ograniczony do jednego elementu -
 			# konczymy
+			log.log("RegisterBrowser.prevBinary return", [], 1)
 			return # TODO: A cos tu jest nie tak! a gdzie wylaczenie wyszukiwania binarnego?
 		self.__right = self.__center - 1
 		self.SetStringItem(self.__center, 2, "<") # zaznacz historie wyszukiwania
 		self.__markScope()
 		self.__selectCenter()
+		log.log("RegisterBrowser.prevBinary return", [], 2)
 
 	# czy wyszukiwanie binarne odbywa sie z celem - uzywane tylko w NewEntryRegisterBrowser
 	def hasTarget(self):
@@ -391,4 +427,7 @@ class RegisterBrowser(wx.ListView):
 	# EntryRegisterBrowser
 	def showLastElement(self):
 		pass
+
+	def getSelectedElement(self):
+		return None
 

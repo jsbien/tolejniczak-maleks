@@ -17,6 +17,7 @@ from maleks.gui.window_reg_browser import WindowRegisterBrowser
 from maleks.maleks.registers import anyHint
 from maleks.maleks.useful import ustr, Counter, getUser, stru
 from maleks.maleks.worddict import SortedWordDictionary
+from maleks.maleks import log
 		
 class HintRegisterBrowser(WindowRegisterBrowser):
 
@@ -27,20 +28,26 @@ class HintRegisterBrowser(WindowRegisterBrowser):
 		return 50
 	
 	def reset(self):
+		log.log("HintRegisterBrowser.reset", [], 0)
 		WindowRegisterBrowser.reset(self)
 		self.Bind(wx.EVT_KEY_UP, self.__onKey, self)
 		self.__hints = []
+		log.log("HintRegisterBrowser.reset return", [], 1)
 
 	def __onKey(self, event):
+		log.op("HintRegisterBrowser.__onKey", [event.GetKeyCode()], 0)
 		if event.GetKeyCode() == wx.WXK_RETURN:
 			self.levelDown()
 		else:
 			event.Skip()
+		log.opr("HintRegisterBrowser.__onKey return", [], 1)
 
 	def levelDown(self):
+		log.op("HintRegisterBrowser.levelDown", [self._selected if self._selected == None else self._elementOf(self._selected)], 0)
 		if self._selected != None:
 			for l in self._listeners:
 				l.find_in_entry_register(self._elementOf(self._selected))
+		log.opr("HintRegisterBrowser.levelDown return", [], 1)
 
 	#def setRegister(self, reg, getEntry=None):
 	#	self.reset()
@@ -58,19 +65,32 @@ class HintRegisterBrowser(WindowRegisterBrowser):
 	#	self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
 	#	self.SetColumnWidth(3, wx.LIST_AUTOSIZE)
 	#	self._initialized = True
+
+	def onSelect(self, event):
+	#mapsafe
+		log.op("HintRegisterBrowser.onSelect", [event], 0)
+		WindowRegisterBrowser.onSelect(self, event)
+		log.opr("HintRegisterBrowser.onSelect return", [], 1)
 	
 	def setRegister(self, reg, getEntry=None):
+		log.log("HintRegisterBrowser.setRegister", [reg, getEntry], 0)
 		#self.__reverseIndex.disableSorting()
 		WindowRegisterBrowser.setRegister(self, reg, getEntry=getEntry)
 		#c = Counter()
 		#self.__reverseIndex.sortAll()
 		#print "s", c
 		#self.__reverseIndex.enableSorting()
+		log.log("HintRegisterBrowser.setRegister return", [], 1)
 
-	def _element_selected(self, elementId, notify=True):
-		pass
+	def _element_selected(self, elementId):
+		log.log("HintRegisterBrowser._element_selected", [elementId], 0)
+		for l in self._listeners:
+			#l.on_hint_selected(self.__hints[self._element2item[elementId]])
+			l.on_hint_selected(self.__hints[self._itemOf(elementId)])
+		log.log("HintRegisterBrowser._element_selected return", [], 1)
 
 	def incrementalAdd(self, hint):
+		log.log("HintRegisterBrowser.incrementalAdd", [hint], 0)
 		#c = Counter()
 		ind = self.__binaryFind(hint)
 		if ind == len(self.__hints):
@@ -84,6 +104,7 @@ class HintRegisterBrowser(WindowRegisterBrowser):
 		self._itemsNo += 1
 		#print c
 		self._reloadSelect(ind, veto=True)
+		log.log("HintRegisterBrowser.incrementalAdd return", [], 1)
 
 	def _label(self, element):
 		return anyHint(element)
@@ -101,6 +122,7 @@ class HintRegisterBrowser(WindowRegisterBrowser):
 	# TODO: A sprawdzanie czy rowne?
 	# TODO: A zintegrowac z _findItem
 	def __binaryFind(self, what):
+		log.log("HintRegisterBrowser.__binaryFind", [what], 0)
 		collator = icu.Collator.createInstance(icu.Locale('pl_PL.UTF-8'))
 		def __pom(left, right):
 			if left == right:
@@ -121,23 +143,22 @@ class HintRegisterBrowser(WindowRegisterBrowser):
 				return __pom(left, center - 1)
 			else:
 				return __pom(center + 1, right)
-		return __pom(0, len(self.__hints) - 1)
+		res = __pom(0, len(self.__hints) - 1)
+		log.log("HintRegisterBrowser.__binaryFind return", [res], 1)
+		return res
 			
 	def hintChanged(self, hint):
+		log.log("HintRegisterBrowser.hintChanged", [hint], 0)
 		itemId = self._findItem(hint)
 		if itemId != -1:
 			if self._selected != None:
 				self._unselect(self._selected)
 			self._select(itemId, veto=True)
+		log.log("HintRegisterBrowser.hintChanged return", [], 1)
 
 	def binaryAvailable(self):
 		return False
 
 	def allowsNextFiche(self):
 		return False
-
-	def _element_selected(self, elementId):
-		for l in self._listeners:
-			#l.on_hint_selected(self.__hints[self._element2item[elementId]])
-			l.on_hint_selected(self.__hints[self._itemOf(elementId)])
 

@@ -38,6 +38,12 @@ def stru(unic):
 	else:
 		return str(unic.encode("utf-8"))
 
+def fstr(s):
+	if isinstance(s, unicode):
+		return str(s.encode("utf-8"))
+	else:
+		return str(s)
+
 class Notifier(object):
 
 	def __init__(self):

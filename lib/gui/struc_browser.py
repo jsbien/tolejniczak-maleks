@@ -14,6 +14,7 @@ import wx
 import time
 from maleks.gui.reg_browser import RegisterBrowser
 from maleks.maleks.fiche import Fiche
+from maleks.maleks import log
 
 class StructureRegisterBrowser(RegisterBrowser):
 
@@ -21,14 +22,17 @@ class StructureRegisterBrowser(RegisterBrowser):
 		RegisterBrowser.__init__(self, *args, **kwargs)
 
 	def reset(self):
+		log.log("StructreRegisterBrowser.reset", [], 0)
 		RegisterBrowser.reset(self)
 		self.__binaryAvailable = False
 		self.__register = None
 		self.__ficheLevel = False
 		self.__element = None
 		self.__path = ""
+		log.log("StructureRegisterBrowser.reset return", [], 1)
 
 	def setRegister(self, reg, getEntry=None):
+		log.log("StructureRegisterBrowser.setRegister", [reg, getEntry], 0)
 		if self.binarySearchActive():
 			for l in self._listeners:
 				l.stop_binary_search()
@@ -38,8 +42,10 @@ class StructureRegisterBrowser(RegisterBrowser):
 		self.__element = reg.getRoot()
 		self.__path = self.__element.getDescriptivePath()
 		self._initialized = True
+		log.log("StructureRegisterBrowser.setRegister return", [], 1)
 
 	def __fillRegister(self, elements):
+		log.log("StructureRegisterBrowser.__fillRegister", [elements], 0)
 		i = 0
 		for element in elements:
 			if isinstance(element, Fiche):
@@ -52,25 +58,38 @@ class StructureRegisterBrowser(RegisterBrowser):
 			self._element2item.setdefault(element.getId(), i)
 			i += 1
 		self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
+		log.log("StructureRegisterBrowser.__fillRegister return", [], 1)
+
+	def onSelect(self, event):
+		log.op("StructureRegisterBrowser.onSelect", [self._elementOf(self._unmap(event.GetIndex()))], 0)
+		RegisterBrowser.onSelect(self, event)
+		log.opr("StructureRegisterBrowser.onSelect return", [], 1)
 
 	def select(self, elementId):
+		log.log("StructureRegisterBrowser.select", [elementId], 0)
 		if self.__ficheLevel:
 			RegisterBrowser.select(self, elementId)
-
+		log.log("StructureRegisterBrowser.select return", [], 1)
+	
 	def __selectStructureNode(self, node):
+		log.log("StructureRegisterBrowser.__selectStructureNode", [node.getDescriptivePath()], 0)
 		self.__path = node.getDescriptivePath()
 		for l in self._listeners:
 			l.on_structure_element_selected(node.getDescriptivePath())
 		self.DeleteAllItems()
 		self.__fillRegister(node.getChildren())
+		log.log("StructureRegisterBrowser.__selectStructureNode return", [], 1)
 
 	def _element_selected(self, elementId, notify=True):
+		log.log("StructureRegisterBrowser._element_selected", [elementId, notify], 0)
 		if self.__ficheLevel:
 			RegisterBrowser._element_selected(self, elementId, notify=notify)
 		else:
 			self.__element = self.__register.getNodeById(elementId)
+		log.log("StructureRegisterBrowser._element_selected return", [self.__element], 1)
 
 	def levelDown(self):
+		log.op("StructureRegisterBrowser.levelDown", [self.__ficheLevel], 0)
 		if not self.__ficheLevel:
 			self.__selectStructureNode(self.__element)
 			if self.__ficheLevel:
@@ -83,18 +102,22 @@ class StructureRegisterBrowser(RegisterBrowser):
 				#		self.select(elementId)
 				#		time.sleep(0.1) # TODO: NOTE bez tego nie zaznacza w wykazie aktualnie ogladanej fiszki
 				time.sleep(0.1)
+		log.opr("StructureRegisterBrowser.levelDown return", [], 1)
 
 	def onUp(self, event):
+		log.op("StructureRegisterBrowser.onUp", [event], 0)
 		if self.__element.getParent() != None:
 			self.__ficheLevel = False
 			self.__binaryAvailable = False
 			self.__element = self.__element.getParent()
 			self.__selectStructureNode(self.__element)
+		log.op("StructureRegisterBrowser.onUp return", [], 1)
 
 	def topLevel(self):
 		return self.__element.getParent() == None
 
 	def _nextFicheNotFound(self):
+		log.op("StructureRegisterBrowser._nextFicheNotFound", [], 0)
 		fiche = self.__register.findNextFiche(self.__element)
 		if fiche != None:
 			self.__element = fiche.getParent()
@@ -103,6 +126,7 @@ class StructureRegisterBrowser(RegisterBrowser):
 			self._unselect(self._selected)
 			self._select(itemId, veto=True)
 			RegisterBrowser._element_selected(self, fiche.getId(), notify=False)
+		log.op("StructureRegisterBrowser._nextFicheNotFound return", [], 1)
 
 	def getPath(self):
 		return self.__path

@@ -10,28 +10,89 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 # General Public License for more details.
 
-PATH = None
+import os
+from maleks.maleks.useful import fstr, stru
+from time import ctime
 
-from maleks.maleks.useful import ustr
+DEBUG = "DEBUG"
+OP = "OP"
+DB = "DB"
+QUERY = "QUERY"
+DBaQ = "DBaQ"
+NONE = "NONE"
+
+path = None
+level = OP
+
+def setLevel(lev):
+	global level
+	level = lev
 
 def startLog(absolutePath):
-	global PATH
-	f = open(absolutePath + "/log.txt", "w")
-	PATH = absolutePath + "/log.txt"
+	global path
+	mod = 0
+	while os.path.exists(absolutePath + "/log_" + str(mod) + ".txt"):
+		mod += 1
+	f = open(absolutePath + "/log_" + str(mod) + ".txt", "w")
+	path = absolutePath + "/log_" + str(mod) + ".txt"
 	f.write("")
 	f.close()
 
-def log(l):
-	global PATH
-	if PATH == None:
+def dumpDatabase(dump):
+	global path
+	if level == NONE:
 		return
-	f = open(PATH, "a")
+	if path == None:
+		return
+	f = open(path, "a")
+	f.write(dump)
+	f.close()
+
+def op(label, l, idd):
+	global level
+	if level == NONE:
+		return
+	__log("OP: " + label.upper(), l, idd, True)
+
+def opr(label, l, idd):
+	global level
+	if level == NONE:
+		return
+	__log("OP: " + label, l, idd, True)
+
+def db(label, l, idd):
+	global level
+	if level in [DB, DBaQ]:
+		__log(label, l, idd)
+
+def query(label, l, idd):
+	global level
+	if level in [QUERY, DBaQ]:
+		__log(label, l, idd)
+
+def log(label, l, idd):
+	global level
+	if level in [DEBUG, DB, QUERY, DBaQ]:
+		__log(label, l, idd)
+
+def __log(label, l, idd, op=False):
+	global path
+	if path == None:
+		return
+	f = open(path, "a")
+	f.write(("" if op else "    ") + label + " (")
+	f.write(str(idd) + ") " + str(ctime()) + ": ")
 	for el in l:
 		if isinstance(el, unicode):
-			f.write(el)
-		else:
+			f.write(stru(el))
+			f.write(": <type 'unicode'>")
+		elif isinstance(el, list):
 			f.write(str(el))
-		f.write(" ")
+			f.write("(" + str(len(el)) + "): <type 'list'>")
+		else:
+			f.write(str(el) + ": ")
+			f.write(str(type(el)))
+		f.write("; ")
 	f.write("\n")
 	f.close()
 

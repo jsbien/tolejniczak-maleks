@@ -13,8 +13,9 @@
 import MySQLdb
 import time
 import icu
+from maleks.maleks import log
 from maleks.i18n import _
-from maleks.maleks.useful import ustr
+from maleks.maleks.useful import ustr, fstr
 
 #def _(x):
 #	return x
@@ -72,16 +73,21 @@ class DBCommon(object):
 		querystr = query
 		i = querystr.find("%s")
 		j = 0
+		ok = True
 		while i != -1:
 			querya = querystr[:i]
 			queryb = querystr[i + 2:]
 			try:
 				querystr = querya + str(pars[j]) + queryb
 			except IndexError:
-				#print query, pars, j
-				raise
+				ok = False
+				break
 			j += 1
 			i = querystr.find("%s")
+		if ok:
+			log.query(querystr, [], 0)
+		else:
+			log.query(query, [pars], 1)
 		#start = time.time()
 		cursor.execute(query, pars)
 		#stop = time.time()
@@ -148,6 +154,7 @@ class DBEntryController(DBCommon):
 		return (first, last, res)
 
 	def getFicheForEntryPosition(self, entry, pos):
+		log.db("getFicheForEntryPosition", [entry, pos], 0)
 		cursor = self._openDBWithCursor()
 		##if ustr(entry) == _("First fiche"):
 		##	res = self.__single(cursor, "select fiche from fiches order by position limit 1", ())
@@ -158,6 +165,7 @@ class DBEntryController(DBCommon):
 		#&res = self.__single(cursor, "select fiche from fiches f where position >= %s and position <= %s and not exists (select * from actual_entries e where f.fiche = e.fiche and entry <> %s) order by position limit %s,1", (first, last, entry, pos))
 		res = self.__single(cursor, "select fiche from fiches f where (position >= %s and position <= %s and not exists (select * from actual_entries e where f.fiche = e.fiche and entry <> %s)) or ((position < %s or position > %s) and exists (select * from actual_entries e where e.fiche = f.fiche and entry = %s)) order by position limit %s,1", (first, last, entry, first, last, entry, pos))
 		self._closeDBAndCursor(cursor)
+		log.db("getFicheForEntryPosition return", [res], 1)
 		return res
 
 	def getLastFicheOfElement(self, el):
@@ -167,14 +175,17 @@ class DBEntryController(DBCommon):
 			return self.__getLastFicheOfEntry(el)
 
 	def __getLastFicheOfEntry(self, entry):
+		log.db("__getLastFicheOfEntry", [entry], 0)
 		cursor = self._openDBWithCursor()
 		res = self.__single(cursor, "select fiche from entries where entry = %s order by position desc limit 1", (entry))
 		self._closeDBAndCursor(cursor)
 		#if res == None:
 		#	print "select fiche from entries where entry = %s order by position desc limit 1", entry
+		log.db("__getLastFicheOfEntry return", [res], 1)
 		return res
 
 	def __getLastFicheOfGap(self, (num, before, after)):
+		log.db("__getLastFicheOfGap", [(num, before, after)], 0)
 		cursor = self._openDBWithCursor()
 		if before == None and after == None:
 			res = self.__single(cursor, "select fiche from fiches order by position desc limit 1", ())
@@ -195,9 +206,11 @@ class DBEntryController(DBCommon):
 		#	print "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position < %s order by position desc limit 1", num
 		#	print "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s order by position desc limit 1", num
 		#	print "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and position < %s order by position desc limit 1", numb, numa
+		log.db("__getLastFicheOfGap return", [res], 1)
 		return res
 		
 	def __getPositions(self, cursor, query, pars, left, right, center):
+		log.db("__getPositions", [cursor, query, pars, left, right, center], 0)
 		self._execute(cursor, "set @row = -1")
 		leftFiche = self.__single(cursor, "select a.row from (" + query + ") a where a.fiche = %s", pars + tuple([left]))
 		self._execute(cursor, "set @row = -1")
@@ -205,9 +218,11 @@ class DBEntryController(DBCommon):
 		rightFiche = self.__single(cursor, "select a.row from (" + query + ") a where a.fiche = %s", pars + tuple([right]))
 		self._execute(cursor, "set @row = -1")
 		centerFiche = self.__single(cursor, "select a.row from (" + query + ") a where a.fiche = %s", pars + tuple([center]))
+		log.db("__getPositions return", [(leftFiche, rightFiche, centerFiche)], 1)
 		return (leftFiche, rightFiche, centerFiche)
 		
 	def getPositionsForFichesForEntry(self, entry, left, right, center):
+		log.db("getPositionsForFichesForEntry", [entry, left, right, center], 0)
 		cursor = self._openDBWithCursor()
 		##if ustr(entry) in [_("First fiche"), _("Last fiche")]: # TODO: D nie powinno sie wydarzyc, ale sprawdzic
 		##	return (0, 0, 0)
@@ -216,10 +231,12 @@ class DBEntryController(DBCommon):
 		#&(leftFiche, rightFiche, centerFiche) = self.__getPositions(cursor, "select @row := @row + 1 as row, fiche from fiches f where position >= %s and position <= %s and not exists (select * from actual_entries e where f.fiche = e.fiche and entry <> %s) order by position", (first, last, entry), left, right, center)
 		(leftFiche, rightFiche, centerFiche) = self.__getPositions(cursor, "select @row := @row + 1 as row, fiche from fiches f where (position >= %s and position <= %s and not exists (select * from actual_entries e where f.fiche = e.fiche and entry <> %s)) or ((position < %s or position > %s) and exists (select * from actual_entries e where e.fiche = f.fiche and entry = %s)) order by position", (first, last, entry, first, last, entry), left, right, center)
 		self._closeDBAndCursor(cursor)
+		log.db("getPositionsForFichesForEntry return", [(leftFiche, rightFiche, centerFiche)], 1)
 		return (leftFiche, rightFiche, centerFiche)
 
 	# TODO: C w dziurach ktore sa na poczatku i koncu jest pierwsza i ostatnia fiszka!
 	def getGapCount(self, before, after):
+		log.db("getGapCount", [before, after], 0)
 		cursor = self._openDBWithCursor()
 		if before == None and after == None:
 			res = int(self.__single(cursor, "select count(*) from fiches", ()))
@@ -242,10 +259,12 @@ class DBEntryController(DBCommon):
 			first = self.__single(cursor, "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and position < %s order by position limit 1", (numb, numa))
 			last = self.__single(cursor, "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and position < %s order by position desc limit 1", (numb, numa))
 		self._closeDBAndCursor(cursor)
+		log.db("getGapCount return", [(first, last, res)], 1)
 		return (first, last, res)
 
 	def getFicheForGapPosition(self, before, after, pos):
 		#print pos
+		log.db("getFicheForGapPosition", [before, after, pos], 0)
 		cursor = self._openDBWithCursor()
 		if before == None and after == None:
 			res = self.__single(cursor, "select fiche from fiches order by position limit %s,1", (pos))
@@ -261,9 +280,11 @@ class DBEntryController(DBCommon):
 			numb = self.__lastEntry(cursor, before)
 			res = self.__single(cursor, "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and position < %s order by position limit %s,1", (numb, numa, pos))
 		self._closeDBAndCursor(cursor)
+		log.db("getFicheForGapPosition return", [res], 1)
 		return res
 		
 	def getPositionsForFichesForGap(self, before, after, left, right, center):
+		log.db("getPositionsForFichesForGap", [before, after, left, right, center], 0)
 		cursor = self._openDBWithCursor()
 		if before == None and after == None:
 			(leftFiche, rightFiche, centerFiche) = self.__getPositions(cursor, "select @row := @row + 1 as row, fiche from fiches order by position", (), left, right, center)
@@ -279,9 +300,11 @@ class DBEntryController(DBCommon):
 			numb = self.__lastEntry(cursor, before)
 			(leftFiche, rightFiche, centerFiche) = self.__getPositions(cursor, "select @row := @row + 1 as row, fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and position < %s order by position", (numb, numa), left, right, center)
 		self._closeDBAndCursor(cursor)
+		log.db("getPositionsForFichesForGap return", [(leftFiche, rightFiche, centerFiche)], 1)
 		return (leftFiche, rightFiche, centerFiche)
 
 	def getEntriesRegisterWithGaps(self, preloadedEntries=None):
+		log.db("getEntriesRegisterWithGaps", [preloadedEntries], 0)
 		cursor = self._openDBWithCursor()
 		#self._execute(cursor, "select distinct entry from fiches f, actual_entries e where f.fiche = e.fiche and position = 0")
 		##self._execute(cursor, "select min(position) from fiches")
@@ -343,6 +366,7 @@ class DBEntryController(DBCommon):
 			if num > 0:
 				newres.append((num, prev, None))
 		self._closeDBAndCursor(cursor)
+		log.db("getEntriesRegisterWithGaps return", [(newres, entryLens)], 1)
 		return (newres, entryLens)
 
 	NEIGHBOURHOOD = 3
@@ -362,6 +386,7 @@ class DBEntryController(DBCommon):
 	SMART_LIMIT = 2
 	
 	def __binaryFind(self, text, li): # jesli nie ma zwraca nastepne haslo, poprzednie w razie gdy osiagnieto koniec listy
+		log.db("__binaryFind", [text, li], 0)
 		collator = icu.Collator.createInstance(icu.Locale('pl_PL.UTF-8'))
 		def __pom(left, right):
 			#print left, right, stru(text)
@@ -390,9 +415,11 @@ class DBEntryController(DBCommon):
 		res = __pom(0, len(li) - 1)
 		if res == len(li):
 			res -= 1
+		log.db("__binaryFind return", [res], 1)
 		return res
 
 	def getPartialEntriesRegisterWithGaps(self, entries):
+		log.db("getPartialEntriesRegisterWithGaps", [entries], 0)
 		cursor = self._openDBWithCursor()
 		res = []
 		neighbourhoods = []
@@ -458,6 +485,7 @@ class DBEntryController(DBCommon):
 			neighbourhoods.append((ustr(e), newres))
 		#neighbourhoods = self.__combine(neighbourhoods)
 		self._closeDBAndCursor(cursor)
+		log.db("getPartialEntriesRegisterWithGaps return", [(neighbourhoods, True, hasFirstNone, hasLastNone, entryLens)], 1)
 		return (neighbourhoods, True, hasFirstNone, hasLastNone, entryLens)
 
 	#def __eq(self, a, b):
@@ -504,6 +532,7 @@ class DBEntryController(DBCommon):
 	#	return neighbourhoods			
 
 	def __smartLimit(self, cursor, query, pars, limitStart, atleast, limit):
+		log.db("__smartLimit", [cursor, query, pars, limitStart, atleast, limit], 0)
 		if atleast != None:
 			self._execute(cursor, query.replace("#", "count(*)"), pars)
 			num = int(cursor.fetchone()[0])
@@ -517,9 +546,11 @@ class DBEntryController(DBCommon):
 		#:else:
 		next = None
 		self._execute(cursor, query.replace("#", "fiche") + " limit " + str(limitStart) + "," + str(limit), pars)
+		log.db("__smartLimit return", [(limitStart, next)], 1)
 		return (limitStart, next)
 
 	def getFichesForGap(self, before, after, limit, limitStart=0, atleast=None):
+		log.db("getFichesForGap", [before, after, limit, limitStart, atleast], 0)
 		cursor = self._openDBWithCursor()
 		res = []
 		#print ":", before, after
@@ -546,9 +577,11 @@ class DBEntryController(DBCommon):
 			res.append(str(row[0]))
 			row = cursor.fetchone()
 		self._closeDBAndCursor(cursor)
+		log.db("getFichesForGap return", [(res, limitStart, next)], 1)
 		return (res, limitStart, next)
 
 	def getFichesForEntry(self, entry, limit, limitStart=0, atleast=None):
+		log.db("getFichesForEntry", [entry, limit, limitStart, atleast], 0)
 		res = []
 		next = None
 		cursor = self._openDBWithCursor()
@@ -566,16 +599,21 @@ class DBEntryController(DBCommon):
 			res.append(str(row[0]))
 			row = cursor.fetchone()
 		self._closeDBAndCursor(cursor)
+		log.db("getFichesForEntry return", [(res, limitStart, next)], 1)
 		return (res, limitStart, next)
 
 	def getFichesForEntryForLastFiche(self, entry, limit):
+		log.db("getFichesForEntryForLastFiche", [entry, limit], 0)
 		cursor = self._openDBWithCursor()
 		(firstpos, lastpos) = self.__entryLimits(cursor, entry)
 		ficheId = self.__single(cursor, "select fiche from fiches where position = %s", (lastpos))
 		self._closeDBAndCursor(cursor)
-		return self.getFichesForEntryForFiche(entry, ficheId, limit) + (ficheId,)
+		res = self.getFichesForEntryForFiche(entry, ficheId, limit) + (ficheId,)
+		log.db("getFichesForEntryForLastFiche return", [res], 1)
+		return res
 
 	def getFichesForEntryForFiche(self, entry, ficheId, limit):
+		log.db("getFichesForEntryForFiche", [entry, ficheId, limit], 0)
 		cursor = self._openDBWithCursor()
 		res = []
 		rownum = 0
@@ -602,9 +640,11 @@ class DBEntryController(DBCommon):
 			res.append(str(row[0]))
 			row = cursor.fetchone()
 		self._closeDBAndCursor(cursor)
+		log.db("getFichesForEntryForFiche return", [(res, rownum, next)], 1)
 		return (res, rownum, next)
 		
 	def __smartQuery(self, cursor, query, pars, ficheId, ind, limit):
+		log.db("__smartQuery", [cursor, query, pars, ficheId, ind, limit], 0)
 		self._execute(cursor, "set @row = -1")
 		self._execute(cursor, "select a.row from (" + query.replace("#", "@row := @row + 1 as row,") + ") a where a.fiche = %s", pars + tuple([ficheId]))
 		rownum = cursor.fetchone()[0]
@@ -618,9 +658,11 @@ class DBEntryController(DBCommon):
 		if rownum < 0:
 			rownum = 0
 		self._execute(cursor, query.replace("#", "") + " limit %s,%s", pars + (rownum, limit))
+		log.db("__smartQuery return", [(rownum, next)], 1)
 		return (rownum, next)
 
 	def getFichesForGapForLastFiche(self, before, after, limit):
+		log.db("getFichesForGapForLastFiche", [], 0)
 		cursor = self._openDBWithCursor()
 		if before == None and after == None:
 			ficheId = self.__single(cursor, "select fiche from fiches order by position desc limit 1", ())
@@ -635,9 +677,12 @@ class DBEntryController(DBCommon):
 			numb = self.__lastEntry(cursor, before)
 			ficheId = self.__single(cursor, "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and position < %s order by position desc limit 1", (numb, numa))
 		self._closeDBAndCursor(cursor)
-		return self.getFichesForGapForFiche(before, after, ficheId, limit) + (ficheId,)
+		res = self.getFichesForGapForFiche(before, after, ficheId, limit) + (ficheId,)
+		log.db("getFichesForGapForLastFiche return", [res], 1)
+		return res
 
 	def getFichesForGapForFiche(self, before, after, ficheId, limit):
+		log.db("getFichesForGapForFiche", [], 0)
 		cursor = self._openDBWithCursor()
 		res = []
 		if before == None and after == None:
@@ -657,9 +702,11 @@ class DBEntryController(DBCommon):
 			res.append(str(row[0]))
 			row = cursor.fetchone()
 		self._closeDBAndCursor(cursor)
+		log.db("getFichesForGapForFiche return", [(res, rownum, next)], 1)
 		return (res, rownum, next)
 
 	def hasFiche(self, element, ficheId):
+		log.db("hasFiche", [element, ficheId], 0)
 		cursor = self._openDBWithCursor()
 		if isinstance(element, tuple):
 			(num, before, after) = element
@@ -696,5 +743,17 @@ class DBEntryController(DBCommon):
 		#row2 = cursor.fetchone()
 		#print "---", row2
 		self._closeDBAndCursor(cursor)
+		log.db("hasFiche return", [row != None], 1)
 		return row != None
+
+	def dumpDatabase(self):
+		cursor = self._openDBWithCursor()
+		res = ""
+		cursor.execute("select * from entries")
+		row = cursor.fetchone()
+		while row != None:
+			res += fstr(row[0]) + ", " + fstr(row[1]) + ", " + fstr(row[2]) + "\n"
+			row = cursor.fetchone()
+		self._closeDBAndCursor(cursor)
+		return res
 

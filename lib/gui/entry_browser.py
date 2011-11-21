@@ -11,6 +11,7 @@
 # General Public License for more details.
 
 from maleks.gui.reg_browser import RegisterBrowser
+from maleks.maleks import log
 import time
 import wx
 
@@ -21,15 +22,23 @@ class EntryRegisterBrowser(RegisterBrowser):
 		self.__dBController = None
 
 	def reset(self):
+		log.log("EntryRegisterBrowser.reset", [], 0)
 		RegisterBrowser.reset(self)
 		self.__level = "ENTRY"
 		self.__stack = []
 		self.__selectedElement = None
+		log.log("EntryRegisterBrowser.reset return", [], 1)
 
 	def setDBController(self, controller):
 		self.__dBController = controller
+		
+	def onSelect(self, event):
+		log.op("EntryRegisterBrowser.onSelect", [self._elementOf(self._unmap(event.GetIndex()))], 0)
+		RegisterBrowser.onSelect(self, event)
+		log.opr("EntryRegisterBrowser.onSelect return", [], 1)
 
 	def initialize(self):
+		log.log("EntryRegisterBrowser.initialize", [], 0)
 		if self.binarySearchActive():
 			for l in self._listeners:
 				l.stop_binary_search()
@@ -39,8 +48,10 @@ class EntryRegisterBrowser(RegisterBrowser):
 		#elements = ["a", "b", "c", "d"]
 		self.__fillRegister(elements)
 		self._initialized = True
+		log.log("EntryRegisterBrowser.initialize return", [], 1)
 
 	def __fillRegister(self, elements):
+		log.log("EntryRegisterBrowser.initialize", [elements], 0)
 		i = 0
 		for element in elements:
 			self.InsertStringItem(i, element)
@@ -51,18 +62,24 @@ class EntryRegisterBrowser(RegisterBrowser):
 			self._element2item.setdefault(element, i)
 			i += 1
 		self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
+		log.log("EntryRegisterBrowser.initialize return", [], 1)
 
 	def select(self, elementId):
+		log.log("EntryRegisterBrowser.select", [elementId, self.__level], 0)
 		if self.__level == "FICHE":
 			RegisterBrowser.select(self, elementId)
+		log.log("EntryRegisterBrowser.select return", [], 1)	
 
 	def _element_selected(self, elementId, notify=True):
+		log.log("EntryRegisterBrowser._element_selected", [elementId, notify, self.__level], 0)
 		if self.__level == "FICHE":
 			RegisterBrowser._element_selected(self, elementId, notify=notify)
 		else:
 			self.__selectedElement = elementId
+		log.log("EntryRegisterBrowser._element_selected return", [], 1)
 
 	def levelDown(self):
+		log.op("EntryRegisterBrowser.levelDown", [self.__selectedElement, self.__level], 0)
 		elementId = self.__selectedElement
 		#elif self.__level == "ENTRY":
 		if self.__level == "ENTRY":	
@@ -96,10 +113,12 @@ class EntryRegisterBrowser(RegisterBrowser):
 				if elementId != None:
 					self.select(elementId)
 			time.sleep(0.1) # TODO: NOTE bez tego nie zaznacza w wykazie aktualnie ogladanej fiszki
+		log.opr("EntryRegisterBrowser.levelDown return", [], 1)
 
 	def onUp(self, event):
 		#pass
 		#print "up", self.__stack, self.__level
+		log.op("EntryRegisterBrowser.levelDown", [self.__selectedElement, self.__level], 0)
 		if self.__stack == []:
 			return
 		if self.__level == "FICHE":
@@ -127,6 +146,7 @@ class EntryRegisterBrowser(RegisterBrowser):
 			self.__level = "ENTRY"
 			self.DeleteAllItems()
 			self.__fillRegister(elements)
+		log.opr("EntryRegisterBrowser.onUp return", [], 1)
 
 	def topLevel(self):
 		return self.__level == "ENTRY"

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-19 15:09+0100\n"
+"POT-Creation-Date: 2011-11-21 20:51+0100\n"
 "PO-Revision-Date: 2009-05-31 14:45+CEST\n"
 "Last-Translator: Tomasz Olejniczak <tomek.87@poczta.onet.pl>\n"
 "Language-Team: none\n"
@@ -26,6 +26,9 @@ msgstr "&Zamknij"
 
 msgid "&Color"
 msgstr "&Kolor"
+
+msgid "&Dump database to log"
+msgstr "&Zapisz bazę danych do logu"
 
 msgid "&Export bookmarks"
 msgstr "&Eksportuj zakładki"
@@ -132,6 +135,9 @@ msgstr ""
 "programu.\n"
 "\n"
 
+msgid "Are you sure?"
+msgstr "Jesteś pewien?"
+
 msgid "Arrow"
 msgstr "Strzałka"
 
@@ -160,6 +166,15 @@ msgstr "Zamknij dokument"
 msgid "Comment"
 msgstr "Komentarz"
 
+msgid "Database dump"
+msgstr "Zapis bazy danych"
+
+msgid "Database dumped to log"
+msgstr "Baza danych zapisana do logu"
+
+msgid "Database reset"
+msgstr "Resetowanie bazy danych"
+
 msgid "Decrease the magnification"
 msgstr "Zmniejsz powiększenie"
 
@@ -177,6 +192,9 @@ msgstr "Pokaż tylko dwubarwny szablon dokumentu"
 
 msgid "Display only the foreground layer"
 msgstr "Pokaż tylko pierwszy plan"
+
+msgid "Dump current state of database to log"
+msgstr "Zapisz aktualny stan bazy danych do logu"
 
 msgid "Edit metadata"
 msgstr "Edytuj metadane"
@@ -576,9 +594,6 @@ msgstr "słowo"
 
 msgid "words"
 msgstr "słowa"
-
-#~ msgid "Are you sure?"
-#~ msgstr "Na pewno?"
 
 #~ msgid "Exit"
 #~ msgstr "Wyjście"

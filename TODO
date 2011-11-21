@@ -25,15 +25,23 @@ Ostatnio wykonane:
 
 Nowa wersja:
 
+* Logowanie
 * Dostosowanie GUI do Windows
 * Przenośna wersja dla Windows
 
+Błędy do usunięcia:
+
+* Trim haseł gdzie tylko się da - MySQL sortuje 'dziurawy' < ' dziurawy' a ICU ' dziurawy' < 'dziurawy'
+* Mamy hasło jednofiszkowe w wykazie haseł. Widzimy jego fiszkę. Akceptujemy ją z innym hasłem - poprzedniego hasła nie ma już w bazie. Ale w wykazie wciąż widzimy stare hasło, przy próbie wejścia do którego następuje błąd.
+
 Inne:
 
+* Klonowanie fiszek (możemy wyjść z wyszukiwania)
 * Hipotezy dla fiszek zaindeksowanych i nie po kolei (do przemyślenia)
 * CTRL-C CTRL-C i włączanie wyszukiwania binarnego dla haseł zaindeksowanych
 * Efektywne odświeżanie wykazu haseł przy modyfikacji nie w wyszukiwaniu binarnym i traktowanie jednoelementowej dziury jako fiszki
 * Czy pokazywać w panelu podpowiedzi ostatnio dodany element czy aktualnie widoczną zawartość panelu podpowiedzi (do omówienia)
+* Fiszki ignorowane w wykazie haseł
 * Automatyczne znajdywanie bloku fiszek nie po kolei
 * Nadawanie identyfikatorów fiszkom obsługujące powtarzające się nazwy plików
 * Dodanie do wykazu haseł i podpowiedzi pomocy nawigacyjnych użytych na poziomie fiszek wykazu haseł

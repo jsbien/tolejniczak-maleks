@@ -418,6 +418,7 @@ class MainWindow(wx.Frame):
         #self._page_annotations_callback = PageAnnotationsCallback(self)
         #self._outline_callback = OutlineCallback(self)
         self.status_bar = self.CreateStatusBar(3, style = wx.ST_SIZEGRIP)
+        log.setLevel(self._config.read("loglevel", "OP"))
         
         ##self.super_splitter = wx.SplitterWindow(self, style = wx.SP_LIVE_UPDATE)
         ##self.super_splitter.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_left_splitter_sash_changed)
@@ -707,7 +708,8 @@ class MainWindow(wx.Frame):
         menu = wx.Menu()
         for caption, help, method, icon in \
         [
-            (_(u'&Reset database'), _(u'Remove entries from database'), self.on_reset_db, None)
+            (_(u'&Reset database'), _(u'Remove entries from database'), self.on_reset_db, None),
+            (_(u'&Dump database to log'), _(u'Dump current state of database to log'), self.on_dump_db, None)
         ]:
             self._menu_item(menu, caption, help, method, icon = icon)
         return menu
@@ -766,11 +768,14 @@ class MainWindow(wx.Frame):
     ENTRY_HISTORY_LIMIT = 100
 
     def addToHistory(self, entry):
+        log.log("addToHistory", [entry], 0)
         if len(self.entry_history) > MainWindow.ENTRY_HISTORY_LIMIT:
             self.entry_history = self.entry_history[1:]
         self.entry_history.append(entry)
+        log.log("addToHistory return", [], 1)
 
     def on_nav_history_prev(self, event):
+        log.op("on_nav_history_prev", [event, self.top_panel.getEditPanelContent()], 0)
         if len(self.entry_history) != 0:
             if not self.browsing_entry_history:
                 self.browsing_entry_history = True
@@ -782,8 +787,10 @@ class MainWindow(wx.Frame):
                 self.entry_history_index -= 1
                 #print "show", self.entry_history_index, "of", self.entry_history, self.actual_entry
             self.top_panel.setEntry(self.entry_history[self.entry_history_index], browsingHistory=True)
+        log.opr("on_nav_history_prev return", [], 1)
 
     def on_nav_history_next(self, event):
+        log.op("on_nav_history_next", [event, self.top_panel.getEditPanelContent()], 0)
         if len(self.entry_history) != 0 and self.browsing_entry_history:
             if self.entry_history_index < len(self.entry_history):
                 #print "increase", self.entry_history_index
@@ -794,17 +801,27 @@ class MainWindow(wx.Frame):
             else:
                 #print "show actual entry", self.entry_history, self.actual_entry
                 self.top_panel.setEntry(self.actual_entry, browsingHistory=True)
+        log.opr("on_nav_history_next return", [], 1)
             
 
     def stop_browsing_entry_history(self, event):
+        log.log("stop_browsing_entry_history", [event], 0)
         if self.browsing_entry_history:
             self.browsing_entry_history = False
+        log.log("stop_browsing_entry_history return", [], 1)
         #print "invalidated"
 
     def on_reset_db(self, event):
+        log.op("on_reset_db", [event], 0)
         if self.dBController != None:
-            if wx.MessageDialog(self, "Are you sure?", "Exit", wx.YES_NO).ShowModal() == wx.ID_YES:
+            if wx.MessageDialog(self, _("Are you sure?"), _("Database reset"), wx.YES_NO).ShowModal() == wx.ID_YES:
                 self.dBController.reset()
+        log.opr("on_reset_db return", [], 1)
+
+    def on_dump_db(self, event):
+        if self.dBController != None:
+            log.dumpDatabase(self.dBController.dumpDatabase())
+            wx.MessageDialog(self, _("Database dumped to log"), _("Database dump"), wx.OK).ShowModal()
 
     # TODO: A rozne przypadki bledow:
     
@@ -814,17 +831,21 @@ class MainWindow(wx.Frame):
         #    return
         #from maleks.maleks.useful import Counter
         #c = Counter()
+        log.op("on_edit_accept", [event, binaryOK, target, self.top_panel.getEditPanelContent()], 0)
         if self.top_panel.getEditPanelContent() == '':
             if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive() and (not binaryOK) and self.active_register.hasTarget():
                 self.on_automatic_binary_accept(emptyPanel=True)
+                log.opr("on_edit_accept return", [], 1)
                 return
             elif binaryOK:
                 entry = target if target != None else self.active_register.getTarget()
             else:
                 self.error_box(_('Empty edit panel'))
+                log.opr("on_edit_accept return", [], 2)
                 return
         else:
             entry = self.top_panel.getEditPanelContent()
+        log.opr("on_edit_accept entry", [entry], 3)
         ok = False
         #print "ok"
         if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive():
@@ -841,6 +862,7 @@ class MainWindow(wx.Frame):
                     #print "C"
                     self.on_automatic_binary_accept()
                     #print "D"
+                    log.opr("on_edit_accept return", [], 5)
                     return
                 #print "E"
                 self.active_register.prepareForActiveBinary()
@@ -851,6 +873,7 @@ class MainWindow(wx.Frame):
             msg = self.dBController.addFicheToEntriesIndex(self.ficheId, entry)
             if msg != None:
                 self.error_box(msg)
+                log.opr("on_edit_accept return", [], 6)
                 return
             else:
                 self.addToHistory(entry)
@@ -883,36 +906,48 @@ class MainWindow(wx.Frame):
         self.ignore_entries = False
         #print "koncowka", c
         #pass
+        log.opr("on_edit_accept return", [], 4)
 
     def on_edit_prefix_accept(self, event):
+        log.op("on_edit_prefix_accept", [event, self.top_panel.getEditPanelContent()], 0)
         if self.active_register.binarySearchActive():
             return
+            log.opr("on_edit_prefix_accept return", [], 1)
         if self.top_panel.getEditPanelContent() == '':
             self.error_box(_('Empty edit panel'))
+            log.opr("on_edit_prefix_accept return", [], 2)
             return
         if self.dBController != None:
             msg = self.dBController.addFicheToPrefixesIndex(self.ficheId, self.top_panel.getEditPanelContent())
             if msg != None:
                 self.error_box(msg)
+                log.opr("on_edit_prefix_accept return", [], 3)
                 return
+        log.opr("on_edit_prefix_accept return", [], 4)
 
     def on_structure_element_selected(self, path):
+        log.log("on_structure_element_selected", [path], 0)
         self.regbar.setPath(path)
+        log.log("on_strucutre_element_selected return", [], 1)
 
     def on_hint_accept(self, event, binaryOK=False, target=None):
         #if self.active_register.binarySearchActive():
         #    return
+        log.op("on_hint_accept", [event, binaryOK, target, self.top_panel.getHint()], 0)
         if self.top_panel.getHint() == '':
             if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive() and (not binaryOK) and self.active_register.hasTarget():
                 self.on_automatic_binary_accept(hint=True, emptyPanel=True)
+                log.opr("on_hint_accept return", [], 1)
                 return
             elif binaryOK:
                 entry = target if target != None else self.active_register.getTarget()
             else:
                 self.error_box(_('Empty hint panel'))
+                log.opr("on_hint_accept return", [], 2)
                 return
         else:
             entry = self.top_panel.getHint()
+        log.opr("on_hint_accept entry", [entry], 3)
         ok = False
         if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive():
             if binaryOK or (not self.active_register.hasTarget()):
@@ -924,12 +959,14 @@ class MainWindow(wx.Frame):
             if not binaryOK:
                 if self.active_register.hasTarget():
                     self.on_automatic_binary_accept(hint=True)
+                    log.opr("on_hint_accept return", [], 4)
                     return
                 self.active_register.prepareForActiveBinary()
         if self.dBController != None:
             msg = self.dBController.addFicheToEntriesIndex(self.ficheId, entry)
             if msg != None:
                 self.error_box(msg)
+                log.opr("on_hint_accept return", [], 5)
                 return
             else:
                 self.addToHistory(entry)
@@ -940,7 +977,7 @@ class MainWindow(wx.Frame):
             if ok:
                 self.lastEntry = entry
                 self.wasEditAccept = True
-            self.active_register.getNextFiche()
+            self.active_register.getNextFiche() # TODO: C dlaczego w on_edit_accept jest entry a tu nie?
         else:
             if self.active_register == self.new_entryreg_browser:
                 if self.active_register.binarySearchActive():
@@ -950,27 +987,35 @@ class MainWindow(wx.Frame):
                 #    self.active_register.initialize(entry)
             self.update_indices()
         self.ignore_entries = False
+        log.opr("on_hint_accept return", [], 6)
 
     def on_up(self, event):
+        log.op("on_up", [event], 0)
         #print self.active_register == self.entryreg_browser
         if self.active_register in [self.strucreg_browser, self.entryreg_browser, self.new_entryreg_browser] and not self.active_register.topLevel():
             self.active_register.onUp(event)
             self.update_indices()
             if self.active_register == self.new_entryreg_browser:
                 self.active_register.initialize()
+        log.opr("on_up return", [], 1)
 
     def on_bookmark(self, event):
+        log.op("on_bookmark", [event, self.ficheId], 0)
         if self.dBController != None:
             self.dBController.bookmarkFiche(self.ficheId)
             #if self.active_register == self.bookreg_browser:
             self.bookreg_browser.setRegister(self.dBController.getBookmarksTaskRegister(), self.dBController.getActualEntryForFiche if self.dBController != None else None)
             self.bookreg_browser.select(self.ficheId)
+        log.opr("on_bookmark return", [], 1)
 
     def on_default_register(self, event):
+        log.op("on_default_register", [event], 0)
         self.taskreg_browser.setRegister(self.taskRegister, self.dBController.getActualEntryForFiche if self.dBController != None else None)
         self.taskreg_browser.select(self.ficheId)
+        log.opr("on_default_register return", [], 1)
 
     def on_choose_register(self, event):
+        log.op("on_choose_register", [event], 0)
         if self.active_register == self.taskreg_browser:
             dg = wx.FileDialog(self, _('Open task register'), os.getcwd(), style=wx.FD_OPEN)
             if dg.ShowModal() == wx.ID_OK:
@@ -978,6 +1023,7 @@ class MainWindow(wx.Frame):
                 self.taskreg_browser.setRegister(register, self.dBController.getActualEntryForFiche if self.dBController != None else None)
                 self.taskreg_browser.select(self.ficheId)
             self.page_widget.SetFocus()
+        log.opr("on_choose_register return", [], 1)
         
     # TODO: A flage __fileOpen i sprawdzanie we wszystkich istotnych metodach
 
@@ -1044,6 +1090,7 @@ class MainWindow(wx.Frame):
 
     def stop_binary_search(self, user=False):
         #print ":", restart
+        log.log("stop_binary_search", [user], 0)
         hasTarget = self.active_register.hasTarget()
         self.active_register.stopBinarySearch()
         if self.active_register in [self.strucreg_browser]: # TODO: A zmiany stron w innych wykazach: czy pozwalac?
@@ -1053,8 +1100,10 @@ class MainWindow(wx.Frame):
             self.regbar.setPath(self.active_register.getElementPath())
             if (not user) and (not hasTarget):
                 self.msg_panel.binaryStopped(self.active_register.getSteps())
+        log.log("stop_binary_search return", [], 1)
     
     def start_binary_search(self, target=None, restarting=False):
+        log.log("start_binary_search", [target, restarting], 0)
         if self.active_register in [self.strucreg_browser]:
             self._disable_page_change()
         self.active_register.startBinarySearch(target=target, restarting=restarting)
@@ -1065,17 +1114,22 @@ class MainWindow(wx.Frame):
                 self.top_panel.refreshForAutomaticBinary(self.active_register.getTarget())
             elif self.active_register == self.new_entryreg_browser:
                 self.top_panel.focus()
+        log.log("start_binary_search return", [], 1)
 
     def next_step(self, steps):
+        log.log("next_step", [], 0)
         self.SetStatusText(_("Binary search") + u", " + _("steps") + u":" + unicode(steps), 2)
+        log.log("next_step return", [], 1)
                 
     def find_in_entry_register(self, entry):
+        log.log("find_in_entry_register", [entry], 0)
         if self.new_entryreg_browser.allowsNextFiche():
             self.new_entryreg_browser.onUp(None)
         self.sidebar.SetSelection(3)
         self.new_entryreg_browser.find(entry)
         if self.new_entryreg_browser.gapSelected(): # TODO: C czy potrzebne sprawdzanie czy wyszukiwanie juz wlaczone?
             self.start_binary_search(target=entry)
+        log.log("find_in_entry_register return", [], 1)
 
     def on_search_mode(self, event):
         if self.left_control.isSearchMode():
@@ -1108,10 +1162,12 @@ class MainWindow(wx.Frame):
         self.page_widget.SetFocus()
 
     def on_level_down(self, event):
+        log.log("on_level_down", [event], 0)
         if self.top_panel.editPanelHasFocus():
             self.top_panel.copyHintToEditPanel()
         elif self.active_register in [self.entryreg_browser, self.strucreg_browser, self.new_entryreg_browser, self.hintreg_browser]:
             self.active_register.levelDown()
+        log.log("on_level_down return", [], 1)
 
     def on_splitter_sash_changed(self, event):
         #print event.GetSash
@@ -1310,43 +1366,56 @@ class MainWindow(wx.Frame):
         self.default_left_sidebar_shown = False
 
     def register_search_input(self, event):
+        log.op("register_search_input", [event, self.register_search.GetValue()], 0)
         self.active_register.find(self.register_search.GetValue())
+        log.opr("register_search_input return", [], 1)
 
     def register_search_key(self, event):
+        log.op("register_search_key", [event, event.GetKeyCode()], 0)
         if event.GetKeyCode() == wx.WXK_RETURN and self.active_register == self.hintreg_browser:
             self.active_register.levelDown()
+        log.opr("register_search_key return", [], 1)
     
     def on_undisplay(self):
+        log.op("on_undisplay", [], 0)
         if self.active_register.binarySearchActive():
             self.stop_binary_search()
         self.update_indices()
         if not self.__closing:
             if self.active_register == self.strucreg_browser:
                 self.regbar.setPath("")
+        log.opr("on_undisplay return", [], 1)
    
     def on_display_taskreg(self, event):
+        log.op("on_display_taskreg", [event], 0)
         if not self.__closing:
             self.on_undisplay()
             self._disable_page_change()         
             self.active_register = self.taskreg_browser
             if self.ficheId != None: self.active_register.select(self.ficheId)
+        log.opr("on_display_taskreg return", [], 1)            
 
     def on_display_strucreg(self, event):
+        log.op("on_display_strucreg", [event], 0)
         if not self.__closing:
             self.on_undisplay()
             self.active_register = self.strucreg_browser
             if self.ficheId != None: self.active_register.select(self.ficheId)
             self.regbar.setPath(self.active_register.getPath())
             self._enable_page_change()
+        log.opr("on_display_strucreg return", [], 1)
 
     def on_display_entryreg(self, event):
+        log.op("on_display_entryreg", [event], 0)
         if not self.__closing:
             self.on_undisplay()
             self._disable_page_change()  
             self.active_register = self.entryreg_browser
             if self.ficheId != None: self.active_register.select(self.ficheId)
+        log.opr("on_display_entryreg return", [], 1)            
 
     def on_display_new_entryreg(self, event):
+        log.op("on_display_new_entryreg", [event], 0)
         if not self.__closing:
             self.on_undisplay()
             self._disable_page_change()
@@ -1358,20 +1427,24 @@ class MainWindow(wx.Frame):
             else:
                 if self.active_register.isActive():
                     self.active_register.initialize()
-
+        log.opr("on_display_new_entryreg return", [], 1)
 
     def on_display_hintreg(self, event):
+        log.op("on_display_hintreg", [event], 0)
         if not self.__closing:
             self.on_undisplay()
             self._disable_page_change()  
             self.active_register = self.hintreg_browser
+        log.opr("on_display_hintreg return", [], 1)
 
     def on_display_bookreg(self, event):
+        log.op("on_display_bookreg", [event], 0)
         if not self.__closing:
             self.on_undisplay()
             self._disable_page_change()
             self.active_register = self.bookreg_browser
             if self.ficheId != None: self.bookreg_browser.select(self.ficheId)
+        log.opr("on_display_bookreg return", [], 1)
 
     def on_display_everything(self, event):
         self.page_widget.render_mode = djvu.decode.RENDER_COLOR
@@ -1417,52 +1490,74 @@ class MainWindow(wx.Frame):
         def get(self):
             return self._page_no
         def set(self, n):
+            log.log("set page_no", [n], 0)
             if self.index is None:
             #if self.document is None:
                 self._page_no = 0
                 self.status_bar.SetStatusText('', 1)
+                log.log("set page_no return", [], 1)
                 return
             #if n < 0 or n >= len(self.document.pages):
             if n < 0 or n >= self.index.getFicheNo():
+                log.log("set page_no return", [], 2)
                 return
             self._page_no = n
             self.status_bar.SetStatusText(_('Page %(pageno)d of %(npages)d') % {'pageno':(n + 1), 'npages':self.index.getFicheNo()}, 1)
             self.switch_document(self._page_no)
             #self.update_page_widget(new_page = True)
+            log.log("set page_no return", [], 3)
         return property(get, set)
 
     def on_back(self, event):
+        log.op("on_back", [event], 0)
         if self.history != [] and not self.active_register.binarySearchActive():
             self.goingBack = True
             self.page_no = self.index.getFicheNoById(self.history.pop())
             self.goingBack = False
+        log.opr("on_back return", [self.page_no], 1)
 
     def on_first_page(self, event):
+        log.op("on_first_page", [event], 0)
         self.page_no = 0
+        log.opr("on_first_page return", [], 1)
 
     def on_last_page(self, event):
+        log.op("on_last_page", [event], 0)
         #self.page_no = len(self.document.pages) - 1
         self.page_no = self.index.getFicheNo() - 1
+        log.opr("on_last_page return", [self.page_no], 1)
 
     def on_next_page(self, event):
+        log.op("on_next_page", [event], 0)
         self.page_no += 1
+        log.opr("on_next_page return", [self.page_no], 1)
 
     def on_previous_page(self, event):
+        log.op("on_previous_page", [event], 0)
         self.page_no -= 1
+        log.opr("on_previous_page return", [self.page_no], 1)
     
     def on_reg_select(self, elementId, notify=True):
+        log.log("on_reg_select", [elementId, notify], 0)
         self.notify = notify
         self.page_no = self.index.getFicheNoById(elementId)
         self.notify = True
+        log.log("on_reg_select return", [], 1)
 
     def request_selection(self):
+        log.log("on_request_selection", [], 0)
+        log.log("on_request_selection return", [self.ficheId], 1)
         return self.ficheId
 
     def scroll_begin(self, event):
+        log.op("scroll_begin", [event], 0)
         self.active_register.showFirstElement()
+        log.opr("scroll_begin return", [], 1)
 
     def scroll_end(self, event):
+        log.op("scroll_end", [event], 0)
         self.active_register.showLastElement()
+        log.opr("scroll_end return", [], 1)
 
     # TODO: D dac jednego globalnego handlera eventow z akceleratora:
 
@@ -1481,21 +1576,26 @@ class MainWindow(wx.Frame):
     #        #if not self.taskreg_browser.binarySearchActive():
     #        #    self.start_binary_search()
     #        #else:
+        log.op("on_next_binary", [event, self.active_register.getSelectedElement()], 0)
         if self.active_register.binarySearchActive() and not self.active_register.hasTarget():
             self.active_register.nextBinary()
+        log.opr("on_next_binary return", [], 1)
 
     def on_prev_binary(self, event):
     #    if self.mode == _('Browsing mode'):
     #        #if not self.taskreg_browser.binarySearchActive():
     #        #    self.start_binary_search()
     #        #else:
-         if self.active_register.binarySearchActive() and not self.active_register.hasTarget():
-             self.active_register.prevBinary()
+        log.op("on_prev_binary", [event, self.active_register.getSelectedElement()], 0)
+        if self.active_register.binarySearchActive() and not self.active_register.hasTarget():
+            self.active_register.prevBinary()
+        log.opr("on_prev_binary return", [], 1)
 
     def on_automatic_binary_accept(self, hint=False, emptyPanel=False):
         #print "a"
         #from maleks.maleks.useful import Counter
         #c = Counter()
+        log.op("on_automatic_binary_accept", [hint, emptyPanel, self.active_register.getSelectedElement()], 0)
         if emptyPanel:
             entry = self.active_register.getTarget()
         elif hint:
@@ -1580,9 +1680,12 @@ class MainWindow(wx.Frame):
                 #print "binaryAcceptFinalize", c
                 self.top_panel.refreshForAutomaticBinary(target)
                 #print "refreshForAutomaticBinary", c
+        log.opr("on_automatic_binary_accept return", [], 1)
 
     def on_next_binary_accept(self, event):
+        log.op("on_next_binary_accept", [event, self.active_register.getSelectedElement()], 0)
         if self.active_register != self.new_entryreg_browser:
+            log.opr("on_next_binary_accept return", [], 1)
             return
         if self.active_register.binarySearchActive() and not self.active_register.hasTarget():
              entry = self.top_panel.getEditPanelContent()
@@ -1596,9 +1699,12 @@ class MainWindow(wx.Frame):
                 #print "ok"
                 self.on_edit_accept(None, binaryOK=True)
                 self.active_register.binaryAcceptFinalize(entry, True)
+        log.opr("on_next_binary_accept return", [], 2)
     
     def on_prev_binary_accept(self, event):
+        log.op("on_prev_binary_accept", [event, self.active_register.getSelectedElement()], 0)
         if self.active_register != self.new_entryreg_browser:
+            log.opr("on_prev_binary_accept return", [], 1)
             return
         if self.active_register.binarySearchActive() and not self.active_register.hasTarget():
              entry = self.top_panel.getEditPanelContent()
@@ -1612,21 +1718,27 @@ class MainWindow(wx.Frame):
                 #print "ok"
                 self.on_edit_accept(None, binaryOK=True)
                 self.active_register.binaryAcceptFinalize(entry, True)
+        log.opr("on_prev_binary_accept return", [], 2)
 
     def invisible_binary_search(self, ficheId):
+        log.log("invisible_binary_search", [ficheId], 0)
         #c = Counter()
         self.notify = False
         self.page_no = self.index.getFicheNoById(ficheId)
         self.notify = True
         #print " invi", c
+        log.log("invisible_binary_search return", [], 1)
 
     def on_stop_binary(self, event):
     #    if self.mode == _('Browsing mode'):
+        log.op("on_stop_binary", [event, self.active_register.binarySearchActive()], 0)
         #print self.active_register.binaryAvailable(), self.active_register.binarySearchActive()
         if not self.active_register.isActive(): # TODO: C po co?, zdecydowac sie czy to sprawdzac explicite tu czy schowac w implementacji rejestru
+            log.log("on_stop_binary return", [], 1)
             return
         if self.active_register == self.hintreg_browser:
             self.active_register.levelDown()
+            log.log("on_stop_binary return", [], 2)
             return
         if self.active_register.binaryAvailable() and not self.active_register.binarySearchActive():
             if self.register_search.GetValue() != "":
@@ -1635,14 +1747,20 @@ class MainWindow(wx.Frame):
                 self.start_binary_search()
         else:
             self.stop_binary_search(user=True)
+        log.opr("on_stop_binary return", [], 3)
 
     def on_hint_changed(self, hint):
+        log.log("on_hint_changed", [hint], 0)
         self.hintreg_browser.hintChanged(hint)
+        log.log("on_hint_changed return", [], 1)
 
     def on_hint_selected(self, hint):
+        log.log("on_hint_selected", [hint], 0)
         self.top_panel.setHint(hint)
+        log.log("on_hint_selected return", [], 1)
 
     def on_goto_page(self, event):
+        log.op("on_goto_page", [event], 0)
         dialog = dialogs.NumberEntryDialog(
             parent = self,
             message = _('Go to page') + ':',
@@ -1660,6 +1778,7 @@ class MainWindow(wx.Frame):
         finally:
             dialog.Destroy()
             self.page_widget.SetFocus()
+        log.opr("on_goto_page return", [], 1)
 
     #def on_edit_metadata(self, event):
     #    document_metadata_model = self.metadata_model[models.SHARED_ANNOTATIONS_PAGENO].clone()
@@ -1806,6 +1925,7 @@ class MainWindow(wx.Frame):
         return event_handler
     
     def reset(self):
+        log.log("MainWindow.reset", [], 0)
         self.document = None
         self.index = None
         self.config = None
@@ -1822,6 +1942,7 @@ class MainWindow(wx.Frame):
         self.entry_history = []
         self.entry_index = -1
         self.browsing_entry_history = False
+        log.log("MainWindow.reset return", [], 1)
 
     # zamkniecie aktualnie otwartej karotetki i otwarcie nowej (jezeli path != None)
     def do_open(self, path):
@@ -1865,6 +1986,8 @@ class MainWindow(wx.Frame):
                 self.config = Configuration(path) # odczytaj plik konfiguracyjny kartoteki
                 self.config.configureDatabase(self.dBController) # skonfiguruj
                     # kontroler bazy danych dla konkretnej kartoteki
+                if self.dBController != None:
+                    log.dumpDatabase(self.dBController.dumpDatabase())
                 # zainicjalizuj niektore widoki wykazow:
                 # TODO: ! wyraznie napisac dlaczego nie moga byc w initialize_registers
                 self.entryreg_browser.initialize() # TODO: C przeniesc do initialize_registers i dac
@@ -1911,6 +2034,7 @@ class MainWindow(wx.Frame):
 
     # wyswielt fiszke o numerze kolejnym page_no
     def switch_document(self, page_no):
+        log.log("switch_document", [page_no], 0)
         c = Counter()
         if self.wasEditAccept:
             self.wasEditAccept = False
@@ -1942,6 +2066,7 @@ class MainWindow(wx.Frame):
         #print "  update", c
         #self.Refresh()
         #self.Update()
+        log.log("switch_document return", [True], 1)
         return True
 
     def update_page_widget(self, new_document = False, new_page = False):
@@ -1988,29 +2113,39 @@ class MainWindow(wx.Frame):
             self.hintreg_browser.setRegister(self.hintRegister)
 
     def update_registers(self):
+        log.log("update_registers", [], 0)
         if self.notify and self.active_register != self.hintreg_browser:
             self.active_register.select(self.ficheId)
+        log.log("update_registers return", [], 1)
 
     # TODO: A zapisywanie wartosci indeksow przy zamykaniu programu
     # TODO: A czyszczenie indeksow przy zamykaniu/otwieraniu nowego katalogu
 
     def request_entry_change(self):
+        log.log("request_entry_change", [], 0)
         if self.dBController != None:
             if self.mainind_panel.isDirty():
+                log.log("request_entry_change return", [self.mainind_panel.getEntryIndicesValue()[0]], 1)
                 return self.mainind_panel.getEntryIndicesValue()[0]
+        log.log("request_entry_change return", [None], 2)
         return None
 
     def locate_needed(self, ficheId):
+        log.log("locate_nedded", [ficheId], 0)
         self.fiche_for_locate = ficheId
         self.locate = 1
+        log.log("locate_nedded return", [], 1)
 
     def update_indices(self):
+        log.log("update_indices", [], 0)
         if self.document == None:
+            log.log("update_indices return", [], 1)
             return
         # TODO: C co jak dBController == None (co z thaw/freeze? w indeksach itp.)
         if self.dBController != None:
             #if self.left_control.isSearchMode(): # TODO: C j.w.
             #    self.left_control.stopSearch()
+            log.log("update_indices inspect", [self.secind_panel.isDirty(), self.mainind_panel.isDirty()], 3)
             if self.secind_panel.isDirty():
                 self.dBController.setSecondaryIndicesForFiche(self.secind_panel.getValues(), self.secind_panel.getFicheId())
             if self.mainind_panel.isDirty():
@@ -2031,8 +2166,10 @@ class MainWindow(wx.Frame):
             self.secind_panel.enableInputEvent()
         self.fiche_for_locate = None
         self.locate = 0
+        log.log("update_indices return", [], 2)
 
     def update_panels(self):
+        log.log("update_panels", [], 0)
         #c = Counter()
         if self.ficheId != None: # TODO: NOTE jest otwarty jakis dokument
             if self.dBController != None:
@@ -2055,6 +2192,7 @@ class MainWindow(wx.Frame):
                     self.top_panel.setEntry(entry)
         #print "finish", c
         #print
+        log.log("update_panels return", [], 1)
 
     def update_title(self):
         if self.path is None:
@@ -2067,6 +2205,7 @@ class MainWindow(wx.Frame):
         self.SetTitle(title)
 
     def on_export_bookmarks(self, event):
+        log.op("on_export_bookmarks", [], 0)
         if self.dBController != None:
             bookmarksTaskRegister = self.dBController.getBookmarksTaskRegister()
             dialog = wx.FileDialog(self, style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT, message = _('Export bookmarks'))
@@ -2081,6 +2220,7 @@ class MainWindow(wx.Frame):
         finally:
             dialog.Destroy()
         self.page_widget.SetFocus()
+        log.opr("on_export_bookmarks return", [], 1)
 
     def on_about(self, event):
         message = '%(APPLICATION_NAME)s %(__version__)s\n' + _('Author') + ': %(__author__)s\n' + _('License') + ': %(LICENSE)s'

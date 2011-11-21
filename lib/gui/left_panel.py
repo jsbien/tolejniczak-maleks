@@ -13,17 +13,22 @@
 import wx
 from maleks.i18n import _
 from maleks.maleks.useful import nvl, Notifier
+from maleks.maleks import log
 
 # TODO: C posprawdzac czy dirty dobrze dziala
 
 class ValidatingTextCtrl(wx.TextCtrl):
 
-	def __init__(self, id, value="", pos=wx.DefaultPosition, size=wx.DefaultSize, style=0, validator=wx.DefaultValidator, name=wx.TextCtrlNameStr, myvalidator=lambda x: True):
+	def __init__(self, id, value="", pos=wx.DefaultPosition, size=wx.DefaultSize, style=0, validator=wx.DefaultValidator, name=wx.TextCtrlNameStr, myvalidator=lambda x: True, idd=0):
 		wx.TextCtrl.__init__(self, id, value=value, pos=pos, size=size, style=style, validator=validator, name=name)
 		self.__value = None
 		self.__validator = myvalidator
 		self.__valid = True
 		self.__frozen = None
+		self.__id = idd
+
+	def getId(self):
+		return self.__id
 
 	def CheckValidity(self, friend=None):
 		if not self.__validator(self.GetValue()):
@@ -100,19 +105,19 @@ class SecondaryIndicesPanel(IndexPanel):
 	def __init__(self, *args, **kwargs):
 		IndexPanel.__init__(self, *args, **kwargs)
 		sizer = wx.BoxSizer(wx.VERTICAL)
-		self.__pageNumber = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit())
-		self.__lineNumber = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit())
-		self.__entryBegin = ValidatingTextCtrl(self, myvalidator=lambda x: len(x) <= 150)
-		self.__entryBeginLine = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit())
-		self.__entryBeginWord = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit())
-		self.__entryBeginChar = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit())
-		self.__entryEnd = ValidatingTextCtrl(self, myvalidator=lambda x: len(x) <= 150)
-		self.__entryEndLine = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit())
-		self.__entryEndWord = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit())
-		self.__entryEndChar = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit())
-		self.__ficheEntryComment = ValidatingTextCtrl(self, style=wx.TE_MULTILINE, myvalidator=lambda x: len(x) <= 50)
-		self.__entryLocation = ValidatingTextCtrl(self, myvalidator=lambda x: len(x) <= 150)
-		self.__textEntryComment = ValidatingTextCtrl(self, style=wx.TE_MULTILINE, myvalidator=lambda x: len(x) <= 50)
+		self.__pageNumber = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit(), idd=0)
+		self.__lineNumber = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit(), idd=1)
+		self.__entryBegin = ValidatingTextCtrl(self, myvalidator=lambda x: len(x) <= 150, idd=2)
+		self.__entryBeginLine = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit(), idd=3)
+		self.__entryBeginWord = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit(), idd=4)
+		self.__entryBeginChar = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit(), idd=5)
+		self.__entryEnd = ValidatingTextCtrl(self, myvalidator=lambda x: len(x) <= 150, idd=6)
+		self.__entryEndLine = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit(), idd=7)
+		self.__entryEndWord = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit(), idd=8)
+		self.__entryEndChar = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit(), idd=9)
+		self.__ficheEntryComment = ValidatingTextCtrl(self, style=wx.TE_MULTILINE, myvalidator=lambda x: len(x) <= 50, idd=10)
+		self.__entryLocation = ValidatingTextCtrl(self, myvalidator=lambda x: len(x) <= 150, idd=11)
+		self.__textEntryComment = ValidatingTextCtrl(self, style=wx.TE_MULTILINE, myvalidator=lambda x: len(x) <= 50, idd=12)
 		self.SetSizer(sizer)
 		sizer.Add(wx.StaticText(self, label=_("Page number") + ":"))
 		sizer.Add(self.__pageNumber, 0, wx.EXPAND)
@@ -187,10 +192,13 @@ class SecondaryIndicesPanel(IndexPanel):
 		self.__textEntryComment.ThawValue()
 
 	def __validateInput(self, event):
+		log.op("__validateInput", [event.GetEventObject().getId(), event.GetEventObject().GetValue()], 0)
 		self._input(event)
 		event.GetEventObject().CheckValidity()
+		log.opr("__validateInput return", [], 1)
 
 	def __entryLocationInput(self, event):
+		log.op("__entryLocationInput", [self.__entryLocation.GetValue()], 0)
 		self._input(event)
 		if self.__entryLocation.GetValue() == "":
 			self.__textEntryComment.SetValue("")
@@ -198,6 +206,7 @@ class SecondaryIndicesPanel(IndexPanel):
 		else:
 			self.__textEntryComment.Enable()
 		self.__entryLocation.CheckValidity(friend=self.__textEntryComment)
+		log.opr("__entryLocationInput return", [], 1)
 
 	def fill(self, values, ficheId):
 		self._dirty = False
@@ -268,10 +277,10 @@ class MainIndicesPanel(IndexPanel):
 		self.__lineComment.ThawValue()
 
 	def _buildEntryIndicesGUI(self):
-		self.__actualEntry = ValidatingTextCtrl(self, myvalidator=lambda x: len(x) <= 40)
-		self.__actualComment = ValidatingTextCtrl(self, style=wx.TE_MULTILINE, myvalidator=lambda x: len(x) <= 50)
-		self.__originalEntry = ValidatingTextCtrl(self, myvalidator=lambda x: len(x) <= 40)
-		self.__originalComment = ValidatingTextCtrl(self, style=wx.TE_MULTILINE, myvalidator=lambda x: len(x) <= 50)
+		self.__actualEntry = ValidatingTextCtrl(self, myvalidator=lambda x: len(x) <= 40, idd=13)
+		self.__actualComment = ValidatingTextCtrl(self, style=wx.TE_MULTILINE, myvalidator=lambda x: len(x) <= 50, idd=14)
+		self.__originalEntry = ValidatingTextCtrl(self, myvalidator=lambda x: len(x) <= 40, idd=15)
+		self.__originalComment = ValidatingTextCtrl(self, style=wx.TE_MULTILINE, myvalidator=lambda x: len(x) <= 50, idd=16)
 		self._sizer.Add(wx.StaticText(self, label=_("Actual entry") + ":"))
 		self._sizer.Add(self.__actualEntry, 0, wx.EXPAND)
 		self._sizer.Add(wx.StaticText(self, label=_("Comment") + ":"))
@@ -286,6 +295,7 @@ class MainIndicesPanel(IndexPanel):
 		self.__originalComment.Bind(wx.EVT_TEXT, self.__validateInput)
 	
 	def __actualEntryInput(self, event):
+		log.op("__actualEntryInput", [self.__actualEntry.GetValue()], 0)
 		self._input(event)
 		if self.__actualEntry.GetValue() == "":
 			self.__actualComment.SetValue("")
@@ -293,8 +303,10 @@ class MainIndicesPanel(IndexPanel):
 		else:
 			self.__actualComment.Enable()
 		self.__actualEntry.CheckValidity(friend=self.__actualComment)
+		log.opr("__actualEntryInput return", [], 1)
 
 	def __originalEntryInput(self, event):
+		log.op("__originalEntryInput", [self.__originalEntry.GetValue()], 0)
 		self._input(event)
 		if self.__originalEntry.GetValue() == "":
 			self.__originalComment.SetValue("")
@@ -302,6 +314,7 @@ class MainIndicesPanel(IndexPanel):
 		else:
 			self.__originalComment.Enable()
 		self.__originalEntry.CheckValidity(friend=self.__originalComment)
+		log.opr("__originalEntryInput return", [], 1)
 
 	def fillEntryIndices(self, (actual, actualComment, original, originalComment), ficheId):
 		self._dirty = False
@@ -319,13 +332,13 @@ class MainIndicesPanel(IndexPanel):
 		return (self.__actualEntry.GetValidatedValue(), self.__actualComment.GetValidatedValue(), self.__originalEntry.GetValidatedValue(), self.__originalComment.GetValidatedValue())
 
 	def _buildFicheIndexGUI(self):
-		self.__work = ValidatingTextCtrl(self, myvalidator=lambda x: len(x) <= 50)
-		self.__firstWordPage = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit())
-		self.__lastWordPage = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit())
-		self.__matrixNumber = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit())
-		self.__matrixSector = ValidatingTextCtrl(self, myvalidator=lambda x: x in ["", "a", "b", "c"])
-		self.__editor = ValidatingTextCtrl(self, myvalidator=lambda x: len(x) <= 10)
-		self.__comment = ValidatingTextCtrl(self, style=wx.TE_MULTILINE, myvalidator=lambda x: len(x) <= 50)
+		self.__work = ValidatingTextCtrl(self, myvalidator=lambda x: len(x) <= 50, idd=17)
+		self.__firstWordPage = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit(), idd=18)
+		self.__lastWordPage = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit(), idd=19)
+		self.__matrixNumber = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit(), idd=20)
+		self.__matrixSector = ValidatingTextCtrl(self, myvalidator=lambda x: x in ["", "a", "b", "c"], idd=21)
+		self.__editor = ValidatingTextCtrl(self, myvalidator=lambda x: len(x) <= 10, idd=22)
+		self.__comment = ValidatingTextCtrl(self, style=wx.TE_MULTILINE, myvalidator=lambda x: len(x) <= 50, idd=23)
 		self._sizer.Add(wx.StaticText(self, label=_("Work identificator") + ":"))
 		self._sizer.Add(self.__work, 0, wx.EXPAND)
 		self._sizer.Add(wx.StaticText(self, label=_("Page number of the first word") + ":"))
@@ -360,20 +373,22 @@ class MainIndicesPanel(IndexPanel):
 		self.__comment.MemorizeValue(nvl(ficheIndexRecord[6]))
 
 	def __validateInput(self, event):
+		log.op("__validateInput", [event.GetEventObject().getId(), event.GetEventObject().GetValue()], 2)
 		self._input(event)
 		event.GetEventObject().CheckValidity()
 		#self.__firstWordPage.CheckValidity()
 		#self.__lastWordPage.CheckValidity()
 		#self.__matrixNumber.CheckValidity()
+		log.opr("__validateInput return", [], 3)
 
 	def getFicheIndexValue(self):
 		return (self.__work.GetValidatedValue(), self.__firstWordPage.GetValidatedValue(), self.__lastWordPage.GetValidatedValue(), self.__matrixNumber.GetValidatedValue(), self.__matrixSector.GetValidatedValue(), self.__editor.GetValidatedValue(), self.__comment.GetValidatedValue())
 
 	def _buildPageAndLineIndicesGUI(self):
-		self.__page = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit())
-		self.__pageComment = ValidatingTextCtrl(self, style=wx.TE_MULTILINE, myvalidator=lambda x: len(x) <= 50)
-		self.__line = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit())
-		self.__lineComment = ValidatingTextCtrl(self, style=wx.TE_MULTILINE, myvalidator=lambda x: len(x) <= 50)
+		self.__page = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit(), idd=24)
+		self.__pageComment = ValidatingTextCtrl(self, style=wx.TE_MULTILINE, myvalidator=lambda x: len(x) <= 50, idd=25)
+		self.__line = ValidatingTextCtrl(self, myvalidator=lambda x: x == "" or x.isdigit(), idd=26)
+		self.__lineComment = ValidatingTextCtrl(self, style=wx.TE_MULTILINE, myvalidator=lambda x: len(x) <= 50, idd=27)
 		self._sizer.Add(wx.StaticText(self, label=_("Page number") + ":"), 0, wx.EXPAND)
 		self._sizer.Add(self.__page, 0, wx.EXPAND)
 		self._sizer.Add(wx.StaticText(self, label=_("Comment") + ":"), 0, wx.EXPAND)
@@ -388,6 +403,7 @@ class MainIndicesPanel(IndexPanel):
 		self.__lineComment.Bind(wx.EVT_TEXT, self.__validateInput)
 
 	def __pageInput(self, event):
+		log.op("__pageInput", [self.__page.GetValue()], 0)
 		self._input(event)
 		if self.__page.GetValue() == "":
 			self.__pageComment.SetValue("")
@@ -395,8 +411,10 @@ class MainIndicesPanel(IndexPanel):
 		else:
 			self.__pageComment.Enable()
 		self.__page.CheckValidity(friend=self.__pageComment)
+		log.opr("__pageInput return", [], 1)
 
 	def __lineInput(self, event):
+		log.op("__lineInput", [self.__line.GetValue()], 0)
 		self._input(event)
 		if self.__line.GetValue() == "":
 			self.__lineComment.SetValue("")
@@ -404,6 +422,7 @@ class MainIndicesPanel(IndexPanel):
 		else:
 			self.__lineComment.Enable()
 		self.__line.CheckValidity(friend=self.__lineComment)
+		log.opr("__lineInput return", [], 1)
 
 	def fillPageAndLineIndices(self, (page, pageComment, line, lineComment), ficheId):
 		self._dirty = False

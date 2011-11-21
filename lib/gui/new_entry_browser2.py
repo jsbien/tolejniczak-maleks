@@ -40,6 +40,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 
 	def reset(self):
 		#print "reset"
+		log.log("NewEntryRegisterBrowser.reset", [], 0)
 		WindowRegisterBrowser.reset(self)
 		self.__level = "ENTRY"
 		self.__selectedElement = None
@@ -50,6 +51,10 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		self.__binaryTarget = None
 		self.__leftTargetBinary = False
 		#self.__binaryType = None
+		log.log("NewEntryRegisterBrowser.reset return", [], 1)
+
+	def getSelectedElement(self):
+		return self.__selectedElement
 
 	def setDBController(self, controller):
 		self.__dBController = controller
@@ -58,6 +63,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		#if self.binarySearchActive():
 		#	for l in self._listeners:
 		#		l.stop_binary_search()
+		log.log("NewEntryRegisterBrowser.initialize", [entry, self.__selectedElement], 0)
 		if entry == None:
 			self.reset()
 			(elements, self.__entryLens) = self.__dBController.getEntriesRegisterWithGaps()
@@ -74,20 +80,26 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 				self._showUpdate()
 		for l in self._listeners:
 			l.on_structure_element_selected("")
+		log.log("NewEntryRegisterBrowser.initialize return", [], 1)
 
 	def refresh(self, ficheId):
+		log.log("NewEntryRegisterBrowser.refresh", [ficheId, self.__level], 0)
 		if self.__level in ["FICHE-GAP", "FICHE-ENTRY"]:
 			self.initialize()
 			self.locate(ficheId)
 		else:
 			self.initialize()
+		log.log("NewEntryRegisterBrowser.refresh return", [], 1)
 
 	def DeleteAllItems(self):
+		log.log("NewEntryRegisterBrowser.DeleteAllItems", [], 0)
 		WindowRegisterBrowser.DeleteAllItems(self)
 		self.__elementObjects = []
 		self.__entryLens = {}
+		log.log("NewEntryRegisterBrowser.DeleteAllItems return", [], 1)
 
 	def __fillRegister(self, elements, goingDown=True):
+		log.log("NewEntryRegisterBrowser.__fillRegister", [elements, goingDown, self.__level], 0)
 		self._itemsNo = 0
 		#print len(elements)
 		if len(elements) < 2 * self.LIMIT() or self.__level in ["FICHE-ENTRY", "FICHE-GAP"]:
@@ -138,17 +150,21 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
 			self._window = 0
 		#print len(self._elements)
+		log.log("NewEntryRegisterBrowser.__fillRegister return", [self._smart], 1)
 
 	def _incrementalUpdate(self, entries):
 		#print "::::", entries
 		#:(neighbourhoods, ok, hasFirstNone, hasLastNone, entryLens) = self.__dBController.getPartialEntriesRegisterWithGaps(entries)
 		#:for (k, v) in entryLens.iteritems():
 		#:	self.__entryLens[k] = v
+		log.log("NewEntryRegisterBrowser._incrementalUpdate", [entries], 0)
 		(neighbourhoods, ok, hasFirstNone, hasLastNone, self.__entryLens) = self.__dBController.getPartialEntriesRegisterWithGaps(entries)
 		#print neighbourhoods
 		if not ok:
 			#print "blad"
+			log.log("NewEntryRegisterBrowser._incrementalUpdate return", [False], 1)
 			return False
+		log.log("NewEntryRegisterBrowser._incrementalUpdate inspect", [neighbourhoods], 4)
 		for (entry, elements) in neighbourhoods:
 			#print elements
 			#for e in elements:
@@ -161,6 +177,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 				indt = len(self._elements) - 1
 			else:
 				indt = self.__findForIncremental(elements[-1])
+			log.log("NewEntryRegisterBrowser._incrementalUpdate assert", [indf, indt, elements[0], elements[-1]], 3)
 			assert(indf != -1)
 			assert(indt != -1)
 			if len(elements) < (indt - indf + 1):
@@ -195,9 +212,11 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		#:self.DeleteAllItems()
 		#:elements = self.__dBController.getEntriesRegisterWithGaps()
 		#:self.__fillRegister(elements)
+		log.log("NewEntryRegisterBrowser._incrementalUpdate return", [True, self._smart], 2)
 		return True
 
 	def _showUpdate(self):
+		log.log("NewEntryRegisterBrowser._showUpdate", [self._smart], 0)
 		if self._smart:
 			wx.ListCtrl.DeleteAllItems(self)
 			for i in range(0, self.LIMIT()):
@@ -209,9 +228,11 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		else:
 			self.DeleteAllItems()
 			self.__fillRegister(self._reg)
+		log.log("NewEntryRegisterBrowser._showUpdate return", [], 1)
 
 	def _scrollBrowser(self, itemId):
 	#mapsafe
+		log.log("NewEntryRegisterBrowser._scrollBrowser", [itemId, self._smart], 0)
 		#print itemId, stru(self._elementLabels[itemId]), stru(self._elements[itemId])
 		#self.__check()
 		#print self._smart
@@ -238,6 +259,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			self.DeleteAllItems()
 			#print "delete", c
 			self.__fillRegister(self._reg)
+		log.log("NewEntryRegisterBrowser._scrollBrowser return", [], 1)
 
 	def _label(self, element):
 		if isinstance(element, tuple):
@@ -259,11 +281,14 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		#return self._label(element) + " (" + str(self.__entryLens[element]) + ")"
 
 	def selectAndShow(self, ficheId):
+		log.log("NewEntryRegisterBrowser.selectAndShow", [ficheId, self.__level, self.__selectedElement], 0)
 		if self.__level in ["FICHE-GAP", "FICHE-ENTRY"]:
 			if self.__dBController.hasFiche(self.__selectedElement, ficheId):
 				self.__selectAndShow(ficheId)
+		log.log("NewEntryRegisterBrowser.selectAndShow return", [], 1)
 
 	def __selectAndShow(self, ficheId):
+		log.log("NewEntryRegisterBrowser.__selectAndShow", [ficheId, self.__selectedElement], 0)
 		if isinstance(self.__selectedElement, tuple):
 			(elements, self.__index, self.__next)  = self.__dBController.getFichesForGapForFiche(self.__selectedElement[1], self.__selectedElement[2], ficheId, self.__limit)
 		else:
@@ -278,6 +303,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		self.__localVeto = False
 		for l in self._listeners:
 			l.on_structure_element_selected(self.__text(self.__selectedElement))
+		log.log("NewEntryRegisterBrowser.__selectAndShow return", [], 1)
 
 	def __text(self, element):
 		if isinstance(element, tuple):
@@ -295,6 +321,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 
 	def onSelect(self, event):
 	#mapsafe
+		log.op("NewEntryRegisterBrowser.onSelect", [self._elementOf(self._unmap(event.GetIndex())), self._smart, self._windowVeto, self.__level], 0)
 		if (not self._smart) or self._windowVeto or self.__level in ["FICHE-ENTRY", "FICHE-GAP"]:
 			self.nonSmartSelect(event)
 		else:
@@ -307,27 +334,35 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 				self._windowVeto = False
 			else:
 				self.nonSmartSelect(event)
+		log.opr("NewEntryRegisterBrowser.onSelect return", [], 1)
 
 	def _select(self, itemId, veto=False):
 	#mapsafe
+		log.log("NewEntryRegisterBrowser._select", [itemId, veto, self.__level, self._smart, self._window], 0)
 		if self.__level == "ENTRY" and self._smart and (itemId < self._window or itemId >= self.LIMIT() + self._window):
 			self._scrollBrowser(itemId)
 		RegisterBrowser._select(self, itemId, veto=veto)
+		log.log("NewEntryRegisterBrowser._select return", [], 1)
 
 	def __binarySelect(self, itemId):
+		log.log("NewEntryRegisterBrowser.__binarySelect", [itemId], 0)
 		self.__binarySelectVeto = True
 		self._select(itemId, veto=True)
 		self.__binarySelectVeto = False
+		log.log("NewEntryRegisterBrowser.__binarySelect return", [], 1)
 
 	def nonSmartSelect(self, event):
 	#mapsafe
+		log.log("NewEntryRegisterBrowser.nonSmartSelect", [event, self._binary, self.__localVeto, self.__level, self.__selectedElement], 0)
 		if self.__binarySelectVeto:
+			log.log("NewEntryRegisterBrowser.nonSmartSelect return", [], 1)
 			return
 		if self._binary:
 			#self.stopBinarySearch()
 			for l in self._listeners:
 				l.stop_binary_search()
 		if self._veto:
+			log.log("NewEntryRegisterBrowser.nonSmartSelect return", [], 2)
 			return
 		if self.__localVeto:
 			RegisterBrowser.onSelect(self, event)
@@ -342,6 +377,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 					for l in self._listeners:
 						l.locate_needed(element)
 					RegisterBrowser.onSelect(self, event)
+					log.log("NewEntryRegisterBrowser.nonSmartSelect return", [], 3)
 					return
 			#ind = self.__index + self._items.index(itemId) - self.__limit / 2
 			ind = self.__index + self._item(itemId) - self.__limit / 2
@@ -371,18 +407,23 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			for l in self._listeners:
 				l.on_structure_element_selected(self.__text(element))
 			RegisterBrowser.onSelect(self, event)
+			log.log("NewEntryRegisterBrowser.nonSmartSelect return", [], 4)
 
 	def _element_selected(self, element, notify=True):
+		log.log("NewEntryRegisterBrowser._element_selected", [element, notify, self.__level], 0)
 		if self.__level in ["FICHE-ENTRY", "FICHE-GAP"]:
 			RegisterBrowser._element_selected(self, element, notify=notify)
 		else:
 			self.__selectedElement = element
+		log.log("NewEntryRegisterBrowser._element_selected return", [], 1)
 
 	def levelDown(self):
+		log.op("NewEntryRegisterBrowser.levelDown", [self._binary, self.__selectedElement], 0)
 		if self._binary:
 			for l in self._listeners:
 				l.stop_binary_search()
 		if self.__selectedElement == None: # TODO: D kiedy? - tez co w takiej sytuacji w entry_browserze?
+			log.opr("NewEntryRegisterBrowser.levelDown return", [])
 			return
 		if self.__level == "ENTRY":
 			#print self._selected, ":"
@@ -403,11 +444,13 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			self._select(0)
 			self.__noLocate = False
 			self.__localVeto = False
+			log.opr("NewEntryRegisterBrowser.levelDown return", [], 1)
 
 	# ta metoda powoduje wyswietlenie w wykazie hasel odpowiedniej listy fiszek na
 	# ktorej jest fiszka po zmianie czegos w panelu indeksow
 	# TODO: A dodac efektywne odswiezanie wykazu hasel
 	def locate(self, ficheId):
+		log.log("NewEntryRegisterBrowser.locate", [ficheId], 0)
 		(elements, self.__entryLens) = self.__dBController.getEntriesRegisterWithGaps()
 		for el in elements:
 			#print el
@@ -417,7 +460,9 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 				self.__selectedElement = el
 				self.levelDown()
 				self.__selectAndShow(ficheId)
+				log.log("NewEntryRegisterBrowser.locate return", [self.__selectedElement], 1)
 				return
+		log.log("NewEntryRegisterBrowser.locate assert", [elements], 2)
 		assert(False)
 
 	#:def _nextFicheNotFound(self):
@@ -425,6 +470,8 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 	#:		self.__selectAndShow(self.__next)
 
 	def getLastFicheOfSelected(self):
+		log.log("NewEntryRegisterBrowser.getLastFicheOfSelected", [self.__selectedElement], 0)
+		log.log("NewEntryRegisterBrowser.getLastFicheOfSelected return", [self.__dBController.getLastFicheOfElement(self.__selectedElement)], 1)
 		return self.__dBController.getLastFicheOfElement(self.__selectedElement)
 
 	def getElementPath(self):
@@ -434,9 +481,10 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			return ""
 
 	def getNextFiche(self, entry=None):
+		log.log("NewEntryRegisterBrowser.getNextFiche", [entry, self.__entry, self._selected, self._item(0), self._item(-1)], 0)
 		if self._selected == None: # TODO: C kiedy?
+			log.log("NewEntryRegisterBrowser.getNextFiche return", [], 1)
 			return
-		#print self.__entry, entry
 		if (self.__entry == None and entry == "") or (self.__entry != None and (self.__entry == entry or (entry == "" and self._selected != self._item(0) and self._selected != self._item(-1)))):
 			#print "nie trzeba"
 			RegisterBrowser.getNextFiche(self)
@@ -446,6 +494,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 				ficheId = self._elementOf(itemId)
 				self.locate(ficheId)
 				#print "znaleziono fiszke"
+				log.log("NewEntryRegisterBrowser.getNextFiche return", [], 2)
 				return
 			else:
 				#:if self.__next != None:
@@ -455,18 +504,23 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 				self.initialize()
 				for l in self._listeners:
 					l.on_structure_element_selected("")
+		log.log("NewEntryRegisterBrowser.getNextFiche return", [], 3)
 
 	def onUp(self, event):
+		log.op("NewEntryRegisterBrowser.onUp", [event, self.__level], 0)
 		if self.__level in ["FICHE-ENTRY", "FICHE-GAP"]:
 			self.initialize()
 		for l in self._listeners:
 			l.on_structure_element_selected("")
+		log.opr("NewEntryRegisterBrowser.onUp return", [], 1)
 
 	def select(self, elementId):
+		log.log("NewEntryRegisterBrowser.select", [elementId, self.__level], 0)
 		if self.__level in ["FICHE-ENTRY", "FICHE-GAP"]:
 			self.__noLocate = True
 			RegisterBrowser.select(self, elementId)
 			self.__noLocate = False
+		log.log("NewEntryRegisterBrowser.select return", [], 1)
 
 	def _compare(self, a, b): # dla wyszukiwania przyrostowego
 		collator = icu.Collator.createInstance(icu.Locale('pl_PL.UTF-8'))
@@ -491,7 +545,9 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			elif tob != None and froma != None and collator.compare(ustr(tob), ustr(froma)) <= 0:
 				return 1
 			else:
-				assert(toa == tob and froma == fromb)
+				if not (toa == tob and froma == fromb):
+					log.log("NewEntryRegisterBrowser.__compareForIncremental assert", [a, b, self.__elementObjects], 0)
+					assert(False)
 				return 0
 		elif isinstance(a, tuple):
 			(num, fromm, too) = a
@@ -500,6 +556,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			elif too != None and collator.compare(ustr(too), ustr(b)) <= 0:
 				return -1
 			else:
+				log.log("NewEntryRegisterBrowser.__compareForIncremental assert", [a, b, self.__elementObjects], 1)
 				assert(False)
 		elif isinstance(b, tuple):
 			(num, fromm, too) = b
@@ -508,11 +565,13 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			elif too != None and collator.compare(ustr(too), ustr(a)) <= 0:
 				return 1
 			else:
+				log.log("NewEntryRegisterBrowser.__compareForIncremental assert", [a, b, self.__elementObjects], 2)
 				assert(False)
 		else:
 			return collator.compare(ustr(a), ustr(b))
 
 	def __findForIncremental(self, element):
+		log.log("NewEntryRegisterBrowser.__findForIncremental", [element], 0)
 		def __pom(left, right):
 			#print left, right, stru(text)
 			#print self.__elementObjects[left], self.__elementObjects[right]
@@ -524,6 +583,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 				elif self.__compareForIncremental(self.__elementObjects[left], element) == 0:
 					return left
 				else:
+					log.log("NewEntryRegisterBrowser.__findForIncremental assert", [self.__elementObjects[right], self.__elementObjects[left], left, right, self.__elementObjects], 2)
 					assert(False)
 			lenn = right - left
 			center = left + lenn // 2
@@ -535,10 +595,13 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			else:
 				return __pom(center + 1, right)
 		res = __pom(0, len(self.__elementObjects) - 1)
+		log.log("NewEntryRegisterBrowser.__findForIncremental return", [res], 1)
 		return res
 
 	def _findItem(self, text):
+		log.log("NewEntryRegisterBrowser._findItem", [text], 0)
 		if len(self.__elementObjects) == 0:
+			log.log("NewEntryRegisterBrowser._findItem return", [-1], 1)
 			return -1
 		def __pom(left, right):
 			#print left, right, stru(text)
@@ -560,9 +623,11 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			else:
 				return __pom(center + 1, right)
 		res = __pom(0, len(self.__elementObjects) - 1)
+		log.log("NewEntryRegisterBrowser._findItem return", [res], 2)
 		return res
 
 	def find(self, text):
+		log.log("NewEntryRegisterBrowser.find", [text], 0)
 		if self.__level in ["FICHE-ENTRY", "FICHE-GAP"]:
 			RegisterBrowser.find(self, text)
 		else:
@@ -576,22 +641,31 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 				if self._selected != None:
 					self._unselect(self._selected)
 				self._select(itemId)
+		log.log("NewEntryRegisterBrowser.find return", [], 1)
 
 	def gapSelected(self):
+		log.log("NewEntryRegisterBrowser.gapSelected", [], 0)
+		log.log("NewEntryRegisterBrowser.gapSelected return", [isinstance(self.__selectedElement, tuple)], 1)
 		return isinstance(self.__selectedElement, tuple)
 
 	def wrongOrder(self, entry):
+		log.log("NewEntryRegisterBrowser.wrongOrder", [entry], 0)
 		if self.__selectedElement != None and isinstance(self.__selectedElement, tuple):
 			if self.__selectedElement[2] != None and self.__collator.compare(ustr(self.__selectedElement[2]), ustr(entry)) < 0:
+				log.log("NewEntryRegisterBrowser.wrongOrder return", [(True, False)], 1)
 				return (True, False)
 			elif self.__selectedElement[1] != None and self.__collator.compare(ustr(self.__selectedElement[1]), ustr(entry)) > 0:
+				log.log("NewEntryRegisterBrowser.wrongOrder return", [(False, True)], 2)
 				return (False, True)
 			else:
+				log.log("NewEntryRegisterBrowser.wrongOrder return", [(False, False)], 3)
 				return (False, False)
 		else:
+			log.log("NewEntryRegisterBrowser.wrongOrder return", [(False, False)], 4)
 			return (False, False)
 
 	def selectElementContaining(self, ficheId):
+		log.log("NewEntryRegisterBrowser.selectElementContaining", [ficheId], 0)
 		for i in range(0, self._itemsLen()):
 			el = self._elementOf(i)
 			has = self.__dBController.hasFiche(el, self.__centerFiche)
@@ -602,6 +676,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 				break
 		self._scrollBrowser(self._itemOf(self.__selectedElement))
 		self.__binarySelect(self._itemOf(self.__selectedElement))
+		log.log("NewEntryRegisterBrowser.selectElementContaining return", [self.__selectedElement], 1)
 
 
 	# --- WYSZUKIWANIE BINARNE --- #
@@ -610,6 +685,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		return self.__level == "ENTRY"
 	
 	def __determineAutomaticSearchScope(self):#, right):
+		log.log("NewEntryRegisterBrowser.__determineAutomaticSearchScope", [], 0)
 		for i in range(0, self._itemsLen()):
 			elem = self._elementOf(i)
 			#print elem
@@ -630,14 +706,17 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 				#:	if (self.__collator.compare(unicode(nvl(elem[1]), "utf-8"), self.__binaryTarget) < 0 and (elem[2] == None or self.__collator.compare(unicode(elem[2], "utf-8"), self.__binaryTarget) > 0)) or unicode(nvl(elem[2]), "utf-8") == self.__binaryTarget:
 				if (elem[1] == None or self.__collator.compare(unicode(elem[1], "utf-8"), self.__binaryTarget) < 0) and (elem[2] == None or self.__collator.compare(unicode(elem[2], "utf-8"), self.__binaryTarget) >= 0):
 					#print elem, self.__binaryTarget, ":::"
+					log.log("NewEntryRegisterBrowser.__determineAutomaticSearchScope return", [(elem, False)], 1)
 					return (elem, False)
 				if (elem[1] != None and self.__collator.compare(unicode(elem[1], "utf-8"), self.__binaryTarget) == 0) and (elem[2] == None or self.__collator.compare(unicode(elem[2], "utf-8"), self.__binaryTarget) > 0):
 					#print elem, self.__binaryTarget
+					log.log("NewEntryRegisterBrowser.__determineAutomaticSearchScope return", [(elem, True)], 2)
 					return (elem, True)
+		log.log("NewEntryRegisterBrowser.__determineAutomaticSearchScope return", [(None, None)], 3)
 		return (None, None)
 
 	def startBinarySearch(self, target=None, restarting=False):
-		log.log(["startBinarySearch", self.__selectedElement, self.__binaryType])
+		log.log("NewEntryRegisterBrowser.startBinarySearch", [target, restarting, self.__selectedElement, self.__binaryType], 0)
 		self.__binaryScopeValid = True
 		self.__binaryTarget = target
 		self._binary = True
@@ -660,6 +739,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 					#print "ojej!"
 					self._binary = False
 					self.__binaryTarget = None
+					log.log("NewEntryRegisterBrowser.startBinarySearch return", [], 1)
 					return
 				else:
 					self.__selectedElement = elem
@@ -683,11 +763,13 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		self.__left = 0
 		self.__right = length - 1
 		self.__selectCenter()
+		log.log("NewEntryRegisterBrowser.startBinarySearch return", [], 2)
 
 	def getSteps(self):
 		return self.__steps
 
 	def restartable(self, binaryTarget):
+		log.log("NewEntryRegisterBrowser.startBinarySearch", [binaryTarget], 0)
 		#print binaryTarget
 		self.__binaryTarget = binaryTarget
 		(elem, right) = self.__determineAutomaticSearchScope()
@@ -697,16 +779,18 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			#assert(false)
 			self.__leftTargetBinary = not right
 			self.__selectedElement = elem
+			log.log("NewEntryRegisterBrowser.restartable return", [True], 1)
 			return True
 		self.__binaryTarget = None
 		self.__leftTargetBinary = False
+		log.log("NewEntryRegisterBrowser.restartable return", [False], 2)
 		return False
 
 	def getTarget(self):
 		return self.__binaryTarget
 
 	def stopBinarySearch(self):
-		log.log(["stopBinarySearch", self.__selectedElement, self.__binaryType])
+		log.log("NewEntryRegisterBrowser.stopBinarySearch", [self.__selectedElement, self.__binaryType], 0)
 		self._binary = False
 		#print "@", restart
 		#print "restartujemy?"
@@ -733,19 +817,22 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		#print "ojej, stalo sie cos dziwnego"
 		self.__binaryTarget = None
 		self.__leftBinaryTarget = False
+		log.log("NewEntryRegisterBrowser.stopBinarySearch return", [None], 1)
 		return None
 
 	def nextBinaryAcceptPrepare(self, automatic=False):
-		log.log(["nextBinaryAcceptPrepare", self.__selectedElement, self.__binaryType])
+		log.log("NewEntryRegisterBrowser.nextBinaryAcceptPrepare", [automatic, self.__selectedElement, self.__binaryType], 0)
 		#print "!", self.__left, self.__center, self.__right
 		#
 		#print "::", self.__left, self.__right
 		if self.__center == self.__right and self.__left == self.__center - 1:
+			log.log("NewEntryRegisterBrowser.nextBinaryAcceptPrepare return", [False], 1)
 			return False
 		if self.__left == self.__right:
 			if not automatic:
 				for l in self._listeners:
 					l.stop_binary_search()
+			log.log("NewEntryRegisterBrowser.nextBinaryAcceptPrepare return", [False], 2)
 			return False
 		#
 		self.__left = self.__center + 1
@@ -755,18 +842,22 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			self.__binaryScopeValid = True
 			self.__leftFiche = self.__potentialNextLeftFiche
 			if self.__left == self.__right:
+				log.log("NewEntryRegisterBrowser.nextBinaryAcceptPrepare return", [False], 3)
 				return False
 			self.__center = self.__potentialNextCenter
 			self.__centerFiche = self.__potentialNextCenterFiche
+			log.log("NewEntryRegisterBrowser.nextBinaryAcceptPrepare return", [True], 4)
 			return True
 		if self.__binaryType == "GAP":
 			self.__leftFiche = self.__dBController.getFicheForGapPosition(self.__selectedElement[1], self.__selectedElement[2], self.__left)
 		else:
 			self.__leftFiche = self.__dBController.getFicheForEntryPosition(self.__selectedElement, self.__left)
-		return self.__selectCenterPrepare()
+		res = self.__selectCenterPrepare()
+		log.log("NewEntryRegisterBrowser.nextBinaryAcceptPrepare return", [res], 5)
+		return res
 
 	def prevBinaryAcceptPrepare(self, automatic=False):
-		log.log(["prevBinaryAcceptPrepare", self.__selectedElement, self.__binaryType])
+		log.log("NewEntryRegisterBrowser.prevBinaryAcceptPrepare", [automatic, self.__selectedElement, self.__binaryType], 0)
 		#print "!", self.__left, self.__center, self.__right
 		#
 		#print ":", self.__left, self.__right
@@ -774,6 +865,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			if not automatic:
 				for l in self._listeners:
 					l.stop_binary_search()
+			log.log("NewEntryRegisterBrowser.prevBinaryAcceptPrepare return", [False], 1)
 			return False
 		#
 		self.__right = self.__center - 1
@@ -783,18 +875,22 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			self.__binaryScopeValid = True
 			self.__rightFiche = self.__potentialPrevRightFiche
 			if self.__right == self.__left:
+				log.log("NewEntryRegisterBrowser.prevBinaryAcceptPrepare return", [False], 2)
 				return False
 			self.__center = self.__potentialPrevCenter
 			self.__centerFiche = self.__potentialPrevCenterFiche
+			log.log("NewEntryRegisterBrowser.prevBinaryAcceptPrepare return", [True], 3)
 			return True
 		if self.__binaryType == "GAP":
 			self.__rightFiche = self.__dBController.getFicheForGapPosition(self.__selectedElement[1], self.__selectedElement[2], self.__right)
 		else:
 			self.__rightFiche = self.__dBController.getFicheForEntryPosition(self.__selectedElement, self.__right)
-		return self.__selectCenterPrepare()
+		res = self.__selectCenterPrepare()
+		log.log("NewEntryRegisterBrowser.prevBinaryAcceptPrepare return", [res], 4)
+		return res
 
 	def initializeForActiveBinary(self, entry):
-		log.log(["initializeForActiveBinary", self.__selectedElement, self.__binaryType])
+		log.log("NewEntryRegisterBrowser.initializeForActiveBinary", [entry, self.__selectedElement, self.__binaryType], 0)
 		self._selected = None
 		if not self._incrementalUpdate([self.__entryOf(self.__selectedElement), entry]):
 			self.DeleteAllItems()
@@ -802,9 +898,10 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			self.__fillRegister(elements)
 		else:
 			self._showUpdate()
+		log.log("NewEntryRegisterBrowser.initializeForActiveBinary return", [], 1)
 
 	def prepareForActiveBinary(self):
-		log.log(["prepareForActiveBinary", self.__selectedElement, self.__binaryType])
+		log.log("NewEntryRegisterBrowser.prepareForActiveBinary", [self.__selectedElement, self.__binaryType, self.__left, self.__center, self.__right], 0)
 		#print self.__left, self.__center, self.__right
 		potentialPrevLeft = self.__left
 		potentialPrevRight = self.__center - 1
@@ -815,6 +912,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		#	return
 		#print self.__left, self.__center, self.__right
 		self.__potentialPrevCenter = potentialPrevLeft + lenn / 2
+		log.log("NewEntryRegisterBrowser.prepareForActiveBinary assert", [self.__potentialPrevCenter], 3)
 		assert(self.__potentialPrevCenter >= 0)
 		#print potentialPrevLeft, self.__potentialPrevCenter, potentialPrevRight
 		potentialNextLeft = self.__center + 1
@@ -841,15 +939,17 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			self.__potentialNextLeftFiche = self.__dBController.getFicheForEntryPosition(self.__selectedElement, potentialNextLeft)
 			self.__potentialNextCenterFiche = self.__dBController.getFicheForEntryPosition(self.__selectedElement, self.__potentialNextCenter)
 		self.__potentialNextRightFiche = self.__rightFiche
-		log.log(["element początkowy:", self.__selectedElement])
-		log.log(["zakres początkowy:", self.__left, self.__center, self.__right])
-		log.log(["fiszki początkowe:", self.__leftFiche, self.__centerFiche, self.__rightFiche])
-		log.log(["obliczony zakres potencjalny w lewo:", potentialPrevLeft, self.__potentialPrevCenter, potentialPrevRight])
-		log.log(["obliczone fiszki potencjalne w lewo:", self.__potentialPrevLeftFiche, self.__potentialPrevCenterFiche, self.__potentialPrevRightFiche])
-		log.log(["obliczony zakres potencjalny w prawo:", potentialNextLeft, self.__potentialNextCenter, potentialNextRight])
-		log.log(["obliczone fiszki potencjalne w prawo:", self.__potentialNextLeftFiche, self.__potentialNextCenterFiche, self.__potentialNextRightFiche])
+		#log.log(["element początkowy:", self.__selectedElement])
+		#log.log(["zakres początkowy:", self.__left, self.__center, self.__right])
+		#log.log(["fiszki początkowe:", self.__leftFiche, self.__centerFiche, self.__rightFiche])
+		#log.log(["obliczony zakres potencjalny w lewo:", potentialPrevLeft, self.__potentialPrevCenter, potentialPrevRight])
+		#log.log(["obliczone fiszki potencjalne w lewo:", self.__potentialPrevLeftFiche, self.__potentialPrevCenterFiche, self.__potentialPrevRightFiche])
+		#log.log(["obliczony zakres potencjalny w prawo:", potentialNextLeft, self.__potentialNextCenter, potentialNextRight])
+		#log.log(["obliczone fiszki potencjalne w prawo:", self.__potentialNextLeftFiche, self.__potentialNextCenterFiche, self.__potentialNextRightFiche])
+		log.log("NewEntryRegisterBrowser.prepareForActiveBinary assert", [self.__potentialNextCenterFiche, self.__potentialPrevCenterFiche], 2)
 		assert(self.__potentialNextCenterFiche != None and self.__potentialPrevCenterFiche != None)
 		self.__binaryScopeValid = False
+		log.log("NewEntryRegisterBrowser.prepareForActiveBinary return", [], 1)
 
 	def __entryOf(self, el):
 		if isinstance(el, tuple):
@@ -862,7 +962,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 
 	def binaryAcceptFinalize(self, entry, safe=False):
 		#gc = Counter()
-		log.log(["binaryAcceptFinalize", self.__selectedElement, self.__binaryType])
+		log.log("NewEntryRegisterBrowser.binaryAcceptFinalize", [entry, safe, self.__selectedElement, self.__binaryType], 0)
 		self._selected = None
 		#c = Counter()
 		if not self._incrementalUpdate([self.__entryOf(self.__selectedElement), entry]):
@@ -918,6 +1018,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		# TODO: C konczenie wyszukiwania z celem gdy wyladowalismy nie w GAP tylko w ENTRY
 		#print ":::::", self.__centerFiche
 		#print self.__leftFiche, self.__rightFiche, self.__left, self.__right, self.__center
+		log.log("NewEntryRegisterBrowser.binaryAcceptFinalize assert", [self.__leftFiche, self.__rightFiche, self.__centerFiche, self._elements], 1)
 		assert(self.__left != None)
 		#c.reset()
 		self.__steps += 1
@@ -930,9 +1031,10 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 				l.stop_binary_search()
 		#print "stop_binary_search2", c
 		#print "global", gc
+		log.log("NewEntryRegisterBrowser.binaryAcceptFinalize return", [], 2)
 		
 	def nextBinary(self):
-		log.log(["nextBinary", self.__selectedElement, self.__binaryType])
+		log.log("NewEntryRegisterBrowser.nextBinary", [self.__selectedElement, self.__binaryType], 0)
 		# TODO: NOTE niepotrzebne? (bo w selectCenter)
 		#if self.__left == self.__right:
 		#	for l in self._listeners:
@@ -954,11 +1056,11 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			self.__center = self.__potentialNextCenter
 			self.__centerFiche = self.__potentialNextCenterFiche
 			self.__selectedElement = None
-			log.log(["idziemy w prawo, szukamy", self.__centerFiche, ":"])
+			log.log("NewEntryRegisterBrowser.nextBinary inspect", [self.__centerFiche, self._elements], 1)
 			#::for (i, el) in self._item2element.iteritems():
 			for i in range(0, self._itemsLen()):
 				el = self._elementOf(i)
-				log.log(["w", el, ":", self.__dBController.hasFiche(el, self.__centerFiche)])
+				#log.log(["w", el, ":", self.__dBController.hasFiche(el, self.__centerFiche)])
 				if self.__dBController.hasFiche(el, self.__centerFiche):
 					self.__selectedElement = el
 					if isinstance(self.__selectedElement, tuple):
@@ -979,15 +1081,17 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			if self.__left == self.__right:
 				for l in self._listeners:
 					l.stop_binary_search()
+					log.log("NewEntryRegisterBrowser.nextBinary return", [], 2)
 			return
 		if self.__binaryType == "GAP":
 			self.__leftFiche = self.__dBController.getFicheForGapPosition(self.__selectedElement[1], self.__selectedElement[2], self.__left)
 		else:
 			self.__leftFiche = self.__dBController.getFicheForEntryPosition(self.__selectedElement, self.__left)
 		self.__selectCenter()
+		log.log("NewEntryRegisterBrowser.nextBinary return", [], 3)
 
 	def prevBinary(self):
-		log.log(["prevBinary", self.__selectedElement, self.__binaryType])
+		log.log("NewEntryRegisterBrowser.prevBinary", [self.__selectedElement, self.__binaryType], 0)
 		#print self.__right, self.__center, self.__left
 		#print self.__rightFiche, self.__centerFiche, self.__leftFiche
 		# TODO: NOTE niepotrzebne? (bo w selectCenter)
@@ -1012,12 +1116,12 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			self.__centerFiche = self.__potentialPrevCenterFiche
 			self.__selectedElement = None
 			#print "szukamy " + self.__centerFiche
-			log.log(["idziemy w lewo, szukamy", self.__centerFiche, ":"])
+			log.log("NewEntryRegisterBrowser.prevBinary inspect", [self.__centerFiche, self._elements], 1)
 			#::for (i, el) in self._item2element.iteritems():
 			for i in range(0, self._itemsLen()):
 				el = self._elementOf(i)
 				#print self.__centerFiche, el, self.__dBController.hasFiche(el, self.__centerFiche)
-				log.log(["w", el, ":", self.__dBController.hasFiche(el, self.__centerFiche)])
+				#log.log(["w", el, ":", self.__dBController.hasFiche(el, self.__centerFiche)])
 				if self.__dBController.hasFiche(el, self.__centerFiche):
 					self.__selectedElement = el
 					if isinstance(self.__selectedElement, tuple):
@@ -1038,6 +1142,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			if self.__left == self.__right:
 				for l in self._listeners:
 					l.stop_binary_search()
+			log.log("NewEntryRegisterBrowser.prevBinary return", [], 2)
 			return
 		if self.__binaryType == "GAP":
 			#print self.__selectedElement
@@ -1045,10 +1150,12 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		else:
 			self.__rightFiche = self.__dBController.getFicheForEntryPosition(self.__selectedElement, self.__right)
 		#print self.__rightFiche, self.__right
+		log.log("NewEntryRegisterBrowser.prevBinary return", [], 3)
 		self.__selectCenter()
 		
 	def __selectCenterPrepare(self):
 		#print "select center fired"
+		log.log("NewEntryRegisterBrowser.__selectCenterPrepare", [self.__left, self.__right], 0)
 		lenn = self.__right - self.__left + 1
 		self.__center = self.__left
 		self.__center += lenn // 2
@@ -1061,9 +1168,11 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		#	return False
 		#if self.__left == self.__right == self.__center:
 		#	return False
+		log.log("NewEntryRegisterBrowser.__selectCenterPrepare return", [True], 1)
 		return True
 			
 	def __selectCenter(self):
+		log.log("NewEntryRegisterBrowser.__selectCenter", [self.__left, self.__right], 0)
 		lenn = self.__right - self.__left + 1
 		#:if self.__left == self.__right:# == self.__center:
 		#:	#for l in self._listeners:
@@ -1084,6 +1193,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		#	print self.__left, self.__center, self.__right
 		#	print self.__leftFiche, self.__centerFiche, self.__rightFiche
 		#	print self._elements
+		log.log("NewEntryRegisterBrowser.__selectCenter assert", [self.__centerFiche, self.__center, self.__selectedElement], 2)
 		assert(self.__centerFiche != None)
 		for l in self._listeners:
 			l.invisible_binary_search(self.__centerFiche)
@@ -1094,6 +1204,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		#	#	l.on_structure_element_selected("")
 			for l in self._listeners:
 				l.stop_binary_search()
+		log.log("NewEntryRegisterBrowser.__selectCenter return", [], 1)
 
 	def topLevel(self):
 		return self.__level == "ENTRY"
@@ -1102,7 +1213,9 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		return self.__level in ["FICHE-ENTRY", "FICHE-GAP"]
 
 	def showFirstElement(self):
+		log.log("NewEntryRegisterBrowser.showFirstElement", [self.__level], 0)
 		if self.__level == "ENTRY":
+			log.log("NewEntryRegisterBrowser.showFirstElement return", [], 1)
 			return
 		if self.__level == "FICHE-GAP":
 			(elements, self.__index, self.__next) = self.__dBController.getFichesForGap(self.__selectedElement[1], self.__selectedElement[2], self.__limit, 0, self._itemsLen())
@@ -1115,9 +1228,12 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		self._select(0)
 		self.__noLocate = False
 		self.__localVeto = False
+		log.log("NewEntryRegisterBrowser.showFirstElement return", [], 2)
 
 	def showLastElement(self):
+		log.log("NewEntryRegisterBrowser.showLastElement", [self.__level], 0)
 		if self.__level == "ENTRY":
+			log.log("NewEntryRegisterBrowser.showLastElement return", [], 1)
 			return
 		if self.__level == "FICHE-GAP":
 			(elements, self.__index, self.__next, element) = self.__dBController.getFichesForGapForLastFiche(self.__selectedElement[1], self.__selectedElement[2], self.__limit)
@@ -1132,25 +1248,33 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		self._select(itemId)
 		self.__noLocate = False
 		self.__localVeto = False
+		log.log("NewEntryRegisterBrowser.showLastElement return", [], 2)
 
 	def hasTarget(self):
+		log.log("NewEntryRegisterBrowser.hasTarget", [], 0)
+		log.log("NewEntryRegisterBrowser.hasTarget return", [self.__binaryTarget != None], 1)
 		return self.__binaryTarget != None
 
 	def determineNextTarget(self, entry):
 		# TODO: C co jak jestesmy w niewlasciwym elemencie (nie jestesmy w dziurze z tym celem)?		
 		#print entry, self.__binaryTarget, self.__leftTargetBinary
+		log.log("NewEntryRegisterBrowser.determineNextTarget", [entry], 0)
 		if self.__leftTargetBinary:
 			if self.__collator.compare(entry, self.__binaryTarget) >= 0:
 				#print "left"
+				log.log("NewEntryRegisterBrowser.determineNextTarget return", ["LEFT"], 1)
 				return "LEFT"
 			else: # TODO: C obsluga fiszek nie po kolei
 				#print "right"
+				log.log("NewEntryRegisterBrowser.determineNextTarget return", ["RIGHT"], 2)
 				return "RIGHT"
 		else:
 			if self.__collator.compare(entry, self.__binaryTarget) <= 0:
 				#print "right2"
+				log.log("NewEntryRegisterBrowser.determineNextTarget return", ["RIGHT"], 3)
 				return "RIGHT"
 			else: # TODO: C j.w.
 				#print "left2"
+				log.log("NewEntryRegisterBrowser.determineNextTarget return", ["LEFT"], 4)
 				return "LEFT"
 

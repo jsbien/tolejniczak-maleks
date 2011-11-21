@@ -13,6 +13,7 @@
 import wx
 from maleks.i18n import _
 from maleks.maleks.useful import ustr
+from maleks.maleks import log
 
 class MessagePanel(wx.Panel):
 
@@ -27,20 +28,28 @@ class MessagePanel(wx.Panel):
 		self.__list.showMessage(msg)
 
 	def automaticBinaryStopped(self, target, steps):
+		log.log("automaticBinaryStopped", [target, steps], 0)
 		msg = _('Search for') + u" \"" + ustr(target) + u"\" " + _('finished') + u". " + _('Steps:') + u" " + unicode(steps)
 		self.__list.showMessage(msg)
+		log.log("automaticBinaryStopped return", [], 1)
 
 	def binaryStopped(self, steps):
+		log.log("binaryStopped", [steps], 0)
 		msg = _('Binary search') + u" " + _('finished') + u". " + _('Steps:') + u" " + unicode(steps)
 		self.__list.showMessage(msg)
+		log.log("binaryStopped return", [], 1)
 
 	def wrongFiche(self, entry):
+		log.log("wrongFiche", [entry], 0)
 		msg = ustr(entry) + u": " + _('fiche not in order')
 		self.__list.showMessage(msg)
+		log.log("wrongFiche return", [], 1)
 
 	def wrongOrder(self, entry):
+		log.log("wrongOrder", [entry], 0)
 		msg = ustr(entry) + u": " + _('corrupted alphabetic order')
 		self.__list.showMessage(msg)
+		log.log("wrongOrder return", [], 1)
 
 class MessageList(wx.ListView):
 
@@ -53,6 +62,7 @@ class MessageList(wx.ListView):
 		self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
 
 	def showMessage(self, msg):
+		log.op("showMessage", [msg], 0)
 		if len(self.__messages) == MessageList.LIMIT:
 			self.__messages = self.__messages[:len(self.__messages) - 1]
 		self.__messages.insert(0, msg)
@@ -62,4 +72,5 @@ class MessageList(wx.ListView):
 			self.InsertStringItem(i, m)
 			i += 1
 		self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
+		log.opr("showMessage return", [], 1)
 

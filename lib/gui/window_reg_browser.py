@@ -16,6 +16,7 @@ from maleks.gui.reg_browser import RegisterBrowser
 from maleks.maleks.worddict import WordDictionary
 from maleks.maleks.useful import nvl, ustr, stru
 from maleks.maleks.registers import anyHint, commonprefix
+from maleks.maleks import log
 
 class WindowRegisterBrowser(RegisterBrowser):
 
@@ -35,24 +36,31 @@ class WindowRegisterBrowser(RegisterBrowser):
 		return i + self._window
 	
 	def reset(self):
+		log.log("WindowRegisterBrowser.reset", [], 0)
 		RegisterBrowser.reset(self)
 		self._window = 0
 		self._windowVeto = False
 		# czy self._reg = None cos psuje?
+		log.log("WindowRegisterBrowser.reset return", [], 1)
 	
 	def DeleteAllItems(self):
+		log.log("WindowRegisterBrowser.DeleteAllItems", [], 0)
 		RegisterBrowser.DeleteAllItems(self)
 		self._elements = []
 		self._elementLabels = []
+		log.log("WindowRegisterBrowser.DeleteAllItems return", [], 1)
 
 	def reinitialize(self):
+		log.log("WindowRegisterBrowser.reinitialize", [], 0)
 		self.reset()
 		self.setRegister(self._reg, self.__entryGetter)
+		log.log("WindowRegisterBrowser.reinitialize return", [], 1)
 
 	def setRegister(self, reg, getEntry=None):
 		#from maleks.maleks.useful import Counter
 		#c = Counter()
 		#g = Counter()
+		log.log("WindowRegisterBrowser.setRegister", [reg, getEntry], 0)
 		if len(reg) < 2 * self.LIMIT():
 			#TODO: !A nie obsluguje hint_browsera?"
 			self._smart = False
@@ -87,12 +95,17 @@ class WindowRegisterBrowser(RegisterBrowser):
 			self._initialized = True
 			#print "koniec", c
 		#print "po", g
+		log.log("WindowRegisterBrowser.setRegister return", [], 1)
 
 	def _itemOf(self, elementId):
 		return self._elements.index(elementId)
 
 	def _elementOf(self, itemId):
-		return self._elements[itemId]
+		try:
+			res = self._elements[itemId]
+			return res
+		except IndexError:
+			return None
 
 	def smartOn(self):
 		self._smart = True
@@ -109,6 +122,7 @@ class WindowRegisterBrowser(RegisterBrowser):
 	#mapsafe
 		#print itemId, stru(self._elementLabels[itemId]), stru(self._elements[itemId])
 		#self.__check()
+		log.log("WindowRegisterBrowser._scrollBrowser", [itemId, self._window], 0)
 		wx.ListCtrl.DeleteAllItems(self)
 		halfBefore = self.LIMIT() / 2
 		halfAfter = self.LIMIT() - halfBefore
@@ -128,9 +142,11 @@ class WindowRegisterBrowser(RegisterBrowser):
 		self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
 		self.SetColumnWidth(3, wx.LIST_AUTOSIZE)
 		self._window = itemId - halfBefore
+		log.log("WindowRegisterBrowser.setRegister return", [self._window], 1)
 
 	def onSelect(self, event):
 	#mapsafe
+		log.op("WindowRegisterBrowser.onSelect", [self._elementOf(self._unmap(event.GetIndex())), self._smart], 0)
 		if (not self._smart) or self._windowVeto:
 			RegisterBrowser.onSelect(self, event)
 		else:
@@ -143,23 +159,27 @@ class WindowRegisterBrowser(RegisterBrowser):
 				self._windowVeto = False
 			else:
 				RegisterBrowser.onSelect(self, event)
+		log.opr("WindowRegisterBrowser.onSelect return", [], 1)
 
 	def _reloadSelect(self, itemId, veto=False):
+		log.log("WindowRegisterBrowser._reloadSelect", [self._smart], 0)
 		if not self._smart:
 			pass
 			# TODO: A co wtedy?
 		self._scrollBrowser(itemId)
 		RegisterBrowser._select(self, itemId, veto=veto)
-
+		log.log("WindowRegisterBrowser._reloadSelect return", [], 1)
 
 	def _select(self, itemId, veto=False):
 	#mapsafe
 		#print itemId, self._window, self.__len
+		log.log("WindowRegisterBrowser._select", [itemId, veto, self._window, self._smart], 0)
 		if self._smart and (itemId < self._window or itemId >= self.LIMIT() + self._window):
 			#print "tu"
 			self._scrollBrowser(itemId)
 		#print "ok"
 		RegisterBrowser._select(self, itemId, veto=veto)
+		log.log("WindowRegisterBrowser._select return", [], 1)
 
 	# TODO: A przeslonic w NewEntryRegisterBrowserze
 	def _compare(self, a, b):
@@ -170,7 +190,9 @@ class WindowRegisterBrowser(RegisterBrowser):
 	# TODO: !!!A poprawic na prefiks
 	# TODO: A polaczyc z self.find()
 	def _findItem(self, text):
+		log.log("WindowRegisterBrowser._findItem", [text], 0)
 		if len(self._elementLabels) == 0:
+			log.log("WindowRegisterBrowser._findItem return", [-1], 2)
 			return -1
 		def __pom(left, right):
 			#print left, right, stru(text)
@@ -199,9 +221,12 @@ class WindowRegisterBrowser(RegisterBrowser):
 		res = __pom(0, len(self._elementLabels) - 1)
 		if self._compare(self._elementLabels[res], text) < 0 and res < len(self._elementLabels) - 1 and len(commonprefix(self._elementLabels[res + 1], text)) > len(commonprefix(self._elementLabels[res], text)):
 			res += 1
-		return 0 if res < 0 else res
+		res = 0 if res < 0 else res
+		log.log("WindowRegisterBrowser._findItem return", [res], 1)
+		return res
 
 	def find(self, text):
+		log.log("WindowRegisterBrowser.find", [text], 0)
 		if not self._smart:
 			RegisterBrowser.find(self, text)
 		else:
@@ -211,6 +236,7 @@ class WindowRegisterBrowser(RegisterBrowser):
 				if self._selected != None:
 					self._unselect(self._selected)
 				self._select(itemId)
+		log.log("WindowRegisterBrowser.find return", [], 1)
 
 	def binaryAvailable(self):
 		return False

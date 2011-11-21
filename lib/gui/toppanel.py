@@ -15,6 +15,7 @@ from maleks.maleks.registers import anyHint
 from maleks.i18n import _
 import wx
 from maleks.gui import __RESOURCES_PATH__
+from maleks.maleks import log
 
 class TopPanel(wx.Panel, Notifier):
 
@@ -62,26 +63,36 @@ class TopPanel(wx.Panel, Notifier):
 		self.__hintRegister = register
 
 	def __onEditAcceptEnter(self, event):
+		log.op("__onEditAcceptEnter", [event.GetKeyCode()], 0)
 		if event.GetKeyCode() == wx.WXK_RETURN and not event.ControlDown():
 			#print "Enter"
 			self.__onEditAccept(event)
 		else:
 			#print "Not"
 			event.Skip()
+		log.opr("__onEditAcceptEnter return", [], 1)
 
 	def __onEditAccept(self, event):
+		log.op("__onEditAccept", [event, self.__editPanel.GetValue()], 0)
 		for l in self._listeners:
 			l.on_edit_accept(event)
+		log.opr("__onEditAcceptEnter return", [], 1)
 
 	def __onEditPrefixAccept(self, event):
+		log.op("__onEditPrefixAccept", [event, self.__editPanel.GetValue()], 0)
 		for l in self._listeners:
 			l.on_edit_prefix_accept(event)
+		log.opr("__onEditPrefixAccept return", [], 1)
 
 	def __onHintAccept(self, event):
+		# TODO: C strip siglum?
+		log.op("__onHintAccept", [event, self.__hintPanel.GetValue()], 0)
 		for l in self._listeners:
 			l.on_hint_accept(event)
+		log.opr("__onHintAccept return", [], 1)
 
 	def editPanelChanged(self, event):
+		log.op("editPanelChanged", [event, self.__editPanel.GetValue()], 0)
 		if not self.__browsingHistory:
 			for l in self._listeners:
 				l.stop_browsing_entry_history(event)
@@ -99,42 +110,55 @@ class TopPanel(wx.Panel, Notifier):
 		else:
 			self.__hintPanel.SetValue("")
 			self.__hint = None
+		log.opr("editPanelChanged return", [], 1)
 
 	def __hintPanelChanged(self, event):
+		log.op("__hintPanelChanged", [event, self.__hintPanel.GetValue()], 0)
 		self.__hint = self.__hintPanel.GetValue()
+		log.opr("__hintPanelChanged return", [], 1)
 		
 	def __stripSiglum(self, text):
 		ind = text.rfind("(")
 		return text[:ind - 1]
 
 	def copyHintToEditPanel(self):
+		log.op("copyHintToEditPanel", [self.__hintPanel.GetValue()], 0)
 		self.setEntry(self.__stripSiglum(self.__hintPanel.GetValue()))
+		log.opr("copyHintToEditPanel return", [], 1)
 
 	def getHint(self):
 		return self.__hint
 
 	def setHint(self, hint):
+		log.log("setHint", [hint], 0)
 		self.__hintPanel.SetValue(unicode(anyHint(hint), "utf-8") + u" " + unicode(hint[3], "utf-8"))
 		self.__hint = anyHint(hint)
+		log.log("setHint return", [self.__hintPanel.GetValue()], 1)
 
 	def getEditPanelContent(self):
 		return self.__editPanel.GetValue()
 
 	def setHypothesis(self, content):
+		log.log("setHypothesis", [content], 0)
 		self.__hypothesisPanel.SetValue(content)
 		self.__editPanel.SetValue(content)
 		self.editPanelChanged(None)
+		log.log("setHypothesis return", [self.__hypothesisPanel.GetValue()], 1)
 
 	def setEntry(self, entry, browsingHistory=False):
+		log.log("setEntry", [entry, browsingHistory], 0)
 		if browsingHistory:
 			self.__browsingHistory = True
 		self.__editPanel.SetValue(entry)
 		self.editPanelChanged(None)
 		if browsingHistory:
 			self.__browsingHistory = False
+		log.log("setEntry return", [self.__editPanel.GetValue()], 1)
 
 	def refreshForAutomaticBinary(self, target):
+		log.log("refreshForAutomaticBinary", [target], 0)
 		self.setEntry(target)
 		self.__hintPanel.SetFocus()
 		self.focus()
+		log.log("refreshForAutomaticBinary return", [], 1)
 
