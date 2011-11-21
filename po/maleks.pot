@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-21 20:51+0100\n"
+"POT-Creation-Date: 2011-11-21 21:35+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,7 +29,7 @@ msgstr ""
 msgid "&Color"
 msgstr ""
 
-msgid "&Dump database to log"
+msgid "&Dump log to file"
 msgstr ""
 
 msgid "&Export bookmarks"
@@ -164,12 +164,6 @@ msgstr ""
 msgid "Comment"
 msgstr ""
 
-msgid "Database dump"
-msgstr ""
-
-msgid "Database dumped to log"
-msgstr ""
-
 msgid "Database reset"
 msgstr ""
 
@@ -191,7 +185,10 @@ msgstr ""
 msgid "Display only the foreground layer"
 msgstr ""
 
-msgid "Dump current state of database to log"
+msgid "Dump current log to file"
+msgstr ""
+
+msgid "Dump log to file"
 msgstr ""
 
 msgid "Edit metadata"

@@ -36,6 +36,7 @@ Błędy do usunięcia:
 
 Inne:
 
+* Wyindeksowanie fiszek
 * Klonowanie fiszek (możemy wyjść z wyszukiwania)
 * Hipotezy dla fiszek zaindeksowanych i nie po kolei (do przemyślenia)
 * CTRL-C CTRL-C i włączanie wyszukiwania binarnego dla haseł zaindeksowanych

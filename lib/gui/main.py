@@ -709,7 +709,7 @@ class MainWindow(wx.Frame):
         for caption, help, method, icon in \
         [
             (_(u'&Reset database'), _(u'Remove entries from database'), self.on_reset_db, None),
-            (_(u'&Dump database to log'), _(u'Dump current state of database to log'), self.on_dump_db, None)
+            (_(u'&Dump log to file'), _(u'Dump current log to file'), self.on_dump_log, None)
         ]:
             self._menu_item(menu, caption, help, method, icon = icon)
         return menu
@@ -818,10 +818,21 @@ class MainWindow(wx.Frame):
                 self.dBController.reset()
         log.opr("on_reset_db return", [], 1)
 
-    def on_dump_db(self, event):
+    def on_dump_log(self, event):
         if self.dBController != None:
             log.dumpDatabase(self.dBController.dumpDatabase())
-            wx.MessageDialog(self, _("Database dumped to log"), _("Database dump"), wx.OK).ShowModal()
+            dialog = wx.FileDialog(self, style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT, message = _('Dump log to file'))
+            dialog.SetDirectory(os.getcwd())#self._config.read('save_dir', ''))
+            try:
+                if dialog.ShowModal() == wx.ID_OK:
+                    #self._config['save_dir'] = os.path.dirname(dialog.GetPath()) or ''
+                    fileToSave = os.path.abspath(dialog.GetPath())
+                    os.system("cp " + log.path + " " + fileToSave)
+            #except IOError:
+            #    wx.MessageBox()
+            finally:
+                dialog.Destroy()
+            self.page_widget.SetFocus()
 
     # TODO: A rozne przypadki bledow:
     

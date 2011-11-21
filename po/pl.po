@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-21 20:51+0100\n"
+"POT-Creation-Date: 2011-11-21 21:35+0100\n"
 "PO-Revision-Date: 2009-05-31 14:45+CEST\n"
 "Last-Translator: Tomasz Olejniczak <tomek.87@poczta.onet.pl>\n"
 "Language-Team: none\n"
@@ -27,8 +27,8 @@ msgstr "&Zamknij"
 msgid "&Color"
 msgstr "&Kolor"
 
-msgid "&Dump database to log"
-msgstr "&Zapisz bazę danych do logu"
+msgid "&Dump log to file"
+msgstr "&Zapisz log do pliku"
 
 msgid "&Export bookmarks"
 msgstr "&Eksportuj zakładki"
@@ -166,12 +166,6 @@ msgstr "Zamknij dokument"
 msgid "Comment"
 msgstr "Komentarz"
 
-msgid "Database dump"
-msgstr "Zapis bazy danych"
-
-msgid "Database dumped to log"
-msgstr "Baza danych zapisana do logu"
-
 msgid "Database reset"
 msgstr "Resetowanie bazy danych"
 
@@ -193,8 +187,12 @@ msgstr "Pokaż tylko dwubarwny szablon dokumentu"
 msgid "Display only the foreground layer"
 msgstr "Pokaż tylko pierwszy plan"
 
-msgid "Dump current state of database to log"
-msgstr "Zapisz aktualny stan bazy danych do logu"
+msgid "Dump current log to file"
+msgstr "Zapisz aktualny log do pliku"
+
+#, fuzzy
+msgid "Dump log to file"
+msgstr "&Zapisz log do pliku"
 
 msgid "Edit metadata"
 msgstr "Edytuj metadane"
@@ -594,6 +592,12 @@ msgstr "słowo"
 
 msgid "words"
 msgstr "słowa"
+
+#~ msgid "Database dump"
+#~ msgstr "Zapis bazy danych"
+
+#~ msgid "Database dumped to log"
+#~ msgstr "Baza danych zapisana do logu"
 
 #~ msgid "Exit"
 #~ msgstr "Wyjście"

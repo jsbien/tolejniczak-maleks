@@ -31,6 +31,7 @@ def setLevel(lev):
 def startLog(absolutePath):
 	global path
 	mod = 0
+	absolutePath = os.path.abspath(absolutePath) # TODO: C potrzeba? (skad sie bierze path w do_open)?
 	while os.path.exists(absolutePath + "/log_" + str(mod) + ".txt"):
 		mod += 1
 	f = open(absolutePath + "/log_" + str(mod) + ".txt", "w")
