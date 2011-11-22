@@ -16,21 +16,25 @@ Ostatnio wykonane:
 * CTRL-ENTER w wykazie edycji przerzuca do niego napis z wykazu podpowiedzi
 * Na końcu wyszukiwania celowego komunikat "wyszukiwanie "XXX" zakończone w Y krokach"
 * Rozpoczynanie wyszukiwania celowego na dziurze jednoelementowej
-* Po zakończeniu wyszukiwania celowego powinna się wyświetlać ostatnia fiszka targetu a zaznaczenie powinno być ustawione gdzieś w pobliżu targetu
 * Zaznaczanie odpowiedniej dziury w trakcie wyszukiwania
 * Na końcu niecelowego wyszukiwania binarnego zaznaczanie jakiegoś odpowiedniego elementu
 * Na końcu wyszukiwania binarnego pokazywanie ile było kroków
 * Wyszukiwanie prefiksowe w wykazie podpowiedzi
 * Wykrywanie haseł nie po kolei przy próbie akceptacji - komunikat że akceptowana fiszka jest w złym miejscu
 
+Nie działa:
+
+* Po zakończeniu wyszukiwania celowego powinna się wyświetlać ostatnia fiszka targetu a zaznaczenie powinno być ustawione gdzieś w pobliżu targetu
+
 Nowa wersja:
 
-* Logowanie
+* Wyszukiwanie przyrostowe podpowiedzi przy wpisywaniu w panel edycji
 * Dostosowanie GUI do Windows
 * Przenośna wersja dla Windows
 
 Błędy do usunięcia:
 
+* Problem z compareForIncremental
 * Trim haseł gdzie tylko się da - MySQL sortuje 'dziurawy' < ' dziurawy' a ICU ' dziurawy' < 'dziurawy'
 * Mamy hasło jednofiszkowe w wykazie haseł. Widzimy jego fiszkę. Akceptujemy ją z innym hasłem - poprzedniego hasła nie ma już w bazie. Ale w wykazie wciąż widzimy stare hasło, przy próbie wejścia do którego następuje błąd.
 

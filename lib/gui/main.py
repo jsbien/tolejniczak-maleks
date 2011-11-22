@@ -2293,6 +2293,7 @@ class Application(wx.App):
     def except_hook_after(self, type_, value, traceback):
         from traceback import format_exception
         message = _('An unhandled exception occurred. Ideally, this should not happen. Please report the bug to the author.\n\n')
+        log.op("ERROR", format_exception(type_, value, traceback), 0)
         message += ''.join(format_exception(type_, value, traceback))
         caption = _('Unhandled exception: %s' % type_.__name__)
         wx.MessageBox(message=message, caption=caption, style = wx.OK | wx.ICON_ERROR)

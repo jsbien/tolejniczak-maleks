@@ -187,12 +187,11 @@ msgstr "Pokaż tylko dwubarwny szablon dokumentu"
 msgid "Display only the foreground layer"
 msgstr "Pokaż tylko pierwszy plan"
 
+msgid "Dump log to file"
+msgstr "Zapisz log do pliku"
+
 msgid "Dump current log to file"
 msgstr "Zapisz aktualny log do pliku"
-
-#, fuzzy
-msgid "Dump log to file"
-msgstr "&Zapisz log do pliku"
 
 msgid "Edit metadata"
 msgstr "Edytuj metadane"
