@@ -24,13 +24,14 @@ Ostatnio wykonane:
 
 Nowa wersja:
 
+* Historia ostatnio akceptowanych haseł bez powtórzeń.
 * Wyszukiwanie przyrostowe podpowiedzi przy wpisywaniu w panel edycji
-* Po zakończeniu wyszukiwania celowego powinna się wyświetlać ostatnia fiszka targetu a zaznaczenie powinno być ustawione gdzieś w pobliżu targetu
 * Jeżeli jest hipoteza to napis w panelu edycji powinien być podświetlony i rozpoczęcie edycji kasuje go
 * Uaktualnienie listy skrótów
+* ENTER w panelu wyszukiwania w wykazie haseł zaczyna wyszukiwanie binarne
+* Po zakończeniu wyszukiwania celowego powinna się wyświetlać ostatnia fiszka targetu a zaznaczenie powinno być ustawione gdzieś w pobliżu targetu
 * Komunikaty przy operacjach - dwuczęściowe (dwie daty) - początek i potwierdzenie
 * Odświeżanie przy akceptacji na najwyższym poziomie w wykazie haseł bez wyszukiwania binarnego (brak tego może powodować błędy)
-* ENTER w panelu wyszukiwania w wykazie haseł zaczyna wyszukiwanie binarne
 * Sprawdzenie, co się dzieje z panelem wykazów gdy jest ukryty
 * Odświeżanie panelu indeksów po akceptacji fiszki w poziomie fiszek w wykazie haseł
 * Sprawdzenie dlaczego maleks zwalnia w raz z powiększaniem się ilości haseł w wykazie haseł
