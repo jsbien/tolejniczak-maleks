@@ -92,6 +92,9 @@ class HintRegisterBrowser(WindowRegisterBrowser):
 	def incrementalAdd(self, hint):
 		log.log("HintRegisterBrowser.incrementalAdd", [hint], 0)
 		#c = Counter()
+		if not self._initialized:
+			log.log("HintRegisterBrowser.incrementalAdd return", [], 2)
+			return
 		ind = self.__binaryFind(hint)
 		if ind == len(self.__hints):
 			#self._items.append(len(self._items))

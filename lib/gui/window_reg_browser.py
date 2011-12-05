@@ -61,6 +61,7 @@ class WindowRegisterBrowser(RegisterBrowser):
 		#c = Counter()
 		#g = Counter()
 		log.log("WindowRegisterBrowser.setRegister", [reg, getEntry], 0)
+		print len(reg), self.LIMIT()
 		if len(reg) < 2 * self.LIMIT():
 			#TODO: !A nie obsluguje hint_browsera?"
 			self._smart = False

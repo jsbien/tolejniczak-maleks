@@ -21,38 +21,52 @@ Ostatnio wykonane:
 * Na końcu wyszukiwania binarnego pokazywanie ile było kroków
 * Wyszukiwanie prefiksowe w wykazie podpowiedzi
 * Wykrywanie haseł nie po kolei przy próbie akceptacji - komunikat że akceptowana fiszka jest w złym miejscu
+* Odświeżanie przy akceptacji na najwyższym poziomie w wykazie haseł bez wyszukiwania binarnego (brak tego może powodować błąd (1))
+* Problem z compareForIncremental (błąd (2))
+* Historia ostatnio akceptowanych haseł bez powtórzeń
+* Uaktualnienie listy skrótów
+* Jeżeli jest hipoteza to napis w panelu edycji powinien być podświetlony i rozpoczęcie edycji kasuje go
+* ENTER w panelu wyszukiwania w wykazie haseł zaczyna wyszukiwanie binarne
+* Skrypt do zerowania bazy
 
 Nowa wersja:
 
-* Historia ostatnio akceptowanych haseł bez powtórzeń.
+* Problem z wykazem podpowiedzi (okienkowym) - co jak zaczynamy od pustego wykazu?
 * Wyszukiwanie przyrostowe podpowiedzi przy wpisywaniu w panel edycji
-* Jeżeli jest hipoteza to napis w panelu edycji powinien być podświetlony i rozpoczęcie edycji kasuje go
-* Uaktualnienie listy skrótów
-* ENTER w panelu wyszukiwania w wykazie haseł zaczyna wyszukiwanie binarne
-* Po zakończeniu wyszukiwania celowego powinna się wyświetlać ostatnia fiszka targetu a zaznaczenie powinno być ustawione gdzieś w pobliżu targetu
-* Komunikaty przy operacjach - dwuczęściowe (dwie daty) - początek i potwierdzenie
-* Odświeżanie przy akceptacji na najwyższym poziomie w wykazie haseł bez wyszukiwania binarnego (brak tego może powodować błędy)
+* Po zakończeniu wyszukiwania celowego powinna się wyświetlać ostatnia fiszka targetu a zaznaczenie powinno być ustawione gdzieś w pobliżu targetu, poza tym wyświetla się fiszka z nie tego hasła (błąd?)
 * Sprawdzenie, co się dzieje z panelem wykazów gdy jest ukryty
-* Odświeżanie panelu indeksów po akceptacji fiszki w poziomie fiszek w wykazie haseł
-* Sprawdzenie dlaczego maleks zwalnia w raz z powiększaniem się ilości haseł w wykazie haseł
 * Przewijanie wykazu haseł i wykazu podpowiedzi przez PGUP i PGDN
-* Szukanie celowe w konkretnej dziurze dla fiszek nie po kolei
+* Komunikaty przy operacjach - dwuczęściowe (dwie daty) - początek i potwierdzenie (przy okazji)
+* Klonowanie fiszek (na szybko - ponowne otwarcie kartoteki)
+
+Na później:
+
+* Komentarze w kodzie
+* Dokumentacja formatu kartoteki (katalogu z danymi), instrukcja i skrypt inicjowania
 * W każdym momencie powinno być możliwe przejście do następnej fiszki w porządku naturalnym
-* Automatyczne ignorowanie fiszek nie po kolei w wyszukiwaniu binarnym
 * Klonowanie fiszek
-* Ignorowanie fiszek
+
+Nowa wersja (lista rezerwowa w zawieszeniu - do przemyślenia):
+
+* Sprawdzenie dlaczego maleks zwalnia wraz z powiększaniem się ilości haseł w wykazie haseł
 * Komunikat że fiszka jest nie po kolei jeżeli kończymy wyszukiwanie binarne i przy akceptacji
-* Dostosowanie GUI do Windows
-* Przenośna wersja dla Windows
 
 Błędy do usunięcia:
 
-* Problem z compareForIncremental
-* Trim haseł gdzie tylko się da - MySQL sortuje 'dziurawy' < ' dziurawy' a ICU ' dziurawy' < 'dziurawy'
-* Mamy hasło jednofiszkowe w wykazie haseł. Widzimy jego fiszkę. Akceptujemy ją z innym hasłem - poprzedniego hasła nie ma już w bazie. Ale w wykazie wciąż widzimy stare hasło, przy próbie wejścia do którego następuje błąd.
+* Białe znaki w hasłach - MySQL sortuje 'dziurawy' < ' dziurawy' a ICU ' dziurawy' < 'dziurawy'
+* Błąd (4) - chyba usunięty?
+* Błąd (5)
+* Błąd (6)
+* Błąd z /home/jsbien/epocj.log (register_search_key)
 
 Inne:
 
+* Odświeżanie panelu indeksów po akceptacji fiszki w poziomie fiszek w wykazie haseł
+* Szukanie celowe w konkretnej dziurze dla fiszek nie po kolei
+* Automatyczne ignorowanie fiszek nie po kolei w wyszukiwaniu binarnym
+* Ignorowanie fiszek
+* Dostosowanie GUI do Windows
+* Przenośna wersja dla Windows
 * Wyindeksowanie fiszek
 * Klonowanie fiszek (możemy wyjść z wyszukiwania)
 * Hipotezy dla fiszek zaindeksowanych i nie po kolei (do przemyślenia)
@@ -64,8 +78,6 @@ Inne:
 * Nadawanie identyfikatorów fiszkom obsługujące powtarzające się nazwy plików
 * Dodanie do wykazu haseł i podpowiedzi pomocy nawigacyjnych użytych na poziomie fiszek wykazu haseł
 * Wyświetlanie liczby fiszek o danym haśle w wykazie haseł (można zrezygnować jeżeli okaże się za kosztowne)
-* Komentarze w kodzie
-* Dokumentacja formatu kartoteki (katalogu z danymi), instrukcja i skrypt inicjowania
 * Obsługa błędów, zachowanie w nietypowych sytuacjach (np. nie otwarto żadnego pliku)
 * Informacja o rozmiarze danych (objętość kartoteki?) - kosmetyka
 * Wyszukiwanie przyrostowe w wykazie haseł na poziomie fiszek powinno obejmować całą listę a nie tylko okienko
@@ -98,7 +110,7 @@ Proste drobiazgi:
 * Wzmianka o grancie w "About"
 * Foliacja (zamiast strony: arkusz, karta, strona)
 * Zegar przy długich operacjach
-* Akceptacja podpowiedzi powinna odświeżać hasło i wpisywać w pole edycji wartość hasła (sprawdzić czy brak tej * funkcjonalności nie był przypadkiem jakimś bugiem)
+* Akceptacja podpowiedzi powinna odświeżać hasło i wpisywać w pole edycji wartość hasła (sprawdzić czy brak tej funkcjonalności nie był przypadkiem jakimś bugiem)
 * Problem z szerokością kolumny w wykazie podpowiedzi
 * Niemożność cofania w wyszukiwaniu binarnym (lub cofanie przerywa)
 * Hipotezy ze wspólnego prefiksu sąsiednich haseł
@@ -135,4 +147,106 @@ Problemy z maleks.txt:
 * [czy episkop nie powinien się cały czas pokzywać w polu hipotezu i/lub polu edycji?]
 * [chyba bug - musiałem dwa razy kliknąc na "Akceptacja napisu w panelu edycji"; po pierwszym uaktualnił się wykaz, ale nie panel indeksu], [to dobrze, że w polu hipotez jest episkop, bo tak powinno cały czas być docelowo, ale jestem ciekawy, skąd on się wziął teraz], [stan po pierwszym kliknięciu na "Akceptacja napisu w panelu edycji", nieuaktualniony panel indeksu]
 * [omylkowo źle zaindeksowane hasło!!!], [gdyby hasłem było rzeczywiście "epiretyjski", to przydałaby się historia - podpowiedzi? wyrażeń hasłowych? - żeby nie trzeba było ponownie wpisywać hasła] (potrzebny lepszy przykład)
+
+Błędy do usunięcia:
+
+(3) W trakcie wyszukiwania binarnego trafiÅ‚em na nieczytelnÄ… fiszkÄ™, chcÄ™
+jÄ… zignorowaÄ‡, ale nie potrafiÄ™ nic zrobiÄ‡. Jak przejÅ›Ä‡ do poprzedniej
+lub nastepnej fiszki?
+
+Zrobienie zakÅ‚adki chyba nie zadziaÅ‚aÅ‚o.
+
+PrÃ³bowaÅ‚em kliknÄ…Ä‡ na "za daleko" i "za blisko", ale nie daÅ‚o Å¼adnego
+efektu.
+
+PrÃ³ba przerwania wyszukiwania binarnego daÅ‚a
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+You have new mail.
+Last login: Fri Nov 18 20:45:04 2011 from 89-68-138-126.dynamic.chello.pl
+jsbien@kanji:~$ maleks
+/usr/local/lib/python2.6/dist-packages/maleks/gui/page.py:632: DeprecationWarning: Use `SetInitialSize`
+  self.SetBestFittingSize(size)
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/main.py", line 1634, in on_stop_binary
+    self.start_binary_search(self.register_search.GetValue())
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/main.py", line 1061, in start_binary_search
+    self.active_register.startBinarySearch(target=target, restarting=restarting)
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/reg_browser.py", line 362, in startBinarySearch
+    self.__selectCenter()
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/reg_browser.py", line 332, in __selectCenter
+    self._select(self._items[self.__center], veto=True) # patrz komentarz do
+IndexError: list index out of range
+(4) ChciaÅ‚em poprawiÄ‡ bÅ‚Ä™dnie zaindeksowanÄ… fiszkÄ™.
+
+/usr/local/lib/python2.6/dist-packages/maleks/gui/new_entry_browser2.py:440: UnicodeWarning: Unicode equal comparison failed to convert both arguments to Unicode - interpreting them as being unequal
+  if (self.__entry == None and entry == "") or (self.__entry != None and (self.__entry == entry or (entry == "" and self._selected != self._item(0) and self._selected != self._item(-1)))):
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/toppanel.py", line 67, in __onEditAcceptEnter
+    self.__onEditAccept(event)
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/toppanel.py", line 74, in __onEditAccept
+    l.on_edit_accept(event)
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/main.py", line 881, in on_edit_accept
+    #    self.active_register.initialize(entry)
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/new_entry_browser2.py", line 67, in initialize
+    if not self._incrementalUpdate([self.__entryOf(self.__selectedElement), entry]):
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/new_entry_browser2.py", line 163, in _incrementalUpdate
+    indt = self.__findForIncremental(elements[-1])
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/new_entry_browser2.py", line 537, in __findForIncremental
+    res = __pom(0, len(self.__elementObjects) - 1)
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/new_entry_browser2.py", line 536, in __pom
+    return __pom(center + 1, right)
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/new_entry_browser2.py", line 536, in __pom
+    return __pom(center + 1, right)
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/new_entry_browser2.py", line 536, in __pom
+    return __pom(center + 1, right)
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/new_entry_browser2.py", line 527, in __pom
+    assert(False)
+AssertionError
+(5) PrÃ³ba obejrzenia hasÅ‚a enem:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/main.py", line 1115, in on_level_down
+    
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/new_entry_browser2.py", line 398, in levelDown
+    (elements, limitStart, self.__next) = self.__dBController.getFichesForEntry(self.__selectedElement, self.__limit)
+  File "/usr/local/lib/python2.6/dist-packages/maleks/db/db_entry.py", line 561, in getFichesForEntry
+    (first, last) = self.__entryLimits(cursor, entry)
+  File "/usr/local/lib/python2.6/dist-packages/maleks/db/db_entry.py", line 119, in __entryLimits
+    return (self.__firstEntry(cursor, entry), self.__lastEntry(cursor, entry))
+  File "/usr/local/lib/python2.6/dist-packages/maleks/db/db_entry.py", line 116, in __lastEntry
+    return int(self.__single(cursor, "select max(position) from fiches f, actual_entries e where f.fiche = e.fiche and entry = %s", (entry)))
+TypeError: int() argument must be a string or a number, not 'NoneType'
+(6)
+
+Błędy usunięte:
+
+(1) Mamy hasło jednofiszkowe w wykazie haseł. Widzimy jego fiszkę. Akceptujemy ją z innym hasłem - poprzedniego hasła nie ma już w bazie. Ale w wykazie wciąż widzimy stare hasło, przy próbie wejścia do którego następuje błąd.
+(2) Traceback (most recent call last):
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/toppanel.py", line 82, in __onHintAccept
+    l.on_hint_accept(event)
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/main.py", line 926, in on_hint_accept
+    self.on_automatic_binary_accept(hint=True)
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/main.py", line 1521, in on_automatic_binary_accept
+    self.active_register.initialize(entry)
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/new_entry_browser2.py", line 67, in initialize
+    if not self._incrementalUpdate([self.__entryOf(self.__selectedElement), entry]):
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/new_entry_browser2.py", line 163, in _incrementalUpdate
+    indt = self.__findForIncremental(elements[-1])
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/new_entry_browser2.py", line 537, in __findForIncremental
+    res = __pom(0, len(self.__elementObjects) - 1)
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/new_entry_browser2.py", line 536, in __pom
+    return __pom(center + 1, right)
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/new_entry_browser2.py", line 534, in __pom
+    return __pom(left, center - 1)
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/new_entry_browser2.py", line 534, in __pom
+    return __pom(left, center - 1)
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/new_entry_browser2.py", line 534, in __pom
+    return __pom(left, center - 1)
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/new_entry_browser2.py", line 522, in __pom
+    if self.__compareForIncremental(self.__elementObjects[right], element) == 0:
+  File "/usr/local/lib/python2.6/dist-packages/maleks/gui/new_entry_browser2.py", line 503, in __compareForIncremental
+    assert(False)
+AssertionError
 

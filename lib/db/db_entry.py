@@ -86,8 +86,10 @@ class DBCommon(object):
 			i = querystr.find("%s")
 		if ok:
 			log.query(querystr, [], 0)
+			#print querystr
 		else:
 			log.query(query, [pars], 1)
+			#print query, pars
 		#start = time.time()
 		cursor.execute(query, pars)
 		#stop = time.time()
@@ -418,6 +420,24 @@ class DBEntryController(DBCommon):
 		log.db("__binaryFind return", [res], 1)
 		return res
 
+	def __fillGap(self, cursor, prev, el, newres, myEntries):
+		if prev == None and el == myEntries[0]:
+			pos = self.__firstEntry(cursor, el)
+			num = int(self.__single(cursor, "select count(*) from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position < %s", (pos)))
+			if num > 0:
+				newres.append((num, None, el))
+			newres.append(el)
+		elif prev == None:
+			newres.append(el)
+		elif prev != None:
+			posa = self.__firstEntry(cursor, el)
+			posb = self.__lastEntry(cursor, prev)
+			num = int(self.__single(cursor, "select count(*) from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and position < %s", (posb, posa)))
+			if num > 0:
+				newres.append((num, prev, el))
+			newres.append(el)
+		return newres
+
 	def getPartialEntriesRegisterWithGaps(self, entries):
 		log.db("getPartialEntriesRegisterWithGaps", [entries], 0)
 		cursor = self._openDBWithCursor()
@@ -450,38 +470,65 @@ class DBEntryController(DBCommon):
 		#for e in entries:
 			neighbours = []
 		#	for i in range(self.__zero(ind - DBEntryController.NEIGHBOURHOOD), self.__max(ind + DBEntryController.NEIGHBOURHOOD, len(myEntries))):
-			for i in range(fromm, too):
-				neighbours.append(myEntries[i])
+			#:for i in range(fromm, too):
+			#:	neighbours.append(myEntries[i])
 		#	#fromm = self._execute(cursor, "select min(position) from entries where entry = %s", (neighbours[0]))
 		#	#too = self._execute(cursor, "select max(position) from entries where entry = %s", (neighbours[-1]))
 			prev = None
 			newres = []
-			for el in neighbours:
+			#:for el in neighbours:
+			if fromm < 0:
+				fromm = 0
+			if too > len(myEntries):
+				too = len(myEntries)
+			i = fromm
+			firstEntryNotInOrder = False
+			firstEntryInOrder = None
+			while True:
+				neighbours.append(myEntries[i])
+				el = myEntries[i]
 				firstEntry = self.__firstEntry(cursor, el)
 				if firstEntry == INF:
 					newres.append(el)
+					if i == fromm:
+						firstEntryNotInOrder = True
+					i += 1
 					continue
-				if prev == None and el == myEntries[0]:
-					pos = self.__firstEntry(cursor, el)
-					num = int(self.__single(cursor, "select count(*) from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position < %s", (pos)))
-					if num > 0:
-						newres.append((num, None, el))
-					newres.append(el)
-				elif prev == None:
-					newres.append(el)
-				elif prev != None:
-					posa = self.__firstEntry(cursor, el)
-					posb = self.__lastEntry(cursor, prev)
-					num = int(self.__single(cursor, "select count(*) from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and position < %s", (posb, posa)))
-					if num > 0:
-						newres.append((num, prev, el))
-					newres.append(el)
+				newres = self.__fillGap(cursor, prev, el, newres, myEntries)
 				prev = el
+				if firstEntryInOrder == None:
+					firstEntryInOrder = el
+				i += 1
+				if i >= too:
+					break
 			if neighbours[-1] == myEntries[-1]:
 				pos = self.__lastEntry(cursor, prev)
 				num = int(self.__single(cursor, "select count(*) from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s", (pos)))
 				if num > 0:
 					newres.append((num, prev, None))
+			if firstEntryNotInOrder:
+				if firstEntryInOrder == None:
+					log.log("db_entry assert", [myEntries, entries, fromm, too], 0)
+					assert(False)
+				i = fromm
+				while True:
+					prev = myEntries[i]
+					firstEntry = self.__firstEntry(cursor, prev)
+					if firstEntry == INF:
+						if i != fromm:
+							newres.insert(0, prev)
+						i -= 1
+						if i < 0:
+							log.log("db_entry assert", [myEntries, entries, fromm, too], 1)
+							assert(False)
+						continue
+					posa = self.__firstEntry(cursor, firstEntryInOrder)
+					posb = self.__lastEntry(cursor, prev)
+					num = int(self.__single(cursor, "select count(*) from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and position < %s", (posb, posa)))
+					if num > 0:
+						newres.insert(0, (num, prev, firstEntryInOrder))
+					newres.insert(0, prev)
+					break
 			neighbourhoods.append((ustr(e), newres))
 		#neighbourhoods = self.__combine(neighbourhoods)
 		self._closeDBAndCursor(cursor)

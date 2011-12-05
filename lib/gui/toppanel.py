@@ -63,7 +63,7 @@ class TopPanel(wx.Panel, Notifier):
 		self.__hintRegister = register
 
 	def __onEditAcceptEnter(self, event):
-		log.op("__onEditAcceptEnter", [event.GetKeyCode()], 0)
+		log.op("__onEditAcceptEnter", [event.GetKeyCode(), wx.WXK_RETURN], 0)
 		if event.GetKeyCode() == wx.WXK_RETURN and not event.ControlDown():
 			#print "Enter"
 			self.__onEditAccept(event)
@@ -105,7 +105,7 @@ class TopPanel(wx.Panel, Notifier):
 				l.on_hint_changed(hint[0])
 			#print hint[0], hint[1]
 			#print type(hint[0]), type(hint[1])
-			self.__hintPanel.SetValue(unicode(hint[0], "utf-8") + u" " + unicode(hint[1], "utf-8"))
+			self.__hintPanel.SetValue(unicode(hint[0], "utf-8") + (u" " if hint[0] != '' and hint[1] != '' else u"") + unicode(hint[1], "utf-8"))
 			self.__hint = hint[0]
 		else:
 			self.__hintPanel.SetValue("")
@@ -114,7 +114,7 @@ class TopPanel(wx.Panel, Notifier):
 
 	def __hintPanelChanged(self, event):
 		log.op("__hintPanelChanged", [event, self.__hintPanel.GetValue()], 0)
-		self.__hint = self.__hintPanel.GetValue()
+		self.__hint = self.__hintPanel.GetValue() # niepoprawne (bo siglum)
 		log.opr("__hintPanelChanged return", [], 1)
 		
 	def __stripSiglum(self, text):
@@ -143,6 +143,8 @@ class TopPanel(wx.Panel, Notifier):
 		self.__hypothesisPanel.SetValue(content)
 		self.__editPanel.SetValue(content)
 		self.editPanelChanged(None)
+		self.__hintPanel.SetFocus() # potrzebne ...
+		self.focus() # ... zeby tu zaznaczylo
 		log.log("setHypothesis return", [self.__hypothesisPanel.GetValue()], 1)
 
 	def setEntry(self, entry, browsingHistory=False):

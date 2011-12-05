@@ -215,6 +215,30 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		log.log("NewEntryRegisterBrowser._incrementalUpdate return", [True, self._smart], 2)
 		return True
 
+	def prepareForUpdateAfterAccept(self, ficheId):
+		log.log("NewEntryRegisterBrowser.prepareForUpdateAfterAccept", [ficheId, self._elements], 0)
+		self.__formerEntryElement = None
+		if self.__level == "ENTRY":
+			for el in self._elements:
+				print el
+				if self.__dBController.hasFiche(el, ficheId):
+					self.__formerEntryElement = el
+		log.log("NewEntryRegisterBrowser.prepareForUpdateAfterAccept return", [self.__formerEntryElement], 1)
+
+	def updateAfterAccept(self, entry):
+		log.log("NewEntryRegisterBrowser.updateAfterAccept", [entry, self.__formerEntryElement], 0)
+		if self.__level == "ENTRY":
+			if self.__formerEntryElement != None:
+				inc = self._incrementalUpdate([entry, self.__entryOf(self.__formerEntryElement)])
+				if inc:
+					self.find(entry)
+					log.log("NewEntryRegisterBrowser.updateAfterAccept return", [], 1)
+					return
+			self.DeleteAllItems()
+			(elements, self.__entryLens) = self.__dBController.getEntriesRegisterWithGaps()
+			self.__fillRegister(elements)
+		log.log("NewEntryRegisterBrowser.updateAfterAccept return", [], 2)
+
 	def _showUpdate(self):
 		log.log("NewEntryRegisterBrowser._showUpdate", [self._smart], 0)
 		if self._smart:

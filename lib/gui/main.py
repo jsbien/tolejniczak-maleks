@@ -557,6 +557,7 @@ class MainWindow(wx.Frame):
             # dodane zostaly jakies elementy
         self.do_open(None)
         self.Bind(wx.EVT_CLOSE, self.on_exit)
+        self.register_search.Bind(wx.EVT_KEY_DOWN, self.on_regbar_enter, self.register_search)
         
         self.notify = True
         self.__closing = False # TODO: NOTE pomocne w zwalczaniu segmentation fault przy wyjsciu z aplikacji
@@ -769,9 +770,10 @@ class MainWindow(wx.Frame):
 
     def addToHistory(self, entry):
         log.log("addToHistory", [entry], 0)
-        if len(self.entry_history) > MainWindow.ENTRY_HISTORY_LIMIT:
-            self.entry_history = self.entry_history[1:]
-        self.entry_history.append(entry)
+        if not entry in self.entry_history:
+            if len(self.entry_history) > MainWindow.ENTRY_HISTORY_LIMIT:
+                self.entry_history = self.entry_history[1:]
+            self.entry_history.append(entry)
         log.log("addToHistory return", [], 1)
 
     def on_nav_history_prev(self, event):
@@ -880,6 +882,8 @@ class MainWindow(wx.Frame):
                 #print "F"
         #print "po"
         #print "poczatek", c
+        elif self.active_register == self.new_entryreg_browser and not self.active_register.binarySearchActive():
+            self.active_register.prepareForUpdateAfterAccept(self.ficheId)
         if self.dBController != None:
             msg = self.dBController.addFicheToEntriesIndex(self.ficheId, entry)
             if msg != None:
@@ -911,8 +915,8 @@ class MainWindow(wx.Frame):
                 if self.active_register.binarySearchActive():
                     self.active_register.initializeForActiveBinary(entry)
                     self.active_register.selectElementContaining(self.ficheId)
-                #else:
-                #    self.active_register.initialize(entry)
+                else:
+                    self.active_register.updateAfterAccept(entry)
             self.update_indices()
         self.ignore_entries = False
         #print "koncowka", c
@@ -973,6 +977,8 @@ class MainWindow(wx.Frame):
                     log.opr("on_hint_accept return", [], 4)
                     return
                 self.active_register.prepareForActiveBinary()
+        elif self.active_register == self.new_entryreg_browser and not self.active_register.binarySearchActive():
+            self.active_register.prepareForUpdateAfterAccept(self.ficheId)
         if self.dBController != None:
             msg = self.dBController.addFicheToEntriesIndex(self.ficheId, entry)
             if msg != None:
@@ -994,8 +1000,8 @@ class MainWindow(wx.Frame):
                 if self.active_register.binarySearchActive():
                     self.active_register.initializeForActiveBinary(entry)
                     self.active_register.selectElementContaining(self.ficheId)
-                #else:
-                #    self.active_register.initialize(entry)
+                else:
+                    self.active_register.updateAfterAccept(entry)
             self.update_indices()
         self.ignore_entries = False
         log.opr("on_hint_accept return", [], 6)
@@ -1740,6 +1746,14 @@ class MainWindow(wx.Frame):
         #print " invi", c
         log.log("invisible_binary_search return", [], 1)
 
+    def on_regbar_enter(self, event):
+        log.op("on_regbar_enter", [event.GetKeyCode(), self.active_register, self.active_register.binarySearchActive(), wx.WXK_RETURN], 0)
+        if event.GetKeyCode() == wx.WXK_RETURN and (not event.ControlDown()) and self.active_register == self.new_entryreg_browser and (not self.active_register.binarySearchActive()):
+            self.on_stop_binary(event)
+        else:
+            event.Skip()
+        log.opr("on_regbar_enter return", [], 1)
+
     def on_stop_binary(self, event):
     #    if self.mode == _('Browsing mode'):
         log.op("on_stop_binary", [event, self.active_register.binarySearchActive()], 0)
@@ -2121,7 +2135,10 @@ class MainWindow(wx.Frame):
                 self.regbar.setPath(self.strucreg_browser.getPath())
         self.hintreg_browser.DeleteAllItems()
         if self.hintRegister != None:
+            print "jest"
             self.hintreg_browser.setRegister(self.hintRegister)
+        else:
+            print "niema"
 
     def update_registers(self):
         log.log("update_registers", [], 0)
@@ -2244,15 +2261,26 @@ class MainWindow(wx.Frame):
         msg += u'CTRL-H: akceptacja napisu z panelu podpowiedzi i przejście do następnej fiszki\n'
         msg += u'CTRL-D: dodanie fiszki do zakładek\n'
         msg += u'CTRL-R: otwarcie wykazu zadaniowego z pliku\n'
-        msg += u'CTRL-ENTER: przejście do elementu zaznaczonego w wykazie\n'
+        msg += u'CTRL-ENTER: • jeżeli widoczny jest wykaz struktury, haseł lub wielopoziomowy: przejście poziom niżej (do elementu zaznaczonego w wykazie)\n'
+        msg += u'• jeżeli fokus jest w panelu edycji: skopiowanie do panelu edycji zawartości panelu podpowiedzi\n'
+        msg += u'• jeżeli widoczny jest wykaz podpowiedzi: przejście do wykazu haseł z ewentualnym rozpoczęciem celowego wyszukiwania binarnego dla zaznaczonego elementu wykazu podpowiedzi\n'
         msg += u'CTRL-↑: przejście do pierwszej fiszki w wybranym elemencie wykazu haseł\n'
         msg += u'CTRL-↓: przejście do ostatniej fiszki w wybranym elemencie wykazu haseł\n'
         msg += u'CTRL-<: przejście w lewo w wyszukiwaniu binarnym\n'
         msg += u'CTRL->: przejście w prawo w wyszukiwaniu binarnym\n'
         msg += u'CTRL-[: przejście w lewo w wyszukiwaniu binarnym i akceptacja napisu z panelu edycji\n'
         msg += u'CTRL-]: przejście w prawo w wyszukiwaniu binarnym i akceptacja napisu z panelu edycji\n'
-        msg += u'CTRL-B: włączanie/wyłączanie wyszukiwania binarnego'
-        wx.MessageBox(message = msg, caption = u'Skróty klawiaturowe')
+        msg += u'CTRL-B: włączanie/wyłączanie wyszukiwania binarnego; jeżeli widoczny jest wykaz podpowiedzi działa jak CTRL-ENTER\n'
+        msg += u'CTRL-←: nawigacja w historii haseł - poprzedni element\n'
+        msg += u'CTRL-→: nawigacja w historii haseł - następny element\n'
+        msg += u'CTRL-PgDn: przewijanie wykazu haseł na poziomie fiszek\n'
+        msg += u'CTRL-PgUp: przewijanie wykazu haseł na poziomie fiszek\n'
+        msg += u'ENTER: • jeżeli fokus jest w wykazie podpowiedzi: przejście do wykazu haseł z ewentualnym rozpoczęciem celowego wyszukiwania binarnego dla zaznaczonego elementu wykazu podpowiedzi\n'
+        msg += u'• jeżeli fokus jest w panelu edycji - akceptuje fiszkę z napisem z pola edycji jako hasłem; jezeli jest aktywne wyszukiwanie celowe puste pole edycji jest traktowane jako cel\n'
+        msg += u'• jeżeli fokus jest w panelu wyszukiwania i aktywny jest wykaz haseł na poziomie haseł - jak CTRL-B\n'  
+        msg += u'↑: przejście do poprzedniej fiszki w porządku wykazu jeżeli fokus jest w wykazie i wykaz pokazuje listę fiszek\n'
+        msg += u'↓: przejście do następnej fiszki w porządku wykazu jeżeli fokus jest w wykazie i wykaz pokazuje listę fiszek'
+        wx.MessageBox(message=msg, caption=u'Skróty klawiaturowe')
 
     def handle_message(self, event):
         message = event.message
