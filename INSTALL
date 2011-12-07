@@ -1,0 +1,34 @@
+* postać katalogu z kartoteką:
+  * plik config.cfg, może zawierać (wszystkie elementy opcjonalne):
+  	* db<TAB>NAZWA_BAZY_DANYCH_KAROTEKI<NL>
+  	* dbuser<TAB>UZYTKOWNIK_BAZY_DANYCH<NL>
+  	* dbpass<TAB>HASLO_UZYTKOWNIKA<NL>
+  	* hocr_cut<TAB>LICZBA<NL> (LICZBA - w jakiej części pliku hOCR jest hasło na fiszce - jeżeli wpisane jest 0.1 to znaczy, że hasło jest w górnych 10% pliku)
+  	* default_task_register<TAB>DOMYSLNY_WYKAZ_ZADANIOWY<NL> (ten wykaz musi się znajdować w karotece)
+  * domyślny wykaz zadaniowy (opcjonalnie), postaci:
+  	INDENTYFIKATOR_FISZKI<NL>
+  * indeks struktury (index.ind)
+  * hint.reg - wykaz podpowiedzi
+  * user_hint.reg - wykaz podpowiedzi dodanych przez maleksa, tworzony automatycznie
+  * katalogi z fiszkami i hOCR lub podkatalogami
+
+* instalacja:
+  * trzeba zainstalować wxpython i python-djvu
+  * ./update18n
+  * W katalogu os.path.dirname(sys.argv[0]) powinien się znaleźć katalog 'locale' ze źródeł maleksa z tłumaczeniami komunikatów. U mnie jest to /usr/local/bin. Działa to z fragmentem:
+  	  _ = gettext.translation('maleks', os.path.join(os.path.dirname(sys.argv[0]), 'locale'), languages=['pl']).ugettext
+    z pliku i18n.py, który dodałem bo znajdująca się powyżej pętla for z djvusmooth mi z jakiegoś powodu nie działała.
+  * sudo python setup.py install
+  * utworzyć plik konfiguracyjny $HOME/.config/maleks/maleks.conf:
+	  db=<BAZA>
+		dbpass=<HASLO>
+		dbuser=<UZYTKOWNIK>
+		loglevel=DEBUG
+		(podajemy domyślną konfigurację bazy danych której będą używać kartoteki jeżeli nie będzie wpisu w ich pliku config.cfg - ponieważ każda kartoteka musi mieć osobną bazę dobrze w config.cfg umieszczać wpis db, a użytkownika i hasło zdefiniować w maleks.conf)
+
+* każda karoteka powinna być w osobnej bazie danych
+* maleks.sql - skrypt tworzący tabele
+* żeby poniższe skrypty działały trzeba zainstalować maleksa (sudo python setup.py install):
+  * dbprepare.py KATALOG_Z_KAROTEKĄ - inicjalizuję bazę danych
+  * dbreset.py KATALOG_Z_KARTOTEKĄ - usuwa wszystkie zaindeksowane hasła z bazy danych
+
