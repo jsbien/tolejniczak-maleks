@@ -54,7 +54,9 @@ class TopPanel(wx.Panel, Notifier):
 		self.__browsingHistory = False
 
 	def focus(self):
+		log.log("focus", [], 0)
 		self.__editPanel.SetFocus()
+		log.log("focus return", [], 1)
 
 	def editPanelHasFocus(self):
 		return wx.Window.FindFocus() == self.__editPanel
@@ -143,8 +145,8 @@ class TopPanel(wx.Panel, Notifier):
 		self.__hypothesisPanel.SetValue(content)
 		self.__editPanel.SetValue(content)
 		self.editPanelChanged(None)
-		self.__hintPanel.SetFocus() # potrzebne ...
-		self.focus() # ... zeby tu zaznaczylo
+		#self.__hintPanel.SetFocus() # potrzebne ...
+		#self.focus() # ... zeby tu zaznaczylo
 		log.log("setHypothesis return", [self.__hypothesisPanel.GetValue()], 1)
 
 	def setEntry(self, entry, browsingHistory=False):

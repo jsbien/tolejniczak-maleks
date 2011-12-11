@@ -25,12 +25,12 @@ Ostatnio wykonane:
 * Problem z compareForIncremental (błąd (2))
 * Historia ostatnio akceptowanych haseł bez powtórzeń
 * Uaktualnienie listy skrótów
-* Jeżeli jest hipoteza to napis w panelu edycji powinien być podświetlony i rozpoczęcie edycji kasuje go
 * ENTER w panelu wyszukiwania w wykazie haseł zaczyna wyszukiwanie binarne
 * Skrypt do zerowania bazy
 
 Nowa wersja:
 
+* Jeżeli jest hipoteza to napis w panelu edycji powinien być podświetlony i rozpoczęcie edycji kasuje go - powinno to być zaimplementowane w sposób który umożliwia nawigację strzałkami wykazów (w szczegóności poziomu fiszek wykazu haseł)
 * Problem z wykazem podpowiedzi (okienkowym) - co jak zaczynamy od pustego wykazu?
 * Wyszukiwanie przyrostowe podpowiedzi przy wpisywaniu w panel edycji
 * Po zakończeniu wyszukiwania celowego powinna się wyświetlać ostatnia fiszka targetu a zaznaczenie powinno być ustawione gdzieś w pobliżu targetu, poza tym wyświetla się fiszka z nie tego hasła (błąd?)
@@ -68,7 +68,6 @@ Inne:
 * Dostosowanie GUI do Windows
 * Przenośna wersja dla Windows
 * Wyindeksowanie fiszek
-* Klonowanie fiszek (możemy wyjść z wyszukiwania)
 * Hipotezy dla fiszek zaindeksowanych i nie po kolei (do przemyślenia)
 * CTRL-C CTRL-C i włączanie wyszukiwania binarnego dla haseł zaindeksowanych
 * Efektywne odświeżanie wykazu haseł przy modyfikacji nie w wyszukiwaniu binarnym i traktowanie jednoelementowej dziury jako fiszki
@@ -81,7 +80,7 @@ Inne:
 * Obsługa błędów, zachowanie w nietypowych sytuacjach (np. nie otwarto żadnego pliku)
 * Informacja o rozmiarze danych (objętość kartoteki?) - kosmetyka
 * Wyszukiwanie przyrostowe w wykazie haseł na poziomie fiszek powinno obejmować całą listę a nie tylko okienko
-* Tworzenie logów operacji użytkownika (pełna funkcjonalność niekoniecznie od razu - na początek logi potrzebne do usuwania błędów)
+* Tworzenie logów operacji użytkownika
 * Testy dla dużych danych (3 miliony fiszek) i odpowiednie modyfikacje w razie pojawienia się problemów
 * Konfigurowalne skróty klawiszowe
 * Chodzenie do przodu po cofniętych fiszkach, możliwość cofania podczas wyszukiwania binarnego, edycja wyłącza binarne
