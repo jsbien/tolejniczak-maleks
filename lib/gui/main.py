@@ -770,7 +770,7 @@ class MainWindow(wx.Frame):
 
     def addToHistory(self, entry):
         log.log("addToHistory", [entry], 0)
-        if len(self.entry_history) > 0 and self.entry_history[-1] != entry:
+        if (len(self.entry_history) == 0) or (len(self.entry_history) > 0 and self.entry_history[-1] != entry):
             if len(self.entry_history) > MainWindow.ENTRY_HISTORY_LIMIT:
                 self.entry_history = self.entry_history[1:]
             self.entry_history.append(entry)

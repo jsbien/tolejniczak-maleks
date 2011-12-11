@@ -145,8 +145,8 @@ class TopPanel(wx.Panel, Notifier):
 		self.__hypothesisPanel.SetValue(content)
 		self.__editPanel.SetValue(content)
 		self.editPanelChanged(None)
-		#self.__hintPanel.SetFocus() # potrzebne ...
-		#self.focus() # ... zeby tu zaznaczylo
+		self.__hintPanel.SetFocus() # potrzebne ...
+		self.focus() # ... zeby tu zaznaczylo
 		log.log("setHypothesis return", [self.__hypothesisPanel.GetValue()], 1)
 
 	def setEntry(self, entry, browsingHistory=False):
