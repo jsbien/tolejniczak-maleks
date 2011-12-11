@@ -769,15 +769,15 @@ class MainWindow(wx.Frame):
     ENTRY_HISTORY_LIMIT = 100
 
     def addToHistory(self, entry):
-        log.log("addToHistory", [entry], 0)
+        log.log("addToHistory", [entry, self.entry_history], 0)
         if (len(self.entry_history) == 0) or (len(self.entry_history) > 0 and self.entry_history[-1] != entry):
             if len(self.entry_history) > MainWindow.ENTRY_HISTORY_LIMIT:
                 self.entry_history = self.entry_history[1:]
             self.entry_history.append(entry)
-        log.log("addToHistory return", [], 1)
+        log.log("addToHistory return", [self.entry_history], 1)
 
     def on_nav_history_prev(self, event):
-        log.op("on_nav_history_prev", [event, self.top_panel.getEditPanelContent()], 0)
+        log.op("on_nav_history_prev", [self.entry_history, self.entry_history_index, self.top_panel.getEditPanelContent()], 0)
         if len(self.entry_history) != 0:
             if not self.browsing_entry_history:
                 self.browsing_entry_history = True
@@ -789,10 +789,10 @@ class MainWindow(wx.Frame):
                 self.entry_history_index -= 1
                 #print "show", self.entry_history_index, "of", self.entry_history, self.actual_entry
             self.top_panel.setEntry(self.entry_history[self.entry_history_index], browsingHistory=True)
-        log.opr("on_nav_history_prev return", [], 1)
+        log.opr("on_nav_history_prev return", [self.entry_history, self.entry_history_index], 1)
 
     def on_nav_history_next(self, event):
-        log.op("on_nav_history_next", [event, self.top_panel.getEditPanelContent()], 0)
+        log.op("on_nav_history_next", [self.entry_history, self.entry_history_index, self.top_panel.getEditPanelContent()], 0)
         if len(self.entry_history) != 0 and self.browsing_entry_history:
             if self.entry_history_index < len(self.entry_history):
                 #print "increase", self.entry_history_index
@@ -803,7 +803,7 @@ class MainWindow(wx.Frame):
             else:
                 #print "show actual entry", self.entry_history, self.actual_entry
                 self.top_panel.setEntry(self.actual_entry, browsingHistory=True)
-        log.opr("on_nav_history_next return", [], 1)
+        log.opr("on_nav_history_next return", [self.entry_history, self.entry_history_index], 1)
             
 
     def stop_browsing_entry_history(self, event):
