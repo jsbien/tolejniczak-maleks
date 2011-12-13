@@ -27,6 +27,13 @@
 		(podajemy domyślną konfigurację bazy danych której będą używać kartoteki jeżeli nie będzie wpisu w ich pliku config.cfg - ponieważ każda kartoteka musi mieć osobną bazę dobrze w config.cfg umieszczać wpis db, a użytkownika i hasło zdefiniować w maleks.conf)
 
 * każda karoteka powinna być w osobnej bazie danych
+* https://bitbucket.org/tomek87/skrypty/
+* W pliku konfiguracyjnym mysql (my.cnf, u mnie jest w /etc/mysql/my.cnf) do wpisów pod [mysqld] dodać:
+  character_set_server=utf8
+  collation_server=utf8_polish_ci
+  character_set_client=utf8
+* Bazę należy utworzyć poleceniem:
+  create database BAZA character set = utf8 collate = utf8_polish_ci;
 * maleks.sql - skrypt tworzący tabele
 * żeby poniższe skrypty działały trzeba zainstalować maleksa (sudo python setup.py install):
   * dbprepare.py KATALOG_Z_KAROTEKĄ - inicjalizuję bazę danych
