@@ -11,6 +11,7 @@
 # General Public License for more details.
 
 import os
+import shutil
 from maleks.maleks.registers import TaskRegister
 from maleks.maleks.useful import repeat, getElementsByClassName, getBbox, getTextContent
 from xml.dom import minidom
@@ -24,6 +25,7 @@ class Fiche(object):
 	# path - nazwa pliku djvu z fiszka bez rozszerzenia, jest jednoczesnie nazwa pliku hOCR (dualnego) z fiszka bez rozszerzenia
 	def __init__(self, idd, path):
 		self.__id = idd
+		self.__path = path
 		self.__djVuPath = path + ".djvu"
 		self.__metaPath = None # tu bedzie kiedys sciezka do XMP
 		self.__hOCRPath = path + ".xml"
@@ -62,6 +64,13 @@ class Fiche(object):
 	# reprezentacja tekstowa fiszki
 	def __str__(self):
 		return self.__id + ": " + self.__djVuPath
+	
+	#def clone(self):
+	#	cloned = Fiche(self.__id + "_clone", self.__path)
+	#	cloned.setParent(self.__parent)
+	#	shutil.copyfile(self.getDjVuPath(), cloned.getDjVuPath())
+	#	if os.path.exists(self.getHOCRPath()):
+	#		shutil.copyfile(self.getHOCRPath(), cloned.getHOCRPath())
 
 	# zwraca zawartosc tekstowa pierwszego wiersza w hOCR jezeli stosunek jego
 	# dolnego bounding boxu do wysokosci strony jest mniejszy niz parametr
@@ -137,6 +146,13 @@ class StructureNode(object):
 	# tekstowa reprezentacja elementu
 	def __str__(self):
 		return self.__path + ": " + self.__name
+
+	#def addClonedFiche(self, original, clone):
+	#	index = self.__children.index(original)
+	#	if index == len(self.__children) - 1:
+	#		self.__children.append(clone)
+	#	else:
+	#		self.__children.insert(index, clone)
 
 	# zwraca pierwsza fiszke w elemencie w porzadku naturalnym
 	def firstFiche(self):
@@ -238,6 +254,16 @@ class StructureIndex(object):
 					self.__ficheDict.setdefault(fq.getId(), (fq, self.__ficheNo))
 					self.__ficheNo += 1
 		f.close()
+	
+	#def clone(self, ficheId):
+	#	(fiche, ficheNo) = self.__ficheDict[ficheId]
+	#	clone = fiche.clone()
+	#	if ficheNo == len(self.__fiche) - 1:
+	#		self.__fiches.append(clone)
+	#	else:
+	#		self.__fiches.insert(ficheNo + 1, clone)
+	#	self.__ficheDict[clone.getId()] = (clone, ficheNo + 1)
+	#	self.__ficheNo += 1
 
 	# zwraca fiszke o danym numerze kolejnym w porzadku naturalnym
 	def getFiche(self, ficheNo):

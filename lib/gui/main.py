@@ -710,7 +710,8 @@ class MainWindow(wx.Frame):
         for caption, help, method, icon in \
         [
             (_(u'&Reset database'), _(u'Remove entries from database'), self.on_reset_db, None),
-            (_(u'&Dump log to file'), _(u'Dump current log to file'), self.on_dump_log, None)
+            (_(u'&Dump log to file'), _(u'Dump current log to file'), self.on_dump_log, None),
+            (_(u'Delete &logs'), _(u'Delete log files'), self.on_delete_logs, None)
         ]:
             self._menu_item(menu, caption, help, method, icon = icon)
         return menu
@@ -835,6 +836,9 @@ class MainWindow(wx.Frame):
             finally:
                 dialog.Destroy()
             self.page_widget.SetFocus()
+
+    def on_delete_logs(self, event):
+        os.system("rm -f " + log.dirPath + "/log_*")
 
     # TODO: A rozne przypadki bledow:
     
@@ -1134,9 +1138,21 @@ class MainWindow(wx.Frame):
         log.log("start_binary_search return", [], 1)
 
     def next_step(self, steps):
-        log.log("next_step", [], 0)
+        log.log("next_step", [steps], 0)
         self.SetStatusText(_("Binary search") + u", " + _("steps") + u":" + unicode(steps), 2)
         log.log("next_step return", [], 1)
+    
+    def on_toppanel_key_up(self, event):
+        log.log("on_toppanel_key_up", [], 0)
+        if self.active_register.allowsNextFiche():
+            self.active_register.gotoPrevFiche()
+        log.log("on_toppanel_key_up return", [], 1)
+
+    def on_toppanel_key_down(self, event):
+        log.log("on_toppanel_key_down", [], 0)
+        if self.active_register.allowsNextFiche():
+            self.active_register.gotoNextFiche()
+        log.log("on_toppanel_key_down return", [], 1)
                 
     def find_in_entry_register(self, entry):
         log.log("find_in_entry_register", [entry], 0)

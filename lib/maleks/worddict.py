@@ -10,11 +10,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 # General Public License for more details.
 
-# TODO: !!!A sprawdzic czy naprawde potrzeba drzewa i nie wystarczy plaski slownik / wyszukiwanie binarne?
-# TODO: !!!A zrobic porzadne wyszukiwanie przyrostowe dla panelu podpowiedzi i wykazu okienkowego
-
 import icu
-from maleks.maleks.useful import index, ustr
+from maleks.maleks.useful import index, ustr, commonprefix
 
 def commonprefix(a, b):
 	pref = u""
@@ -24,6 +21,99 @@ def commonprefix(a, b):
 		pref += a[i] 
 	return pref
 
+class SimpleDictionary:
+	
+	def __init__(self):
+		self.__dict = {}
+		self.__list = []
+	
+	def clean(self):
+		self.__dict = {}
+		self.__list = []
+	
+	def __insertFind(self, what):
+		collator = icu.Collator.createInstance(icu.Locale('pl_PL.UTF-8'))
+		def __pom(left, right):
+			if left == right:
+				if collator.compare(ustr(self.__list[left]), ustr(what)) > 0:
+					return left
+				elif collator.compare(ustr(self.__list[left]), ustr(what)) < 0:
+					return left + 1
+				else:
+					return -1
+			elif left + 1 == right:
+				if collator.compare(ustr(self.__list[left]), ustr(what)) == 0:
+					return -1
+				elif collator.compare(ustr(self.__list[left]), ustr(what)) > 0:
+					return left
+				elif collator.compare(ustr(self.__list[right]), ustr(what)) > 0:
+					return right
+				elif collator.compare(ustr(self.__list[right]), ustr(what)) == 0:
+					return -1
+				else:
+					return right + 1
+			lenn = right - left
+			center = left + lenn // 2
+			if collator.compare(ustr(self.__list[center]), ustr(what)) > 0:
+				return __pom(left, center - 1)
+			elif collator.compare(ustr(self.__list[center]), ustr(what)) < 0:
+				return __pom(center + 1, right)
+			else:
+				return -1
+		if len(self.__list) == 0:
+			return 0
+		return __pom(0, len(self.__list) - 1)
+		
+	def addWord(self, key, value):
+		where = self.__insertFind(key)
+		if where != -1:
+			self.__dict[key] = value
+			if where == len(self.__list):
+				self.__list.append(key)
+			else:
+				self.__list.insert(where, key)
+				
+	def findWord(self, what):
+		collator = icu.Collator.createInstance(icu.Locale('pl_PL.UTF-8'))
+		def __pom(left, right):
+			if left == right:
+				if collator.compare(ustr(self.__list[left]), ustr(what)) > 0:
+					return left
+				elif collator.compare(ustr(self.__list[left]), ustr(what)) < 0:
+					return left + 1
+				else:
+					return left
+			elif left + 1 == right:
+				if collator.compare(ustr(self.__list[left]), ustr(what)) == 0:
+					return left
+				elif collator.compare(ustr(self.__list[left]), ustr(what)) > 0:
+					return left
+				elif collator.compare(ustr(self.__list[right]), ustr(what)) > 0:
+					return right
+				elif collator.compare(ustr(self.__list[right]), ustr(what)) == 0:
+					return right
+				else:
+					return right + 1
+			lenn = right - left
+			center = left + lenn // 2
+			if collator.compare(ustr(self.__list[center]), ustr(what)) > 0:
+				return __pom(left, center - 1)
+			elif collator.compare(ustr(self.__list[center]), ustr(what)) < 0:
+				return __pom(center + 1, right)
+			else:
+				return center
+		if len(self.__list) == 0:
+			return ("", "")
+		res = __pom(0, len(self.__list) - 1)
+		if res == len(self.__list):
+			res -= 1
+		return self.__dict[self.__list[res]]
+		
+	def printYourself(self):
+		for el in self.__list:
+			print el
+		
+#Deprecated
 class WordDictionary:
 
 	def __init__(self, level=5, null=None):

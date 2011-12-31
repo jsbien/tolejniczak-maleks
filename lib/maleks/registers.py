@@ -13,20 +13,20 @@
 import os
 import icu
 #from maleks.i18n import _
-from maleks.maleks.worddict import WordDictionary
-from maleks.maleks.useful import ustr, getUser, Counter
+from maleks.maleks.worddict import WordDictionary, SimpleDictionary
+from maleks.maleks.useful import ustr, getUser, Counter, commonprefix
 
 def _(s):
 	return s
 
-# 
-def commonprefix(a, b):
-	pref = u""
-	for i in range(0, min(len(a), len(b))):
-		if a[i] != b[i]:
-			break
-		pref += a[i] 
-	return pref
+def compare(a, b, hint):
+	collator = icu.Collator.createInstance(icu.Locale('pl_PL.UTF-8'))
+	if len(commonprefix(a, hint)) > len(commonprefix(b, hint)):
+		return 1
+	elif len(commonprefix(b, hint)) > len(commonprefix(a, hint)):
+		return -1
+	else:
+		return collator.compare(b, a)
 
 def anyHint((a, b, c, d)):
 	return a if a != "" else (b if b != "" else c)
@@ -35,9 +35,9 @@ class HintRegister(object):
 
 	def __init__(self, abspath):
 		self.__entries = []
-		self.__dict17 = WordDictionary(5, (u"", u""))
-		self.__dictLin = WordDictionary(5, (u"", u""))
-		self.__dictDor = WordDictionary(5, (u"", u""))
+		self.__dict17 = SimpleDictionary() #WordDictionary(5, (u"", u""))
+		self.__dictLin = SimpleDictionary() #WordDictionary(5, (u"", u""))
+		self.__dictDor = SimpleDictionary() #WordDictionary(5, (u"", u""))
 		self.__new = []
 		self.__path = abspath
 		if os.path.exists(abspath + "/hint.reg"):
@@ -94,14 +94,14 @@ class HintRegister(object):
 		(lcp17, sig17) = self.__dict17.findWord(ustr(entry))
 		(lcpLin, sigLin) = self.__dictLin.findWord(ustr(entry))
 		(lcpDor, sigDor) = self.__dictDor.findWord(ustr(entry))
-		if len(commonprefix(ustr(lcp17), ustr(entry))) >= len(commonprefix(ustr(lcpLin), ustr(entry))):
-			if len(commonprefix(ustr(lcp17), ustr(entry))) >= len(commonprefix(ustr(lcpDor), ustr(entry))):
+		if compare(ustr(lcp17), ustr(lcpLin), ustr(entry)) >= 0:
+			if compare(ustr(lcp17), ustr(lcpDor), ustr(entry)) >= 0:
 				return (lcp17, sig17)
-			elif len(commonprefix(ustr(lcpLin), ustr(entry))) >= len(commonprefix(ustr(lcpDor), ustr(entry))):
+			elif compare(ustr(lcpLin), ustr(lcpDor), ustr(entry)) >= 0:
 				return (lcpLin, sigLin)
 			else:
 				return (lcpDor, sigDor)
-		elif len(commonprefix(ustr(lcpLin), ustr(entry))) >= len(commonprefix(ustr(lcpDor), ustr(entry))):
+		elif compare(ustr(lcpLin), ustr(lcpDor), ustr(entry)) >= 0:
 			return (lcpLin, sigLin)
 		else:
 			return (lcpDor, sigDor)

@@ -22,6 +22,7 @@ DBaQ = "DBaQ"
 NONE = "NONE"
 
 path = None
+dirPath = None
 level = OP
 
 def setLevel(lev):
@@ -29,8 +30,9 @@ def setLevel(lev):
 	level = lev
 
 def startLog(absolutePath):
-	global path
+	global path, dirPath
 	mod = 0
+	dirPath = absolutePath
 	absolutePath = os.path.abspath(absolutePath) # TODO: C potrzeba? (skad sie bierze path w do_open)?
 	while os.path.exists(absolutePath + "/log_" + str(mod) + ".txt"):
 		mod += 1

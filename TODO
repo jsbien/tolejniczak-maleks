@@ -27,26 +27,28 @@ Ostatnio wykonane:
 * Uaktualnienie listy skrótów
 * ENTER w panelu wyszukiwania w wykazie haseł zaczyna wyszukiwanie binarne
 * Skrypt do zerowania bazy
+* Jeżeli jest hipoteza to napis w panelu edycji powinien być podświetlony i rozpoczęcie edycji kasuje go - powinno to być zaimplementowane w sposób który umożliwia nawigację strzałkami w wykazach fiszkowych
+* Przewijanie wykazu haseł i wykazu podpowiedzi przez PGUP i PGDN
+* Wyszukiwanie przyrostowe podpowiedzi przy wpisywaniu w panel edycji
+* Sprawdzenie, co się dzieje z panelem wykazów gdy jest ukryty (odpowiedź: normalnie działa)
 
 Nowa wersja:
 
-* Jeżeli jest hipoteza to napis w panelu edycji powinien być podświetlony i rozpoczęcie edycji kasuje go - powinno to być zaimplementowane w sposób który umożliwia nawigację strzałkami wykazów (w szczegóności poziomu fiszek wykazu haseł)
-* Problem z wykazem podpowiedzi (okienkowym) - co jak zaczynamy od pustego wykazu?
-* Wyszukiwanie przyrostowe podpowiedzi przy wpisywaniu w panel edycji
 * Po zakończeniu wyszukiwania celowego powinna się wyświetlać ostatnia fiszka targetu a zaznaczenie powinno być ustawione gdzieś w pobliżu targetu, poza tym wyświetla się fiszka z nie tego hasła (błąd?)
-* Sprawdzenie, co się dzieje z panelem wykazów gdy jest ukryty
-* Przewijanie wykazu haseł i wykazu podpowiedzi przez PGUP i PGDN
 * Komunikaty przy operacjach - dwuczęściowe (dwie daty) - początek i potwierdzenie (przy okazji)
-* Klonowanie fiszek (na szybko - ponowne otwarcie kartoteki)
+* W każdym momencie powinno być możliwe przejście do następnej fiszki w porządku naturalnym
+* Klonowanie fiszek
+* Dokumentacja formatu kartoteki (katalogu z danymi, indeksu struktury), instrukcja i skrypt inicjowania
+
+Proste:
+
+* Dopisać gdzieś uwagę o unselect na wykazie o zmniejszonej liczbie elementów i Segmentation fault
 
 Na później:
 
 * Komentarze w kodzie
-* Dokumentacja formatu kartoteki (katalogu z danymi), instrukcja i skrypt inicjowania
-* W każdym momencie powinno być możliwe przejście do następnej fiszki w porządku naturalnym
-* Klonowanie fiszek
 
-Nowa wersja (lista rezerwowa w zawieszeniu - do przemyślenia):
+Nowa wersja (lista rezerwowa w zawieszeniu - do przemyślenia / omówienia):
 
 * Sprawdzenie dlaczego maleks zwalnia wraz z powiększaniem się ilości haseł w wykazie haseł
 * Komunikat że fiszka jest nie po kolei jeżeli kończymy wyszukiwanie binarne i przy akceptacji
@@ -61,6 +63,7 @@ Błędy do usunięcia:
 
 Inne:
 
+* Uporządkowanie spraw związanych z kasztowością
 * Odświeżanie panelu indeksów po akceptacji fiszki w poziomie fiszek w wykazie haseł
 * Szukanie celowe w konkretnej dziurze dla fiszek nie po kolei
 * Automatyczne ignorowanie fiszek nie po kolei w wyszukiwaniu binarnym
@@ -91,8 +94,6 @@ Inne:
 * Synchronizacja między różnymi wykazami, przejście w każdym wykazie do aktualnie oglądanej fiszki (do omówienia: "aktualna fiszka* powinna być jakoś wyróżniona w każdym dostępnym wykazie (lub element do którego fiszka należy*)" - *czy w takim wypadku zmieniać element którego podelementy wyświetlamy, jeżeli fiszka należy do podelementu będącego w innym podelemencie?)
 * Rozwiązanie problemów zasygnalizowanych w http://fleksem.klf.uw.edu.pl/~jsbien/maleks/maleks.txt - patrz dopisek na końcu listy TODO
 * Zapisywanie wartości indeksów przy wychodzeniu z programu i w innych miejscach (poszukać), w ostateczności dodać przycisk "zapisz indeks"
-* Nawigacja w nowym wykazie haseł: PgUp, PgDn
-* Uporządkowanie spraw związanych z kasztowością
 * Położenie kursora po zakończeniu różnych operacji, inne sprawy związane z focusem (do wcześniejszego omówienia)
 * Przejście do następnej i POPRZEDNIEJ fiszki w porządku naturalnym dostępne zawsze, w razie gdy fiszki nie ma na wykazie komunikat "fiszka spoza wykazu" (do przemyślenia)
 * Zamiast panelu źródeł: najniższy wiersz w panelu - wypełniony jeżeli istnieje dokument zawierający tą fiszkę (wyświetlane położenie wyrażenia hasłowego i link do djvu)

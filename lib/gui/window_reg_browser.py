@@ -25,6 +25,10 @@ class WindowRegisterBrowser(RegisterBrowser):
 		self._reg = None
 		self.__entryGetter = None
 		self._smart = True
+		self.Bind(wx.EVT_KEY_UP, self.__onKeyUp, self)
+	
+	def SCROLL(self):
+		return 50
 
 	def LIMIT(self):
 		return 100
@@ -61,7 +65,9 @@ class WindowRegisterBrowser(RegisterBrowser):
 		#c = Counter()
 		#g = Counter()
 		log.log("WindowRegisterBrowser.setRegister", [reg, getEntry], 0)
-		print len(reg), self.LIMIT()
+		#print len(reg), self.LIMIT()
+		self._reg = reg
+		self.__entryGetter = getEntry
 		if len(reg) < 2 * self.LIMIT():
 			#TODO: !A nie obsluguje hint_browsera?"
 			self._smart = False
@@ -71,8 +77,6 @@ class WindowRegisterBrowser(RegisterBrowser):
 			self._smart = True
 			self.reset()
 			i = 0
-			self._reg = reg
-			self.__entryGetter = getEntry
 			#print "init", c
 			self._itemsNo = 0
 			for element in reg: # dla kazdej fiszki w wykazie utworz odpowiedni element i wypelnij slowniki
@@ -98,10 +102,18 @@ class WindowRegisterBrowser(RegisterBrowser):
 		#print "po", g
 		log.log("WindowRegisterBrowser.setRegister return", [], 1)
 
+	# TODO: !!! wazne: tu sa problemy z tym ze w trybie nie smart nie uzywamy
+	# _elements tylko pol z reg_browsera - pytanie czy dobrze sa obsluzone
+	# sytuacje w ktorych przelaczamy miedzy smart a nie smart 
+
 	def _itemOf(self, elementId):
+		if not self._smart:
+			return RegisterBrowser._itemOf(self, elementId)
 		return self._elements.index(elementId)
 
 	def _elementOf(self, itemId):
+		if not self._smart:
+			return RegisterBrowser._elementOf(self, itemId)
 		try:
 			res = self._elements[itemId]
 			return res
@@ -145,6 +157,25 @@ class WindowRegisterBrowser(RegisterBrowser):
 		self._window = itemId - halfBefore
 		log.log("WindowRegisterBrowser.setRegister return", [self._window], 1)
 
+	# TODO: NOTE oba bazuja na tym, ze itemId jest jednoczesnie indeksem item w wykazie
+	def __pageUp(self):
+		log.op("WindowRegisterBrowser.pageUp", [], 0)
+		self._select(max(self._selected - self.SCROLL(), 0))
+		log.opr("WindowRegisterBrowser.pageUp return", [], 1)
+	
+	def __pageDown(self):
+		log.op("WindowRegisterBrowser.pageDown", [], 0)
+		self._select(min(self._selected + self.SCROLL(), self._itemsLen() - 1))
+		log.opr("WindowRegisterBrowser.pageDown return", [], 1)
+	
+	def __onKeyUp(self, event):
+		log.log("WindowRegisterBrowser.__onKeyUp", [event.GetKeyCode(), wx.WXK_PAGEUP, wx.WXK_PAGEDOWN], 0)
+		if event.GetKeyCode() == wx.WXK_PAGEUP:
+			self.__pageUp()
+		elif event.GetKeyCode() == wx.WXK_PAGEDOWN:
+			self.__pageDown()
+		log.log("WindowRegisterBrowser.__onKeyUp return", [], 1)
+
 	def onSelect(self, event):
 	#mapsafe
 		log.op("WindowRegisterBrowser.onSelect", [self._elementOf(self._unmap(event.GetIndex())), self._smart], 0)
@@ -165,8 +196,11 @@ class WindowRegisterBrowser(RegisterBrowser):
 	def _reloadSelect(self, itemId, veto=False):
 		log.log("WindowRegisterBrowser._reloadSelect", [self._smart], 0)
 		if not self._smart:
-			pass
-			# TODO: A co wtedy?
+			log.log("WindowRegisterBrowser._reloadSelect return", [], 2)
+			return
+			# TODO: A co wtedy - chyba niepotrzebne bo i tak robimy reinitialize w incrementalAdd
+			# jedyny problem moze sie pojawic wtedy kiedy wykaz po incrementalAdd robi sie nagle
+			# smart?
 		self._scrollBrowser(itemId)
 		RegisterBrowser._select(self, itemId, veto=veto)
 		log.log("WindowRegisterBrowser._reloadSelect return", [], 1)

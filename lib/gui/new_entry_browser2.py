@@ -23,6 +23,14 @@ from maleks.gui.reg_browser import RegisterBrowser
 from maleks.maleks.useful import nvl, ustr, stru, Counter, copy
 from maleks.maleks import log
 
+class MockEvent:
+
+	def __init__(self, itemId):
+		self.__itemId = itemId
+	
+	def GetIndex(self):
+		return self.__itemId
+
 class NewEntryRegisterBrowser(WindowRegisterBrowser):
 
 	def __init__(self, *args, **kwargs):
@@ -399,7 +407,9 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			if entry != None and not (self.__noLocate):
 				if not ((self.__entry == None and entry == u"") or (self.__entry != None and (self.__entry == entry or (entry == u"" and self._selected != self._item(0) and self._selected != self._item(-1))))):
 					for l in self._listeners:
-						l.locate_needed(element)
+						l.locate_needed(element) # TODO: A zaznacza nie ta fiszke co potrzeba
+							# zeby odtworzyc: w fiszce A modyfikujemy haslo w indeksie i przechodzimy
+							# strzalka do fiszki B, pokaze sie fiszka A w swoim nowym hasle/dziurze
 					RegisterBrowser.onSelect(self, event)
 					log.log("NewEntryRegisterBrowser.nonSmartSelect return", [], 3)
 					return
@@ -503,6 +513,28 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 			return self.__text(self.__selectedElement)
 		else:
 			return ""
+
+	def gotoPrevFiche(self):
+		log.log("NewEntryRegisterBrowser.gotoPrevFiche", [], 0)
+		if self._binary:
+			for l in self._listeners:
+				l.stop_binary_search()
+		if self._selected != None:
+			itemId = self.GetPrevItem(self._selected)
+			if itemId != -1:
+				self._select(itemId)
+		log.log("NewEntryRegisterBrowser.gotoNextFiche return", [], 1)
+
+	def gotoNextFiche(self):
+		log.log("NewEntryRegisterBrowser.gotoNextFiche", [], 0)
+		if self._binary:
+			for l in self._listeners:
+				l.stop_binary_search()
+		if self._selected != None:
+			itemId = self.GetNextItem(self._selected)
+			if itemId != -1:
+				self._select(itemId)
+		log.log("NewEntryRegisterBrowser.gotoNextFiche return", [], 1)
 
 	def getNextFiche(self, entry=None):
 		log.log("NewEntryRegisterBrowser.getNextFiche", [entry, self.__entry, self._selected, self._item(0), self._item(-1)], 0)

@@ -175,6 +175,12 @@ msgstr "Zmniejsz powiększenie"
 msgid "Default mode"
 msgstr "Tryb zwykły"
 
+msgid "Delete &logs"
+msgstr "Usuń &logi"
+
+msgid "Delete log files"
+msgstr "Usuwa pliki z logami"
+
 msgid "Display everything"
 msgstr "Pokaż wszystko"
 

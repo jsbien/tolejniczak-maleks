@@ -113,6 +113,14 @@ def index(li, el):
 	except ValueError:
 		return None
 
+def commonprefix(a, b):
+	pref = u""
+	for i in range(0, min(len(a), len(b))):
+		if a[i] != b[i]:
+			break
+		pref += a[i] 
+	return pref
+
 class Counter:
 
 	def __init__(self):

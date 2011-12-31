@@ -12,6 +12,35 @@
   * user_hint.reg - wykaz podpowiedzi dodanych przez maleksa, tworzony automatycznie
   * katalogi z fiszkami i hOCR lub podkatalogami
 
+* postać indeksu struktury
+  * przykładowy plik, białe znaki na początku wiersza ignorowane,
+    // - komentarze, nie powinny się znaleźć w prawdziwym pliku:
+$alphabetic // element opcjonalny, oznacza, że fiszki są uporządkowane alfabetycznie według haseł,
+// wykaz haseł nie powinien np. działać dla fiszek nieuporządkowanych (ale to nie jest do końca przetestowane)
+$<SPACJA>Do<TAB>Do8 // odpowiada katalogowi Do8, Do to nazwa która wyświetli się w programie
+	$<SPACJA>Partia 1<TAB>Partia_01 // podkatalog Partia_01 katalogu Do8 itd.
+		$from_names_djvu<TAB>$all // nadaj wszystkim fiszkom z katalogu Partia_01 identyfikatory będące nazwami ich plików
+	$end
+	$<SPACJA>Partia 2<TAB>Partia_02
+		$id01<TAB>fiszka_01 // nadaj fiszce z pliku fiszka_01.djvu identyfikator id01 (nietestowane)
+		$id02<TAB>fiszka_02
+	$end
+$end
+$<SPACJA>Dwa-Dwojdroże<TAB>Dwa2-Dwojdroże
+	$<SPACJA>Partia 1<TAB>Partia_01
+		$from_names_djvu<TAB>$all
+	$end
+$end
+$<SPACJA>Dziób-Dzwon<TAB>Dziób-Dzwon
+	$from_names_djvu<TAB>$all
+$end
+$<SPACJA>Emundowani-Ę<TAB>Emundowani-Ę
+	$from_names_djvu<TAB>$all
+$end
+$<SPACJA>G-Ganić<TAB>G-Ganić
+	$from_names_djvu<TAB>$all
+$end
+
 * instalacja:
   * trzeba zainstalować wxpython, python-djvu i python-icu (co najmniej wersja 1.0)
   * ./update18n

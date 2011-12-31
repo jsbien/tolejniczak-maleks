@@ -257,9 +257,39 @@ class RegisterBrowser(wx.ListView):
 	# jakis element jest zaznaczony
 	def hasSelection(self):
 		return self._selected != None
+	
+	def GetPrevItem(self, itemId):
+		item = -1
+		prev = -1
+		while True:
+			prev = item
+			item = self.GetNextItem(prev)
+			if item == itemId:
+				return prev
+			if item == -1:
+				return -1
+	
+	# zwroc poprzednia fiszke przed zaznaczona
+	def gotoPrevFiche(self):
+		log.log("RegisterBrowser.gotoPrevFiche", [], 0)
+		if self._binary:
+			for l in self._listeners:
+				l.stop_binary_search()
+		if self._selected != None:
+			itemId = self.GetPrevItem(self._selected)
+			if itemId != -1:
+				self._unselect(self._selected)
+				self._select(itemId, veto=True)
+				self._element_selected(self._elementOf(itemId), notify=False)
+		log.log("RegisterBrowser.gotoPrevFiche return", [], 1)
+	
+	def gotoNextFiche(self):
+		log.log("RegisterBrowser.gotoNextFiche", [], 0)
+		self.getNextFiche(skipIfNotFound=True)
+		log.log("RegisterBrowser.gotoNextFiche return", [], 1)
 
 	# zwroc nastepna fiszke po zaznaczonej
-	def getNextFiche(self, entry=None):
+	def getNextFiche(self, entry=None, skipIfNotFound=False):
 		log.log("RegisterBrowser.getNextFiche", [entry], 0)
 		if self._binary: # jezeli binarne jest wlaczane to wylaczamy
 			#self.stopBinarySearch()
@@ -275,7 +305,7 @@ class RegisterBrowser(wx.ListView):
 				self._element_selected(self._elementOf(itemId), notify=False) # notify
 					# = False bo nie ma potrzeby wywolywania RegisterBrowser.select (bo
 					# odpowiedni element zostal przed chwila zaznaczony)
-			else:
+			elif not skipIfNotFound:
 				self._nextFicheNotFound()
 		log.log("RegisterBrowser.getNextFiche return", [], 1)
 

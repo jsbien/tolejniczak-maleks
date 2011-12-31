@@ -45,7 +45,9 @@ class TopPanel(wx.Panel, Notifier):
 		self.SetSizerAndFit(sizer)
 		self.__editPanel.Bind(wx.EVT_TEXT, self.editPanelChanged)
 		self.__editPanel.Bind(wx.EVT_KEY_DOWN, self.__onEditAcceptEnter, self.__editPanel)
+		self.__editPanel.Bind(wx.EVT_KEY_UP, self.__onKeyUp, self.__editPanel)
 		self.__hintPanel.Bind(wx.EVT_TEXT, self.__hintPanelChanged)
+		self.__hintPanel.Bind(wx.EVT_KEY_UP, self.__onKeyUp, self.__hintPanel)
 		self.Bind(wx.EVT_BUTTON, self.__onEditAccept, self.__editPanelAcceptButton)
 		self.Bind(wx.EVT_BUTTON, self.__onEditPrefixAccept, self.__editPanelPrefixAcceptButton)
 		self.Bind(wx.EVT_BUTTON, self.__onHintAccept, self.__hintPanelAcceptButton)
@@ -57,12 +59,30 @@ class TopPanel(wx.Panel, Notifier):
 		log.log("focus", [], 0)
 		self.__editPanel.SetFocus()
 		log.log("focus return", [], 1)
+	
+	def focusAndSelect(self):
+		log.log("focusAndSelect", [], 0)
+		def __pom():
+			self.__editPanel.SetSelection(-1, -1)
+		wx.CallAfter(__pom)
+		self.__editPanel.SetFocus()
+		log.log("focusAndSelect return", [], 1)
 
 	def editPanelHasFocus(self):
 		return wx.Window.FindFocus() == self.__editPanel
 
 	def setHintRegister(self, register):
 		self.__hintRegister = register
+	
+	def __onKeyUp(self, event):
+		log.op("__onKeyUp", [event.GetKeyCode(), wx.WXK_UP, wx.WXK_DOWN], 0)
+		if event.GetKeyCode() == wx.WXK_UP:
+			for l in self._listeners:
+				l.on_toppanel_key_up(event)
+		elif event.GetKeyCode() == wx.WXK_DOWN:
+			for l in self._listeners:
+				l.on_toppanel_key_down(event)
+		log.opr("__onKeyUp return", [], 1)
 
 	def __onEditAcceptEnter(self, event):
 		log.op("__onEditAcceptEnter", [event.GetKeyCode(), wx.WXK_RETURN], 0)
@@ -118,9 +138,12 @@ class TopPanel(wx.Panel, Notifier):
 		log.op("__hintPanelChanged", [event, self.__hintPanel.GetValue()], 0)
 		self.__hint = self.__hintPanel.GetValue() # niepoprawne (bo siglum)
 		log.opr("__hintPanelChanged return", [], 1)
-		
+	
+	# TODO: C po co to? przeciez jest self.__hint
 	def __stripSiglum(self, text):
 		ind = text.rfind("(")
+		if ind == -1:
+			return text # bo SimpleDictionary moze zwrocic puste siglum jak nie ma zadnych podpowiedzi?
 		return text[:ind - 1]
 
 	def copyHintToEditPanel(self):
@@ -145,8 +168,9 @@ class TopPanel(wx.Panel, Notifier):
 		self.__hypothesisPanel.SetValue(content)
 		self.__editPanel.SetValue(content)
 		self.editPanelChanged(None)
-		self.__hintPanel.SetFocus() # potrzebne ...
-		self.focus() # ... zeby tu zaznaczylo
+		if (content != ""):
+			self.__hintPanel.SetFocus() # potrzebne ...
+			self.focusAndSelect() # ... zeby tu zaznaczylo
 		log.log("setHypothesis return", [self.__hypothesisPanel.GetValue()], 1)
 
 	def setEntry(self, entry, browsingHistory=False):

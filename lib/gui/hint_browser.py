@@ -12,7 +12,7 @@
 
 import wx
 import icu
-#from maleks.gui.reg_browser import RegisterBrowser
+from maleks.gui.reg_browser import RegisterBrowser
 from maleks.gui.window_reg_browser import WindowRegisterBrowser
 from maleks.maleks.registers import anyHint
 from maleks.maleks.useful import ustr, Counter, getUser, stru
@@ -94,6 +94,12 @@ class HintRegisterBrowser(WindowRegisterBrowser):
 		#c = Counter()
 		if not self._initialized:
 			log.log("HintRegisterBrowser.incrementalAdd return", [], 2)
+			return
+		if not self._smart:
+			self.reinitialize()
+			ind = self.__binaryFind(hint)
+			RegisterBrowser._select(self, ind, veto=True)
+			log.log("HintRegisterBrowser.incrementalAdd return", [], 3)
 			return
 		ind = self.__binaryFind(hint)
 		if ind == len(self.__hints):
