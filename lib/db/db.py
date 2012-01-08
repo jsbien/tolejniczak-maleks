@@ -39,6 +39,29 @@ class DBController(DBWorkController):
 		cursor = self._openDBWithCursor()
 		cursor.execute("update fiches set bookmark = sysdate() where fiche = %s", (ficheId))
 		self._closeDBAndCursor(cursor)
+	
+	def cloneFiche(self, ficheId, cloneId, originalEntry, ficheActualEntry, cloneActualEntry):
+		cursor = self._openDBWithCursor()
+		pos = self._single(cursor, "select position from fiches where fiche = %s", (ficheId))
+		cursor.execute("update fiches set position = position + 1 where position > %s order by position desc", (pos))
+		cursor.execute("insert into fiches values (%s, %s, null, null, null, null, null, null, null, null)", (int(pos) + 1, cloneId))
+		try:
+			cursor.execute("insert into original_entries values (%s, %s, null)", (ficheId, originalEntry))
+		except _mysql_exceptions.IntegrityError:
+			cursor.execute("update original_entries set entry = %s where fiche = %s", (originalEntry, ficheId))
+		try:
+			cursor.execute("insert into original_entries values (%s, %s, null)", (cloneId, originalEntry))
+		except _mysql_exceptions.IntegrityError:
+			cursor.execute("update original_entries set entry = %s where fiche = %s", (originalEntry, cloneId))
+		try:
+			cursor.execute("insert into actual_entries values (%s, %s, null)", (ficheId, ficheActualEntry))
+		except _mysql_exceptions.IntegrityError:
+			cursor.execute("update actual_entries set entry = %s where fiche = %s", (ficheActualEntry, ficheId))
+		try:
+			cursor.execute("insert into actual_entries values (%s, %s, null)", (cloneId, cloneActualEntry))
+		except _mysql_exceptions.IntegrityError:
+			cursor.execute("update actual_entries set entry = %s where fiche = %s", (cloneActualEntry, cloneId))
+		self._closeDBAndCursor(cursor)
 
 	def addFicheToEntriesIndex(self, ficheId, entry):
 		cursor = self._openDBWithCursor()
@@ -88,6 +111,12 @@ class DBController(DBWorkController):
 			return None
 		else:
 			return row[0]
+
+	def getPositionOfFiche(self, ficheId):
+		cursor = self._openDBWithCursor()
+		res = self._single(cursor, "select position from fiches where fiche = %s", (ficheId))
+		self._closeDBAndCursor(cursor)
+		return int(res) if res != None else -1
 
 	def getActualEntryForFiche(self, ficheId):
 		res = None

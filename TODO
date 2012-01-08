@@ -31,18 +31,21 @@ Ostatnio wykonane:
 * Przewijanie wykazu haseł i wykazu podpowiedzi przez PGUP i PGDN
 * Wyszukiwanie przyrostowe podpowiedzi przy wpisywaniu w panel edycji
 * Sprawdzenie, co się dzieje z panelem wykazów gdy jest ukryty (odpowiedź: normalnie działa)
+* Klonowanie fiszek
 
 Nowa wersja:
 
+* Dokumentacja formatu kartoteki (katalogu z danymi, indeksu struktury), instrukcja i skrypt inicjowania
 * Po zakończeniu wyszukiwania celowego powinna się wyświetlać ostatnia fiszka targetu a zaznaczenie powinno być ustawione gdzieś w pobliżu targetu, poza tym wyświetla się fiszka z nie tego hasła (błąd?)
 * Komunikaty przy operacjach - dwuczęściowe (dwie daty) - początek i potwierdzenie (przy okazji)
 * W każdym momencie powinno być możliwe przejście do następnej fiszki w porządku naturalnym
-* Klonowanie fiszek
-* Dokumentacja formatu kartoteki (katalogu z danymi, indeksu struktury), instrukcja i skrypt inicjowania
+* Zastąpienie wywołań poleceń linuksowych przez fukcje Pythona
 
 Proste:
 
 * Dopisać gdzieś uwagę o unselect na wykazie o zmniejszonej liczbie elementów i Segmentation fault
+* Dopisać gdzieś uwagę o efektywnym i nieefektywnym odświeżaniu wykazu haseł
+* Indeks struktury bazuje na kolejności alfabetycznej plików - może inaczej się zachowywać pod Windowsem i Linuksem?
 
 Na później:
 

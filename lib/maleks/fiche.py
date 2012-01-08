@@ -64,13 +64,44 @@ class Fiche(object):
 	# reprezentacja tekstowa fiszki
 	def __str__(self):
 		return self.__id + ": " + self.__djVuPath
+
+	def __isnum(self, string):
+		try:
+			int(string)
+		except ValueError:
+			return False
+		return True
+
+	def __computeClone(self, path):
+		els = path.split("_")
+		if len(els) < 3 or els[-2] != "clone":
+			i = 1
+			while True:
+				if not os.path.exists(self.__parent.getPath() + os.sep + path + "_clone_" + str(i) + ".djvu"):
+					return path + "_clone_" + str(i)
+				i += 1
+		elif els[-2] == "clone" and self.__isnum(els[-1]):
+			res = ""
+			for j in range(0, len(els) - 2):
+				res += els[j] + "_"
+			i = 1
+			while True:
+				if not os.path.exists(self.__parent.getPath() + os.sep + res + "clone_" + str(i) + ".djvu"):
+					return res + "clone_" + str(i)
+				i += 1
+		else:
+			print els
+			assert(False)
 	
-	#def clone(self):
-	#	cloned = Fiche(self.__id + "_clone", self.__path)
-	#	cloned.setParent(self.__parent)
-	#	shutil.copyfile(self.getDjVuPath(), cloned.getDjVuPath())
-	#	if os.path.exists(self.getHOCRPath()):
-	#		shutil.copyfile(self.getHOCRPath(), cloned.getHOCRPath())
+	def clone(self):
+		path = self.__computeClone(self.__path)
+		print path
+		cloned = Fiche(path, path)
+		self.__parent.addAfter(self, cloned)
+		shutil.copyfile(self.getDjVuPath(), cloned.getDjVuPath())
+		if os.path.exists(self.getHOCRPath()):
+			shutil.copyfile(self.getHOCRPath(), cloned.getHOCRPath())
+		return cloned
 
 	# zwraca zawartosc tekstowa pierwszego wiersza w hOCR jezeli stosunek jego
 	# dolnego bounding boxu do wysokosci strony jest mniejszy niz parametr
@@ -129,6 +160,14 @@ class StructureNode(object):
 		self.__children.append(child)
 		child.setParent(self)
 
+	def addAfter(self, after, child):
+		i = self.__children.index(after)
+		if i == len(self.__children):
+			self.__children.append(child)
+		else:
+			self.__children.insert(i + 1, child)
+		child.setParent(self)
+
 	# sciezka absolutna do elementu
 	def getPath(self):
 		if self.__parent == None:
@@ -169,8 +208,8 @@ class Configuration(object):
 		# TODO: C obsluga bledow w pliku
 		self.__dict = {}
 		self.__abspath = abspath
-		if os.path.exists(abspath + "/config.cfg"):
-			f = open(abspath + "/config.cfg")
+		if os.path.exists(abspath + os.sep + "config.cfg"):
+			f = open(abspath + os.sep + "config.cfg")
 			for line in f:
 				if line == "\n":
 					continue
@@ -192,7 +231,7 @@ class Configuration(object):
 		# TODO: C komunikat o bledzie - nie ma takiego pliku
 		path = self.__dict.get("default_task_register")
 		if path != None:
-			tr = TaskRegister(self.__abspath + "/" + path, index)
+			tr = TaskRegister(self.__abspath + os.sep + path, index)
 			return tr
 		else:
 			return TaskRegister(None, None, empty=True)
@@ -210,17 +249,17 @@ class StructureIndex(object):
 
 	# tworzy indeks struktury na podstawie pliku z indeksem struktury o sciezce
 	# abspath
-	def __init__(self, abspath):
+	def __init__(self, abspath, dBController):
 		# TODO: C obsluga bledow w pliku
 		self.__ficheNo = 0
 		self.__alphabetic = False
 		self.__fiches = []
 		self.__ficheDict = {}
 		self.__nodeDict = {}
-		self.__tree = StructureNode(abspath.split("/")[-1], abspath)
+		self.__tree = StructureNode(abspath.split(os.sep)[-1], abspath)
 		curNode = self.__tree
 		self.__nodeDict.setdefault(curNode.getId(), curNode)
-		f = open(abspath + "/index.ind")
+		f = open(abspath + os.sep + "index.ind")
 		for line in f:
 			if line == "\n":
 				continue
@@ -240,7 +279,11 @@ class StructureIndex(object):
 				els = line.split("\t")
 				if els[0] == "$from_names_djvu":
 					if els[1] == "$all":
-						for filee in sorted(os.listdir(curNode.getPath())):
+						if dBController == None:
+							key = lambda x: x
+						else:
+							key = lambda x: dBController.getPositionOfFiche(x[:-5]) if (len(x) > 5 and x[-5:] == ".djvu") else 0
+						for filee in sorted(os.listdir(curNode.getPath()), key=key):
 							if len(filee) > 5 and filee[-5:] == ".djvu":
 								fq = Fiche(filee[:-5], filee[:-5])
 								curNode.add(fq)
@@ -255,15 +298,19 @@ class StructureIndex(object):
 					self.__ficheNo += 1
 		f.close()
 	
-	#def clone(self, ficheId):
-	#	(fiche, ficheNo) = self.__ficheDict[ficheId]
-	#	clone = fiche.clone()
-	#	if ficheNo == len(self.__fiche) - 1:
-	#		self.__fiches.append(clone)
-	#	else:
-	#		self.__fiches.insert(ficheNo + 1, clone)
-	#	self.__ficheDict[clone.getId()] = (clone, ficheNo + 1)
-	#	self.__ficheNo += 1
+	def clone(self, ficheId):
+		(fiche, ficheNo) = self.__ficheDict[ficheId]
+		clone = fiche.clone()
+		if ficheNo == len(self.__fiches) - 1:
+			self.__fiches.append(clone)
+		else:
+			self.__fiches.insert(ficheNo + 1, clone)
+			self.__ficheDict[clone.getId()] = (clone, ficheNo + 1)
+			for i in range(ficheNo + 2, len(self.__fiches)):
+				fq = self.__fiches[i]
+				self.__ficheDict[fq.getId()] = (fq, i)
+		self.__ficheNo += 1
+		return clone.getId()
 
 	# zwraca fiszke o danym numerze kolejnym w porzadku naturalnym
 	def getFiche(self, ficheNo):

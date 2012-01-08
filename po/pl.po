@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-11 19:41+0100\n"
+"POT-Creation-Date: 2012-01-08 17:06+0100\n"
 "PO-Revision-Date: 2009-05-31 14:45+CEST\n"
 "Last-Translator: Tomasz Olejniczak <tomek.87@poczta.onet.pl>\n"
 "Language-Team: none\n"
@@ -20,6 +20,9 @@ msgstr "&O programie"
 
 msgid "&Background"
 msgstr "&Tło"
+
+msgid "&Clone fiche"
+msgstr "&Sklonuj fiszkę"
 
 msgid "&Close"
 msgstr "&Zamknij"
@@ -123,6 +126,12 @@ msgstr "Akceptacja napisu w panelu podpowiedzi"
 msgid "Actual entry"
 msgstr "Hasło aktualne"
 
+msgid "Actual entry of clone"
+msgstr "Hasło aktualne fiszki sklonowanej"
+
+msgid "Actual entry of original fiche"
+msgstr "Hasło aktualne fiszki oryginalnej"
+
 msgid "Always visible"
 msgstr "Zawsze widoczny"
 
@@ -156,9 +165,14 @@ msgstr "Wykaz zakładek"
 msgid "Border"
 msgstr "Obramowanie"
 
-#, fuzzy
+msgid "Cancel"
+msgstr "Anuluj"
+
 msgid "Choose work mode"
 msgstr "Ustaw tryb pracy"
+
+msgid "Clones fiche"
+msgstr "Klonuje fiszkę"
 
 msgid "Close the document"
 msgstr "Zamknij dokument"
@@ -262,6 +276,9 @@ msgstr "Eskportuj zakładki jako wykaz zadaniowy"
 msgid "Fiche already indexed in entry prefix index"
 msgstr "Fiszka została już zaindeksowana w indeksie prefiksów hasłowych"
 
+msgid "Fiche cloning"
+msgstr "Klonowanie fiszki"
+
 msgid "Fit &page"
 msgstr "D&opasuj do okna"
 
@@ -364,6 +381,9 @@ msgstr "Nie pokazuj pierwszego planu ani tła"
 
 msgid "None"
 msgstr "Brak"
+
+msgid "OK"
+msgstr ""
 
 msgid "One &to one"
 msgstr "&Jeden do jednego"

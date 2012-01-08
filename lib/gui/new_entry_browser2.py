@@ -160,6 +160,16 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		#print len(self._elements)
 		log.log("NewEntryRegisterBrowser.__fillRegister return", [self._smart], 1)
 
+	def _itemOf(self, elementId):
+		return self._elements.index(elementId)
+
+	def _elementOf(self, itemId):
+		try:
+			res = self._elements[itemId]
+			return res
+		except IndexError:
+			return None
+
 	def _incrementalUpdate(self, entries):
 		#print "::::", entries
 		#:(neighbourhoods, ok, hasFirstNone, hasLastNone, entryLens) = self.__dBController.getPartialEntriesRegisterWithGaps(entries)
@@ -382,6 +392,19 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		self._select(itemId, veto=True)
 		self.__binarySelectVeto = False
 		log.log("NewEntryRegisterBrowser.__binarySelect return", [], 1)
+	
+	def handleClone(self, entries, ficheId):
+		log.log("NewEntryRegisterBrowser.handleClone", [entries, ficheId], 0)
+		if self.__level in ["FICHE-ENTRY", "FICHE-GAP"]:
+			self.locate(ficheId)
+		else:
+			if not self._incrementalUpdate(entries):
+				(elements, self.__entryLens) = self.__dBController.getEntriesRegisterWithGaps()
+				self.__fillRegister(elements)
+				self._initialized = True
+			else:
+				self._showUpdate()
+		log.log("NewEntryRegisterBrowser.handleClone return", [], 1)
 
 	def nonSmartSelect(self, event):
 	#mapsafe

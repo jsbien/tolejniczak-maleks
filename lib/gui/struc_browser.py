@@ -44,6 +44,13 @@ class StructureRegisterBrowser(RegisterBrowser):
 		self._initialized = True
 		log.log("StructureRegisterBrowser.setRegister return", [], 1)
 
+	def handleClone(self, ficheId):
+		log.log("StructureRegisterBrowser.handleClone", [], 0)
+		if self.__ficheLevel:
+			self.__selectStructureNode(self.__element)
+			self.select(ficheId)
+		log.log("StructureRegisterBrowser.handleClone return", [], 1)
+
 	def __fillRegister(self, elements):
 		log.log("StructureRegisterBrowser.__fillRegister", [elements], 0)
 		i = 0

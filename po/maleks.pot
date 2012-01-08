@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-11 19:41+0100\n"
+"POT-Creation-Date: 2012-01-08 17:06+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,6 +21,9 @@ msgid "&About"
 msgstr ""
 
 msgid "&Background"
+msgstr ""
+
+msgid "&Clone fiche"
 msgstr ""
 
 msgid "&Close"
@@ -125,6 +128,12 @@ msgstr ""
 msgid "Actual entry"
 msgstr ""
 
+msgid "Actual entry of clone"
+msgstr ""
+
+msgid "Actual entry of original fiche"
+msgstr ""
+
 msgid "Always visible"
 msgstr ""
 
@@ -155,7 +164,13 @@ msgstr ""
 msgid "Border"
 msgstr ""
 
+msgid "Cancel"
+msgstr ""
+
 msgid "Choose work mode"
+msgstr ""
+
+msgid "Clones fiche"
 msgstr ""
 
 msgid "Close the document"
@@ -171,6 +186,12 @@ msgid "Decrease the magnification"
 msgstr ""
 
 msgid "Default mode"
+msgstr ""
+
+msgid "Delete &logs"
+msgstr ""
+
+msgid "Delete log files"
 msgstr ""
 
 msgid "Display everything"
@@ -252,6 +273,9 @@ msgid "Export bookmarks as task register"
 msgstr ""
 
 msgid "Fiche already indexed in entry prefix index"
+msgstr ""
+
+msgid "Fiche cloning"
 msgstr ""
 
 msgid "Fit &page"
@@ -355,6 +379,9 @@ msgid "Neither display the foreground layer nor the background layer"
 msgstr ""
 
 msgid "None"
+msgstr ""
+
+msgid "OK"
 msgstr ""
 
 msgid "One &to one"

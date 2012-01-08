@@ -145,7 +145,7 @@ class HintRegisterBrowser(WindowRegisterBrowser):
 				elif collator.compare(anyHint(self.__hints[right]), what) > 0:
 					return right
 				else:
-					return right + 1			
+					return right + 1
 			lenn = right - left
 			center = left + lenn // 2
 			if collator.compare(anyHint(self.__hints[center]), what) > 0:

@@ -54,6 +54,7 @@ from maleks.gui.toppanel import TopPanel
 from maleks.gui.msg_panel import MessagePanel
 from maleks.gui.regbar import RegisterToolbar
 from maleks.gui import dialogs
+from maleks.gui.dialogs import CloneDialog
 from maleks.gui.left_panel import MainIndicesPanel, SecondaryIndicesPanel, ControlPanel
 #from djvusmooth.text import mangle as text_mangle
 #import djvusmooth.models.metadata
@@ -65,7 +66,7 @@ from maleks import config
 from maleks.maleks import log
 from maleks.maleks.fiche import StructureIndex, Configuration
 from maleks.maleks.registers import HintRegister
-from maleks.maleks.useful import stru, ustr, Counter
+from maleks.maleks.useful import stru, ustr, Counter, nvl
 from maleks.gui.mode import Mode
 from maleks.db.db import DBController
 
@@ -711,7 +712,8 @@ class MainWindow(wx.Frame):
         [
             (_(u'&Reset database'), _(u'Remove entries from database'), self.on_reset_db, None),
             (_(u'&Dump log to file'), _(u'Dump current log to file'), self.on_dump_log, None),
-            (_(u'Delete &logs'), _(u'Delete log files'), self.on_delete_logs, None)
+            (_(u'Delete &logs'), _(u'Delete log files'), self.on_delete_logs, None),
+            (_(u'&Clone fiche'), _(u'Clones fiche'), self.on_clone_fiche, None)
         ]:
             self._menu_item(menu, caption, help, method, icon = icon)
         return menu
@@ -1070,6 +1072,7 @@ class MainWindow(wx.Frame):
         self._install_shortcut(li, wx.ACCEL_CTRL, ord(']'), self.on_next_binary_accept)
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('['), self.on_prev_binary_accept)
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('B'), self.on_stop_binary)
+        self._install_shortcut(li, wx.ACCEL_CTRL, ord('K'), self.on_clone_fiche)
         self._install_shortcut(li, wx.ACCEL_CTRL, wx.WXK_LEFT, self.on_nav_history_prev)
         self._install_shortcut(li, wx.ACCEL_CTRL, wx.WXK_RIGHT, self.on_nav_history_next)
         #self._install_shortcut(li, wx.ACCEL_CTRL, ord('J'), self.on_me)
@@ -1936,6 +1939,37 @@ class MainWindow(wx.Frame):
     #        return
     #    self.text_model[self.page_no].raw_value = sexpr
 
+    def on_clone_fiche(self, event):
+        log.op("on_clone_fiche", [self.ficheId], 0)
+        if self.active_register.binarySearchActive():
+            log.opr("on_clone_fiche return", [], 1)
+            return
+        if self.ficheId != None:
+            originalEntry = ""
+            actualEntry = ""
+            if self.dBController != None:
+                actualEntry = self.dBController.getActualEntryForFiche(self.ficheId)
+                originalEntry = self.dBController.getOriginalEntryForFiche(self.ficheId)
+            dialog = CloneDialog(None, wx.ID_ANY, _('Fiche cloning'), size=(300, 110))
+            dialog.setEntry(nvl(originalEntry), nvl(actualEntry))
+            rc = dialog.ShowModal()
+            if rc == wx.ID_OK:
+                cloneId = self.index.clone(self.ficheId)
+                if self.dBController != None:
+                    (original, ficheActual, cloneActual) = dialog.GetValue()
+                    self.dBController.cloneFiche(self.ficheId, cloneId, original, ficheActual, cloneActual)
+                    if actualEntry == None or actualEntry == "":
+                        self.new_entryreg_browser.handleClone([ficheActual, cloneActual], self.ficheId)
+                    else:
+                        self.new_entryreg_browser.handleClone([actualEntry, ficheActual, cloneActual], self.ficheId)
+                self.strucreg_browser.handleClone(self.ficheId)
+                # TODO: !A klonowanie wartosci indeksow - wtedy trzeba tez odswiezyc wykaz wielopoziomowy
+                self.status_bar.SetStatusText(_('Page %(pageno)d of %(npages)d') % {'pageno':self.index.getFicheNoById(self.ficheId), 'npages':self.index.getFicheNo()}, 1)
+                self.update_indices()
+                self.update_panels()
+        dialog.Destroy()
+        log.opr("on_clone_fiche return", [], 2)
+
     def do_percent_zoom(self, percent):
         self.page_widget.zoom = PercentZoom(percent)
         self.zoom_menu_items[percent].Check()
@@ -2023,12 +2057,12 @@ class MainWindow(wx.Frame):
         else: # otwieramy nowa kartoteke
             try:
                 log.startLog(path)
-                self.index = StructureIndex(path) # utworz indeks struktury
                 self.config = Configuration(path) # odczytaj plik konfiguracyjny kartoteki
                 self.config.configureDatabase(self.dBController) # skonfiguruj
                     # kontroler bazy danych dla konkretnej kartoteki
                 if self.dBController != None:
                     log.dumpDatabase(self.dBController.dumpDatabase())
+                self.index = StructureIndex(path, self.dBController) # utworz indeks struktury
                 # zainicjalizuj niektore widoki wykazow:
                 # TODO: ! wyraznie napisac dlaczego nie moga byc w initialize_registers
                 self.entryreg_browser.initialize() # TODO: C przeniesc do initialize_registers i dac
@@ -2277,6 +2311,7 @@ class MainWindow(wx.Frame):
         msg += u'CTRL-H: akceptacja napisu z panelu podpowiedzi i przejście do następnej fiszki\n'
         msg += u'CTRL-D: dodanie fiszki do zakładek\n'
         msg += u'CTRL-R: otwarcie wykazu zadaniowego z pliku\n'
+        msg += u'CTRL-K: klonowanie fiszki\n'
         msg += u'CTRL-ENTER: • jeżeli widoczny jest wykaz struktury, haseł lub wielopoziomowy: przejście poziom niżej (do elementu zaznaczonego w wykazie)\n'
         msg += u'• jeżeli fokus jest w panelu edycji: skopiowanie do panelu edycji zawartości panelu podpowiedzi\n'
         msg += u'• jeżeli widoczny jest wykaz podpowiedzi: przejście do wykazu haseł z ewentualnym rozpoczęciem celowego wyszukiwania binarnego dla zaznaczonego elementu wykazu podpowiedzi\n'

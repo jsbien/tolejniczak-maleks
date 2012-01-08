@@ -125,8 +125,11 @@ class DBEntryController(DBCommon):
 
 	def __entryLimits(self, cursor, entry):
 		return (self.__firstEntry(cursor, entry), self.__lastEntry(cursor, entry))
-
+		
 	def __single(self, cursor, query, pars):
+		return self._single(cursor, query, pars)
+
+	def _single(self, cursor, query, pars):
 		self._execute(cursor, query, pars)
 		row = cursor.fetchone()
 		if row == None:

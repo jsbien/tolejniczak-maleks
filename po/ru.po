@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-11 19:41+0100\n"
+"POT-Creation-Date: 2012-01-08 17:06+0100\n"
 "PO-Revision-Date: 2010-06-26 18:05+0300\n"
 "Last-Translator: Kyrill Detinov <lazy.kent.suse@gmail.com>\n"
 "Language-Team: openSUSE Translation Team\n"
@@ -21,6 +21,9 @@ msgstr "&О программе"
 
 msgid "&Background"
 msgstr "&Фон"
+
+msgid "&Clone fiche"
+msgstr ""
 
 msgid "&Close"
 msgstr "&Закрыть"
@@ -126,6 +129,12 @@ msgstr ""
 msgid "Actual entry"
 msgstr ""
 
+msgid "Actual entry of clone"
+msgstr ""
+
+msgid "Actual entry of original fiche"
+msgstr ""
+
 msgid "Always visible"
 msgstr "Всегда показывать"
 
@@ -160,8 +169,15 @@ msgstr "закладки"
 msgid "Border"
 msgstr "Рамка"
 
+msgid "Cancel"
+msgstr ""
+
 msgid "Choose work mode"
 msgstr ""
+
+#, fuzzy
+msgid "Clones fiche"
+msgstr "Последн&яя страница"
 
 msgid "Close the document"
 msgstr "Закрыть документ"
@@ -176,6 +192,12 @@ msgid "Decrease the magnification"
 msgstr "Уменьшить масштаб"
 
 msgid "Default mode"
+msgstr ""
+
+msgid "Delete &logs"
+msgstr ""
+
+msgid "Delete log files"
 msgstr ""
 
 msgid "Display everything"
@@ -258,6 +280,9 @@ msgid "Export bookmarks as task register"
 msgstr ""
 
 msgid "Fiche already indexed in entry prefix index"
+msgstr ""
+
+msgid "Fiche cloning"
 msgstr ""
 
 msgid "Fit &page"
@@ -362,6 +387,9 @@ msgstr "Не показывать фон и передний план"
 
 msgid "None"
 msgstr "Ничего"
+
+msgid "OK"
+msgstr ""
 
 msgid "One &to one"
 msgstr "&Один к одному"
@@ -602,10 +630,6 @@ msgstr "слова"
 #, fuzzy
 #~ msgid "First fiche"
 #~ msgstr "Перв&ая страница"
-
-#, fuzzy
-#~ msgid "Last fiche"
-#~ msgstr "Последн&яя страница"
 
 #, fuzzy
 #~ msgid "Bookmarks"
