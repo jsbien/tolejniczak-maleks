@@ -1,7 +1,7 @@
 # encoding=UTF-8
 # Copyright © 2008, 2009, 2010, 2011 Jakub Wilk <jwilk@jwilk.net>
 # Copyright © 2009 Mateusz Turcza <mturcza@mimuw.edu.pl>
-# Copyright © 2011 Tomasz Olejniczak <tomek.87@poczta.onet.pl>
+# Copyright © 2011, 2012 Tomasz Olejniczak <tomek.87@poczta.onet.pl>
 #
 # This package is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -276,6 +276,111 @@ class DocumentProxy(object):
 #
 #    def notify_node_deselect(self, node):
 #        self._owner.SetStatusText('')
+
+# TODO: D tutaj bo ma cykliczne zaleznosci wzgledem gui.main
+class PreviewDialog(wx.Frame):
+
+    def __init__(self, *args, **kwargs):
+        wx.Frame.__init__(self, *args, **kwargs)
+        self.__context = Context(self)
+        self.Bind(wx.EVT_DJVU_MESSAGE, self.__handleMessage)
+        self.SetSize((350, 475))
+        panel = wx.Panel(self)
+        mainSizer = wx.BoxSizer(wx.VERTICAL)
+        self.__label = wx.StaticText(panel, wx.ID_ANY, _('Preview'))
+        self.__scrolledPanel = ScrolledPanel(panel)
+        mainSizer.Add(self.__label, 0, wx.ALIGN_CENTER | wx.EXPAND)
+        mainSizer.Add(self.__scrolledPanel, 1, wx.ALIGN_CENTER | wx.EXPAND)
+        panel.SetSizer(mainSizer)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        self.__scrolledPanel.SetSizer(sizer)
+        self.__scrolledPanel.SetupScrolling()
+        self.__widget = PageWidget(self.__scrolledPanel)
+        self.__widget.render_mode = djvu.decode.RENDER_COLOR
+        self.__scrolledPanel.Bind(wx.EVT_SIZE, self.__widget.on_parent_resize)
+        sizer.Add(self.__widget, 0, wx.ALL, 0)
+        self.Bind(wx.EVT_KEY_UP, self.__onKey)
+        panel.Bind(wx.EVT_KEY_UP, self.__onKey)
+        self.__widget.Bind(wx.EVT_KEY_UP, self.__onKey)
+        self.__scrolledPanel.Bind(wx.EVT_KEY_UP, self.__onKey)
+        self.__pageJob = None
+        self.__pageProxy = None
+        self.__widget.zoom = FitPageZoom()
+        self.__index = None
+        self.__ficheNo = 0
+        li = []
+        self.__installShortcut(li, wx.ACCEL_CTRL, ord('V'), self.__onClose)
+        self.SetAcceleratorTable(wx.AcceleratorTable(li))
+
+    def setTitle(self, title):
+        self.__label.SetLabel(title)
+
+    def __onClose(self, event):
+        self.__parent.close_preview()
+
+    def setParent(self, parent):
+        self.__parent = parent
+
+    def setIndex(self, index):
+        self.__index = index
+
+    def showFicheByNo(self, ficheNo):
+        self.__ficheNo = ficheNo
+        self.__show(self.__index.getFiche(self.__ficheNo).getDjVuPath())
+        diff = self.__ficheNo - self.__original
+        if diff > 0:
+            self.setTitle(_('Preview') + u": " + str(diff) + u" " + _('after'))
+        elif diff < 0:
+            self.setTitle(_('Preview') + u": " + str(-diff) + u" " + _('before'))
+        else:
+            self.setTitle(_('Preview'))
+
+    def __onKey(self, event):
+        if event.GetKeyCode() == wx.WXK_UP:
+            self.__ficheNo -= 1
+            if self.__ficheNo < 0:
+                self.__ficheNo = 0
+            self.showFicheByNo(self.__ficheNo)
+        elif event.GetKeyCode() == wx.WXK_DOWN:
+            self.__ficheNo += 1
+            if self.__ficheNo == self.__index.getFicheNo():
+                self.__ficheNo -= 1
+            self.showFicheByNo(self.__ficheNo)
+        elif event.GetKeyCode() == wx.WXK_ESCAPE:
+            self.__parent.close_preview()
+    
+    def show(self, ficheNo):
+        self.Show()
+        self.__original = ficheNo
+        self.showFicheByNo(ficheNo)
+        self.__widget.SetFocus()
+
+    def __handleMessage(self, event):
+        message = event.message
+        if isinstance(message, (djvu.decode.RedisplayMessage, djvu.decode.RelayoutMessage)):
+            if self.__pageJob is message.page_job:
+                self.updatePageWidget()
+    
+    def __installShortcut(self, li, accel, key, method):
+        idd = wx.NewId()
+        self.Bind(wx.EVT_MENU, method, id=idd)
+        li.append((accel, key, idd))
+        return li
+
+    def __show(self, url):
+        try:
+            self.__document = self.__context.new_document(djvu.decode.FileURI(url))
+            self.updatePageWidget(newPage=True)
+        except djvu.decode.JobFailed:
+            pass # TODO: !A co tutaj?
+
+    def updatePageWidget(self, newPage=False):
+        if self.__pageJob == None or newPage:
+            self.__widget.Show()
+            page = self.__document.pages[0]
+            self.__pageJob = page.decode(wait=True)
+            self.__pageProxy = PageProxy(page=page)
+        self.__widget.page = self.__pageProxy
 
 class ScrolledPanel(wx.lib.scrolledpanel.ScrolledPanel):
 
@@ -573,6 +678,7 @@ class MainWindow(wx.Frame):
         self.fiche_for_locate = None
         self.locate = 0
         self.ignore_entries = False
+        self.preview = None
         
         #self.taskreg_browser.Bind(wx.EVT_SET_FOCUS, self.defocus, self.taskreg_browser)
 
@@ -710,7 +816,7 @@ class MainWindow(wx.Frame):
         menu = wx.Menu()
         for caption, help, method, icon in \
         [
-            (_(u'&Reset database'), _(u'Remove entries from database'), self.on_reset_db, None),
+            #(_(u'&Reset database'), _(u'Remove entries from database'), self.on_reset_db, None),
             (_(u'&Dump log to file'), _(u'Dump current log to file'), self.on_dump_log, None),
             (_(u'Delete &logs'), _(u'Delete log files'), self.on_delete_logs, None),
             (_(u'&Clone fiche'), _(u'Clones fiche'), self.on_clone_fiche, None)
@@ -816,12 +922,13 @@ class MainWindow(wx.Frame):
         log.log("stop_browsing_entry_history return", [], 1)
         #print "invalidated"
 
-    def on_reset_db(self, event):
-        log.op("on_reset_db", [event], 0)
-        if self.dBController != None:
-            if wx.MessageDialog(self, _("Are you sure?"), _("Database reset"), wx.YES_NO).ShowModal() == wx.ID_YES:
-                self.dBController.reset()
-        log.opr("on_reset_db return", [], 1)
+    # TODO: NOTE przeniesione do skryptu
+    #def on_reset_db(self, event):
+    #    log.op("on_reset_db", [event], 0)
+    #    if self.dBController != None:
+    #        if wx.MessageDialog(self, _("Are you sure?"), _("Database reset"), wx.YES_NO).ShowModal() == wx.ID_YES:
+    #            self.dBController.reset()
+    #    log.opr("on_reset_db return", [], 1)
 
     def on_dump_log(self, event):
         if self.dBController != None:
@@ -844,6 +951,15 @@ class MainWindow(wx.Frame):
 
     # TODO: A rozne przypadki bledow:
     
+    def entry_for_message(self, ignored, target):
+        if self.top_panel.getEditPanelContent() == '':
+            if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive() and self.active_register.hasTarget():
+                return self.active_register.getTarget()
+            else:
+                return None
+        else:
+            return self.top_panel.getEditPanelContent()
+    
     def on_edit_accept(self, event, binaryOK=False, target=None):
         #print "edit"
         #if self.active_register.binarySearchActive() and not binaryOK:
@@ -851,9 +967,17 @@ class MainWindow(wx.Frame):
         #from maleks.maleks.useful import Counter
         #c = Counter()
         log.op("on_edit_accept", [event, binaryOK, target, self.top_panel.getEditPanelContent()], 0)
+        # TODO: C entryForMessage zostalo dodane o wiele pozniej na szybko, mozna to zrefaktoryzowac zeby
+        # polaczyc je ze zmienna entry i tylko raz obliczac haslo
+        entryForMessage = self.entry_for_message(binaryOK, target)
+        if entryForMessage != None and (not binaryOK):
+            self.msg_panel.submit(self.ficheId, entryForMessage)
+        import time
         if self.top_panel.getEditPanelContent() == '':
             if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive() and (not binaryOK) and self.active_register.hasTarget():
                 self.on_automatic_binary_accept(emptyPanel=True)
+                if not binaryOK:
+                    self.msg_panel.accept(self.ficheId, entryForMessage)
                 log.opr("on_edit_accept return", [], 1)
                 return
             elif binaryOK:
@@ -881,6 +1005,8 @@ class MainWindow(wx.Frame):
                     #print "C"
                     self.on_automatic_binary_accept()
                     #print "D"
+                    if not binaryOK:
+                        self.msg_panel.accept(self.ficheId, entryForMessage)
                     log.opr("on_edit_accept return", [], 5)
                     return
                 #print "E"
@@ -894,6 +1020,8 @@ class MainWindow(wx.Frame):
             msg = self.dBController.addFicheToEntriesIndex(self.ficheId, entry)
             if msg != None:
                 self.error_box(msg)
+                if not binaryOK:
+                    self.msg_panel.error(self.ficheId, entryForMessage)
                 log.opr("on_edit_accept return", [], 6)
                 return
             else:
@@ -927,6 +1055,8 @@ class MainWindow(wx.Frame):
         self.ignore_entries = False
         #print "koncowka", c
         #pass
+        if not binaryOK:
+            self.msg_panel.accept(self.ficheId, entryForMessage)
         log.opr("on_edit_accept return", [], 4)
 
     def on_edit_prefix_accept(self, event):
@@ -955,9 +1085,14 @@ class MainWindow(wx.Frame):
         #if self.active_register.binarySearchActive():
         #    return
         log.op("on_hint_accept", [event, binaryOK, target, self.top_panel.getHint()], 0)
+        entryForMessage = self.entry_for_message(binaryOK, target)
+        if entryForMessage != None and (not binaryOK):
+            self.msg_panel.submit(self.ficheId, entryForMessage)
         if self.top_panel.getHint() == '':
             if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive() and (not binaryOK) and self.active_register.hasTarget():
                 self.on_automatic_binary_accept(hint=True, emptyPanel=True)
+                if not binaryOK:
+                    self.msg_panel.accept(self.ficheId, entryForMessage)
                 log.opr("on_hint_accept return", [], 1)
                 return
             elif binaryOK:
@@ -981,6 +1116,8 @@ class MainWindow(wx.Frame):
                 if self.active_register.hasTarget():
                     self.on_automatic_binary_accept(hint=True)
                     log.opr("on_hint_accept return", [], 4)
+                    if not binaryOK:
+                        self.msg_panel.accept(self.ficheId, entryForMessage)
                     return
                 self.active_register.prepareForActiveBinary()
         elif self.active_register == self.new_entryreg_browser and not self.active_register.binarySearchActive():
@@ -989,6 +1126,8 @@ class MainWindow(wx.Frame):
             msg = self.dBController.addFicheToEntriesIndex(self.ficheId, entry)
             if msg != None:
                 self.error_box(msg)
+                if not binaryOK:
+                    self.msg_panel.error(self.ficheId, entryForMessage)
                 log.opr("on_hint_accept return", [], 5)
                 return
             else:
@@ -1010,6 +1149,8 @@ class MainWindow(wx.Frame):
                     self.active_register.updateAfterAccept(entry)
             self.update_indices()
         self.ignore_entries = False
+        if not binaryOK:
+            self.msg_panel.accept(self.ficheId, entryForMessage)
         log.opr("on_hint_accept return", [], 6)
 
     def on_up(self, event):
@@ -1073,6 +1214,7 @@ class MainWindow(wx.Frame):
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('['), self.on_prev_binary_accept)
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('B'), self.on_stop_binary)
         self._install_shortcut(li, wx.ACCEL_CTRL, ord('K'), self.on_clone_fiche)
+        self._install_shortcut(li, wx.ACCEL_CTRL, ord('V'), self.on_preview)
         self._install_shortcut(li, wx.ACCEL_CTRL, wx.WXK_LEFT, self.on_nav_history_prev)
         self._install_shortcut(li, wx.ACCEL_CTRL, wx.WXK_RIGHT, self.on_nav_history_next)
         #self._install_shortcut(li, wx.ACCEL_CTRL, ord('J'), self.on_me)
@@ -1271,7 +1413,9 @@ class MainWindow(wx.Frame):
             self.Destroy()
 
     def on_recently_used(self, event):
+        self.msg_panel.showMessage(_('Opening archive') + u' ' + ustr(self.recently_used_menu[event.GetId()]))
         self.do_open(self.recently_used_menu[event.GetId()])
+        self.msg_panel.showMessage(_('Opened archive') + u' ' + ustr(self.recently_used_menu[event.GetId()]))
 
     def on_open(self, event):
         dialog = OpenDialog(self)
@@ -1286,7 +1430,9 @@ class MainWindow(wx.Frame):
                         self.recently_used = self.recently_used + [os.path.abspath(dialog.GetPath())]
                     else:
                         self.recently_used = self.recently_used + [os.path.abspath(dialog.GetPath())]
+                self.msg_panel.showMessage(_('Opening archive') + u' ' + ustr(dialog.GetPath()))
                 self.do_open(dialog.GetPath())
+                self.msg_panel.showMessage(_('Opened archive') + u' ' + ustr(dialog.GetPath()))
         finally:
             dialog.Destroy()
         #print "open"
@@ -1539,6 +1685,8 @@ class MainWindow(wx.Frame):
                 return
             self._page_no = n
             self.status_bar.SetStatusText(_('Page %(pageno)d of %(npages)d') % {'pageno':(n + 1), 'npages':self.index.getFicheNo()}, 1)
+            if self.preview != None:
+                self.close_preview()
             self.switch_document(self._page_no)
             #self.update_page_widget(new_page = True)
             log.log("set page_no return", [], 3)
@@ -1803,6 +1951,25 @@ class MainWindow(wx.Frame):
         self.top_panel.setHint(hint)
         log.log("on_hint_selected return", [], 1)
 
+    def close_preview(self):
+        self.preview.Close()
+        self.preview = None
+
+    def on_preview(self, event):
+        log.op("on_preview", [event], 0)
+        if self.preview != None:
+            self.close_preview()
+        else:
+            # TODO: !A jezeli zostanie zaimplementowane chowanie panelu indeksow to to sie rozjedzie!
+            height = self.GetSizeTuple()[1] - self.left_sidepanel.GetSizeTuple()[1]
+            width = self.GetSizeTuple()[0] - self.left_sidepanel.GetSizeTuple()[0]
+            #print width, height
+            self.preview = PreviewDialog(self, wx.ID_ANY, _('Preview'), style=wx.FRAME_FLOAT_ON_PARENT, pos=(width, height))
+            self.preview.setParent(self)
+            self.preview.setIndex(self.index)
+            self.preview.show(self.page_no)
+        log.opr("on_preview return", [], 1)
+
     def on_goto_page(self, event):
         log.op("on_goto_page", [event], 0)
         dialog = dialogs.NumberEntryDialog(
@@ -1945,6 +2112,8 @@ class MainWindow(wx.Frame):
             log.opr("on_clone_fiche return", [], 1)
             return
         if self.ficheId != None:
+            if self.preview != None:
+                self.close_preview()
             originalEntry = ""
             actualEntry = ""
             if self.dBController != None:
@@ -2185,10 +2354,11 @@ class MainWindow(wx.Frame):
                 self.regbar.setPath(self.strucreg_browser.getPath())
         self.hintreg_browser.DeleteAllItems()
         if self.hintRegister != None:
-            print "jest"
+            #print "jest"
             self.hintreg_browser.setRegister(self.hintRegister)
         else:
-            print "niema"
+            #print "niema"
+            pass
 
     def update_registers(self):
         log.log("update_registers", [], 0)
@@ -2312,6 +2482,7 @@ class MainWindow(wx.Frame):
         msg += u'CTRL-D: dodanie fiszki do zakładek\n'
         msg += u'CTRL-R: otwarcie wykazu zadaniowego z pliku\n'
         msg += u'CTRL-K: klonowanie fiszki\n'
+        msg += u'CTRL-V: podgląd sąsiednich fiszek\n'
         msg += u'CTRL-ENTER: • jeżeli widoczny jest wykaz struktury, haseł lub wielopoziomowy: przejście poziom niżej (do elementu zaznaczonego w wykazie)\n'
         msg += u'• jeżeli fokus jest w panelu edycji: skopiowanie do panelu edycji zawartości panelu podpowiedzi\n'
         msg += u'• jeżeli widoczny jest wykaz podpowiedzi: przejście do wykazu haseł z ewentualnym rozpoczęciem celowego wyszukiwania binarnego dla zaznaczonego elementu wykazu podpowiedzi\n'

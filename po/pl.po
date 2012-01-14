@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-01-08 17:06+0100\n"
+"POT-Creation-Date: 2012-01-14 21:50+0100\n"
 "PO-Revision-Date: 2009-05-31 14:45+CEST\n"
 "Last-Translator: Tomasz Olejniczak <tomek.87@poczta.onet.pl>\n"
 "Language-Team: none\n"
@@ -273,6 +273,9 @@ msgstr "Eksportuj zakładki"
 msgid "Export bookmarks as task register"
 msgstr "Eskportuj zakładki jako wykaz zadaniowy"
 
+msgid "Fiche"
+msgstr "Fiszka"
+
 msgid "Fiche already indexed in entry prefix index"
 msgstr "Fiszka została już zaindeksowana w indeksie prefiksów hasłowych"
 
@@ -403,6 +406,12 @@ msgstr "Otwórz plik: "
 msgid "Open task register"
 msgstr "Otwórz wykaz zadaniowy"
 
+msgid "Opened archive"
+msgstr "Otwarto kartotekę"
+
+msgid "Opening archive"
+msgstr "Otwieranie kartoteki"
+
 msgid "Original entry"
 msgstr "Hasło oryginalne"
 
@@ -430,6 +439,9 @@ msgstr "Strona nieznana"
 
 msgid "Polygon"
 msgstr "Wielokąt"
+
+msgid "Preview"
+msgstr "Podgląd"
 
 msgid "Pushpin"
 msgstr "Pinezka"
@@ -546,11 +558,20 @@ msgstr "Pow&iększ"
 msgid "Zoom &out"
 msgstr "P&omniejsz"
 
+msgid "accepted with entry"
+msgstr "zaakceptowana z hasłem"
+
+msgid "after"
+msgstr "po"
+
 msgid "all"
 msgstr "wszystko"
 
 msgid "all pages"
 msgstr "wszystkie strony"
+
+msgid "before"
+msgstr "przed"
 
 msgid "bookmarks"
 msgstr "zakładki"
@@ -588,6 +609,9 @@ msgstr "linia"
 msgid "lines"
 msgstr "linie"
 
+msgid "not accepted with entry"
+msgstr "nie zaakceptowana z hasłem"
+
 msgid "page"
 msgstr "strona"
 
@@ -605,6 +629,9 @@ msgstr "regiony"
 
 msgid "steps"
 msgstr "kroków"
+
+msgid "submitted for acceptation with entry"
+msgstr "zgłoszona do akceptacji z hasłem"
 
 msgid "unknown"
 msgstr "nieznany"

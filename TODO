@@ -32,14 +32,16 @@ Ostatnio wykonane:
 * Wyszukiwanie przyrostowe podpowiedzi przy wpisywaniu w panel edycji
 * Sprawdzenie, co się dzieje z panelem wykazów gdy jest ukryty (odpowiedź: normalnie działa)
 * Klonowanie fiszek
+* Komunikaty przy operacjach - dwuczęściowe (dwie daty) - początek i potwierdzenie (przy okazji)
+* Podgląd sąsiednich fiszek w porządku naturalnym
+* Usunąć zerowanie bazy danych z menu operacje
+* Dokumentacja formatu kartoteki (katalogu z danymi, indeksu struktury), instrukcja i skrypt inicjowania
 
 Nowa wersja:
 
-* Dokumentacja formatu kartoteki (katalogu z danymi, indeksu struktury), instrukcja i skrypt inicjowania
+* Podświetlanie panelu edycji jeżeli jest hipoteza tylko dla fiszek nie zaindeksowanych
 * Po zakończeniu wyszukiwania celowego powinna się wyświetlać ostatnia fiszka targetu a zaznaczenie powinno być ustawione gdzieś w pobliżu targetu, poza tym wyświetla się fiszka z nie tego hasła (błąd?)
-* Komunikaty przy operacjach - dwuczęściowe (dwie daty) - początek i potwierdzenie (przy okazji)
-* W każdym momencie powinno być możliwe przejście do następnej fiszki w porządku naturalnym
-* Zastąpienie wywołań poleceń linuksowych przez fukcje Pythona
+* Zastąpienie wywołań poleceń linuksowych przez funkcje Pythona
 
 Proste:
 
@@ -66,6 +68,7 @@ Błędy do usunięcia:
 
 Inne:
 
+* Czyszczenie pola edycji i podpowiedzi na czas odświeżania wykazu przy akceptacji fiszki
 * Uporządkowanie spraw związanych z kasztowością
 * Odświeżanie panelu indeksów po akceptacji fiszki w poziomie fiszek w wykazie haseł
 * Szukanie celowe w konkretnej dziurze dla fiszek nie po kolei
@@ -107,6 +110,10 @@ Inne:
 * Zmiana schematu bazy danych
 * Zrzuty baz danych do katalogu z kartoteką
 * Przygotowanie pakietu debianowego i instalki Windows (być może wystarczy wersja portable)
+
+Do przemyślenia:
+
+* W każdym momencie powinno być możliwe przejście do następnej fiszki w porządku naturalnym
 
 Proste drobiazgi:
 

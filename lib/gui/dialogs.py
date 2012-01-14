@@ -1,6 +1,6 @@
 # encoding=UTF-8
 # Copyright © 2008, 2009 Jakub Wilk <jwilk@jwilk.net>
-# Copyright © 2010, 2011 Tomasz Olejniczak <tomek.87k@poczta.onet.pl>
+# Copyright © 2011, 2012 Tomasz Olejniczak <tomek.87k@poczta.onet.pl>
 #
 # This package is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,10 +37,6 @@ class CloneDialog(wx.Dialog):
         panel.SetSizerAndFit(sizer)
         self.__OKButton.Bind(wx.EVT_BUTTON, self.__onOK)
         self.__cancelButton.Bind(wx.EVT_BUTTON, self.__onCancel)
-
-   # def ShowModal(self):
-   #     wx.Dialog.ShowModal(self)
-   #     self.__
 
     def setEntry(self, original, actual):
         self.__original.SetValue(original)

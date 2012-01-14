@@ -26,7 +26,10 @@ else:
         return unicode(s, "utf-8") # TODO: NOTE bo _ musi zawsze zwracac unicode (por. db.getWorksForEntry itp.)
 del dir
 
-_ = gettext.translation('maleks', os.path.join(os.path.dirname(sys.argv[0]), 'locale'), languages=['pl']).ugettext
+try:
+    _ = gettext.translation('maleks', os.path.join(os.path.dirname(sys.argv[0]), 'locale'), languages=['pl']).ugettext
+except IOError:
+    _ = gettext.translation('maleks', '/usr/local/bin/locale', languages=['pl']).ugettext
 
 # Some dummy translations:
 if False:

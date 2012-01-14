@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-01-08 17:06+0100\n"
+"POT-Creation-Date: 2012-01-14 21:50+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -272,6 +272,9 @@ msgstr ""
 msgid "Export bookmarks as task register"
 msgstr ""
 
+msgid "Fiche"
+msgstr ""
+
 msgid "Fiche already indexed in entry prefix index"
 msgstr ""
 
@@ -400,6 +403,12 @@ msgid "Open file: "
 msgstr ""
 
 msgid "Open task register"
+msgstr ""
+
+msgid "Opened archive"
+msgstr ""
+
+msgid "Opening archive"
 msgstr ""
 
 msgid "Original entry"
@@ -545,6 +554,9 @@ msgstr ""
 msgid "Zoom &out"
 msgstr ""
 
+msgid "accepted with entry"
+msgstr ""
+
 msgid "all"
 msgstr ""
 
@@ -587,6 +599,9 @@ msgstr ""
 msgid "lines"
 msgstr ""
 
+msgid "not accepted with entry"
+msgstr ""
+
 msgid "page"
 msgstr ""
 
@@ -603,6 +618,9 @@ msgid "regions"
 msgstr ""
 
 msgid "steps"
+msgstr ""
+
+msgid "submitted for acceptation with entry"
 msgstr ""
 
 msgid "unknown"

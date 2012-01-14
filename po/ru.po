@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: maleks 0.1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-01-08 17:06+0100\n"
+"POT-Creation-Date: 2012-01-14 21:50+0100\n"
 "PO-Revision-Date: 2010-06-26 18:05+0300\n"
 "Last-Translator: Kyrill Detinov <lazy.kent.suse@gmail.com>\n"
 "Language-Team: openSUSE Translation Team\n"
@@ -279,6 +279,10 @@ msgstr "закладки"
 msgid "Export bookmarks as task register"
 msgstr ""
 
+#, fuzzy
+msgid "Fiche"
+msgstr "Перв&ая страница"
+
 msgid "Fiche already indexed in entry prefix index"
 msgstr ""
 
@@ -407,6 +411,12 @@ msgid "Open file: "
 msgstr ""
 
 msgid "Open task register"
+msgstr ""
+
+msgid "Opened archive"
+msgstr ""
+
+msgid "Opening archive"
 msgstr ""
 
 msgid "Original entry"
@@ -555,6 +565,9 @@ msgstr "У&величить"
 msgid "Zoom &out"
 msgstr "У&меньшить"
 
+msgid "accepted with entry"
+msgstr ""
+
 msgid "all"
 msgstr "все"
 
@@ -597,6 +610,9 @@ msgstr "строка"
 msgid "lines"
 msgstr "строки"
 
+msgid "not accepted with entry"
+msgstr ""
+
 msgid "page"
 msgstr "страница"
 
@@ -615,6 +631,9 @@ msgstr "области"
 msgid "steps"
 msgstr ""
 
+msgid "submitted for acceptation with entry"
+msgstr ""
+
 msgid "unknown"
 msgstr ""
 
@@ -626,10 +645,6 @@ msgstr "слово"
 
 msgid "words"
 msgstr "слова"
-
-#, fuzzy
-#~ msgid "First fiche"
-#~ msgstr "Перв&ая страница"
 
 #, fuzzy
 #~ msgid "Bookmarks"
