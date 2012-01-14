@@ -173,7 +173,7 @@ class TopPanel(wx.Panel, Notifier):
 			self.focusAndSelect() # ... zeby tu zaznaczylo
 		log.log("setHypothesis return", [self.__hypothesisPanel.GetValue()], 1)
 
-	def setEntry(self, entry, browsingHistory=False):
+	def setEntry(self, entry, browsingHistory=False, unselect=False):
 		log.log("setEntry", [entry, browsingHistory], 0)
 		if browsingHistory:
 			self.__browsingHistory = True
@@ -181,6 +181,10 @@ class TopPanel(wx.Panel, Notifier):
 		self.editPanelChanged(None)
 		if browsingHistory:
 			self.__browsingHistory = False
+		if unselect:
+			def __pom():
+				self.__editPanel.SetSelection(len(self.__editPanel.GetValue()), len(self.__editPanel.GetValue()))
+			wx.CallAfter(__pom)
 		log.log("setEntry return", [self.__editPanel.GetValue()], 1)
 
 	def refreshForAutomaticBinary(self, target):

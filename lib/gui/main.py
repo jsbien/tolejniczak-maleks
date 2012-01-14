@@ -2437,7 +2437,7 @@ class MainWindow(wx.Frame):
                 entry = self.dBController.getOriginalEntryForFiche(self.ficheId)
                 #print "entry", c
                 if entry != None:
-                    self.top_panel.setEntry(entry)
+                    self.top_panel.setEntry(entry, unselect=True)
         #print "finish", c
         #print
         log.log("update_panels return", [], 1)
