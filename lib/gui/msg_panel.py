@@ -1,5 +1,5 @@
 # encoding=UTF-8
-# Copyright © 2011 Tomasz Olejniczak <tomek.87@poczta.onet.pl>
+# Copyright © 2011, 2012 Tomasz Olejniczak <tomek.87@poczta.onet.pl>
 #
 # This package is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

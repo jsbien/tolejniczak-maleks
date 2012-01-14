@@ -357,6 +357,9 @@ msgstr "Właściwości linii"
 msgid "Load task register from file"
 msgstr "Wczytaj wykaz zadaniowy z pliku"
 
+msgid "Logs deleted"
+msgstr "Logi usunięte"
+
 #, python-format
 msgid "Magnify %d%%"
 msgstr "Powiększ do %d%%"

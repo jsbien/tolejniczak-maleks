@@ -36,12 +36,12 @@ Ostatnio wykonane:
 * Podgląd sąsiednich fiszek w porządku naturalnym
 * Usunąć zerowanie bazy danych z menu operacje
 * Dokumentacja formatu kartoteki (katalogu z danymi, indeksu struktury), instrukcja i skrypt inicjowania
+* Podświetlanie panelu edycji jeżeli jest hipoteza tylko dla fiszek niezaindeksowanych
+* Zastąpienie wywołań poleceń linuksowych przez funkcje Pythona
 
 Nowa wersja:
 
-* Podświetlanie panelu edycji jeżeli jest hipoteza tylko dla fiszek nie zaindeksowanych
 * Po zakończeniu wyszukiwania celowego powinna się wyświetlać ostatnia fiszka targetu a zaznaczenie powinno być ustawione gdzieś w pobliżu targetu, poza tym wyświetla się fiszka z nie tego hasła (błąd?)
-* Zastąpienie wywołań poleceń linuksowych przez funkcje Pythona
 
 Proste:
 

@@ -1,5 +1,5 @@
 # encoding=UTF-8
-# Copyright © 2011 Tomasz Olejniczak <tomek.87@poczta.onet.pl>
+# Copyright © 2011, 2012 Tomasz Olejniczak <tomek.87@poczta.onet.pl>
 #
 # This package is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -34,10 +34,10 @@ def startLog(absolutePath):
 	mod = 0
 	dirPath = absolutePath
 	absolutePath = os.path.abspath(absolutePath) # TODO: C potrzeba? (skad sie bierze path w do_open)?
-	while os.path.exists(absolutePath + "/log_" + str(mod) + ".txt"):
+	while os.path.exists(absolutePath + os.sep + "log_" + str(mod) + ".txt"):
 		mod += 1
-	f = open(absolutePath + "/log_" + str(mod) + ".txt", "w")
-	path = absolutePath + "/log_" + str(mod) + ".txt"
+	f = open(absolutePath + os.sep + "log_" + str(mod) + ".txt", "w")
+	path = absolutePath + os.sep + "log_" + str(mod) + ".txt"
 	f.write("")
 	f.close()
 

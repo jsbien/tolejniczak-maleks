@@ -947,7 +947,11 @@ class MainWindow(wx.Frame):
             self.page_widget.SetFocus()
 
     def on_delete_logs(self, event):
-        os.system("rm -f " + log.dirPath + "/log_*")
+        for filee in os.listdir(log.dirPath):
+            if len(filee) > 8 and filee[:4] == "log_" and filee[-4:] == ".txt":
+                os.remove(log.dirPath + os.sep + filee)
+        self.msg_panel.showMessage(_('Logs deleted'))
+        #os.system("rm -f " + log.dirPath + "/log_*")
 
     # TODO: A rozne przypadki bledow:
     

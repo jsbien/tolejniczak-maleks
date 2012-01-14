@@ -40,8 +40,8 @@ class HintRegister(object):
 		self.__dictDor = SimpleDictionary() #WordDictionary(5, (u"", u""))
 		self.__new = []
 		self.__path = abspath
-		if os.path.exists(abspath + "/hint.reg"):
-			f = open(abspath + "/hint.reg")
+		if os.path.exists(abspath + os.sep + "hint.reg"):
+			f = open(abspath + os.sep + "hint.reg")
 			for line in f:
 				if line == "\n" or line[0] == "#":
 					continue
@@ -74,8 +74,8 @@ class HintRegister(object):
 		return "(" + res + ")"
 
 	def readUserHints(self, abspath):
-		if os.path.exists(abspath + "/user_hint.reg"):
-			f = open(abspath + "/user_hint.reg")
+		if os.path.exists(abspath + os.sep + "user_hint.reg"):
+			f = open(abspath + os.sep + "user_hint.reg")
 			for line in f:
 				if line == "\n" or line[0] == "#":
 					continue
@@ -152,7 +152,7 @@ class HintRegister(object):
 	#return False
 
 	def saveUserHints(self):
-		f = open(self.__path + "/user_hint.reg", "a")
+		f = open(self.__path + os.sep + "user_hint.reg", "a")
 		for hint in self.__new:
 			hint = hint.replace('\\', '\\\\').replace(',', '\\;')
 			f.write(hint + "\n")
