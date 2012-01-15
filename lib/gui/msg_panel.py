@@ -25,10 +25,15 @@ class MessagePanel(wx.Panel):
 		sizer.Add(self.__list, 0, wx.EXPAND)
 		self.SetSizer(sizer)
 
+	def setParent(self, parent):
+		self.__parent = parent
+
 	def showMessage(self, msg):
 		self.__list.showMessage(msg)
 		self.Refresh()
 		self.Update()
+		self.__parent.Refresh()
+		self.__parent.Update()
 	
 	def submit(self, ficheId, entry):
 		msg = _('Fiche') + u' ' + ustr(ficheId) + u' ' + _('submitted for acceptation with entry') + u' ' + ustr(entry)
