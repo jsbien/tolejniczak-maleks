@@ -880,10 +880,10 @@ class MainWindow(wx.Frame):
 
     def addToHistory(self, entry):
         log.log("addToHistory", [entry, self.entry_history], 0)
-        if (len(self.entry_history) == 0) or (len(self.entry_history) > 0 and self.entry_history[-1] != entry):
+        if (len(self.entry_history) == 0) or (len(self.entry_history) > 0 and self.entry_history[-1] != ustr(entry)):
             if len(self.entry_history) > MainWindow.ENTRY_HISTORY_LIMIT:
                 self.entry_history = self.entry_history[1:]
-            self.entry_history.append(entry)
+            self.entry_history.append(ustr(entry))
         log.log("addToHistory return", [self.entry_history], 1)
 
     def on_nav_history_prev(self, event):
@@ -1086,11 +1086,20 @@ class MainWindow(wx.Frame):
         self.regbar.setPath(path)
         log.log("on_strucutre_element_selected return", [], 1)
 
+    def hint_for_message(self, ignored, target):
+        if self.top_panel.getHint() == '':
+            if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive() and self.active_register.hasTarget():
+                return self.active_register.getTarget()
+            else:
+                return None
+        else:
+            return self.top_panel.getHint()
+
     def on_hint_accept(self, event, binaryOK=False, target=None):
         #if self.active_register.binarySearchActive():
         #    return
         log.op("on_hint_accept", [event, binaryOK, target, self.top_panel.getHint()], 0)
-        entryForMessage = self.entry_for_message(binaryOK, target)
+        entryForMessage = self.hint_for_message(binaryOK, target)
         if entryForMessage != None and (not binaryOK):
             self.msg_panel.submit(self.ficheId, entryForMessage)
         if self.top_panel.getHint() == '':
@@ -2124,7 +2133,7 @@ class MainWindow(wx.Frame):
             if self.dBController != None:
                 actualEntry = self.dBController.getActualEntryForFiche(self.ficheId)
                 originalEntry = self.dBController.getOriginalEntryForFiche(self.ficheId)
-            dialog = CloneDialog(None, wx.ID_ANY, _('Fiche cloning'), size=(300, 110))
+            dialog = CloneDialog(None, wx.ID_ANY, _('Fiche cloning'), size=(500, 110))
             dialog.setEntry(nvl(originalEntry), nvl(actualEntry))
             rc = dialog.ShowModal()
             if rc == wx.ID_OK:

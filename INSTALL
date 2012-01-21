@@ -8,18 +8,24 @@
   * W katalogu os.path.dirname(sys.argv[0]) powinien się znaleźć katalog 'locale' ze źródeł maleksa z tłumaczeniami komunikatów. U mnie jest to /usr/local/bin. Działa to z fragmentem:
   	  _ = gettext.translation('maleks', os.path.join(os.path.dirname(sys.argv[0]), 'locale'), languages=['pl']).ugettext
     z pliku i18n.py, który dodałem bo znajdująca się powyżej pętla for z djvusmooth mi z jakiegoś powodu nie działała.
+    * os.path.dirname(sys.argv[0]) można uzyskać poleceniem 'whereis maleks'
+    * Powyższy krok można wykonać automatycznie skryptem: sudo python install_locale.py
   * utworzyć plik konfiguracyjny $HOME/.config/maleks/maleks.conf:
-	  db=<BAZA>
-		dbpass=<HASLO>
-		dbuser=<UZYTKOWNIK>
-		loglevel=DEBUG
+  
+db=<BAZA>
+dbpass=<HASLO>
+dbuser=<UZYTKOWNIK>
+loglevel=DEBUG
+
 		(podajemy domyślną konfigurację bazy danych której będą używać kartoteki jeżeli nie będzie wpisu w ich pliku config.cfg - ponieważ każda kartoteka musi mieć osobną bazę dobrze w config.cfg umieszczać wpis db, a użytkownika i hasło zdefiniować w maleks.conf)
 
 * konfiguracja mysqla:
 	* w pliku konfiguracyjnym mysql (my.cnf, u mnie jest w /etc/mysql/my.cnf) do wpisów pod [mysqld] dodać:
-  	character_set_server=utf8
-  	collation_server=utf8_polish_ci
-  	character_set_client=utf8
+	
+character_set_server=utf8
+collation_server=utf8_polish_ci
+character_set_client=utf8
+
 	* w katalogu maleks: maleks.sql - skrypt tworzący tabele (nie uruchamiać!)
 
 * postać katalogu z kartoteką niezainicjalizowaną:
@@ -56,22 +62,27 @@
 
 * postać katalogu z kartoteką zainicjalizowaną przez init.py:
   * plik config.cfg, może zawierać (wszystkie elementy opcjonalne):
-  	db<TAB>NAZWA_BAZY_DANYCH_KAROTEKI<NL>
-  	dbuser<TAB>UZYTKOWNIK_BAZY_DANYCH<NL>
-  	dbpass<TAB>HASLO_UZYTKOWNIKA<NL>
-  	hocr_cut<TAB>LICZBA<NL> (LICZBA - w jakiej części pliku hOCR jest hasło na fiszce - jeżeli wpisane jest 0.1 to znaczy, że hasło jest w górnych 10% pliku)
-  	default_task_register<TAB>DOMYSLNY_WYKAZ_ZADANIOWY<NL> (ten wykaz musi się znajdować w karotece)
+  
+db<TAB>NAZWA_BAZY_DANYCH_KAROTEKI<NL>
+dbuser<TAB>UZYTKOWNIK_BAZY_DANYCH<NL>
+dbpass<TAB>HASLO_UZYTKOWNIKA<NL>
+hocr_cut<TAB>LICZBA<NL> (LICZBA - w jakiej części pliku hOCR jest hasło na fiszce - jeżeli wpisane jest 0.1 to znaczy, że hasło jest w górnych 10% pliku)
+default_task_register<TAB>DOMYSLNY_WYKAZ_ZADANIOWY<NL> (ten wykaz musi się znajdować w karotece)
+
   * domyślny wykaz zadaniowy (opcjonalnie), postaci:
   	INDENTYFIKATOR_FISZKI<NL>
   * indeks struktury (index.ind)
   * hint.reg - wykaz podpowiedzi, postaci:
-  	HASŁO_Z_SP17W,HASŁO_Z_LINDEGO,HASŁO_Z_DOROSZEWSKIEGO<NL>
+  
+HASŁO_Z_SP17W,HASŁO_Z_LINDEGO,HASŁO_Z_DOROSZEWSKIEGO<NL>
+
   * user_hint.reg - wykaz podpowiedzi dodanych przez maleksa, tworzony automatycznie
   * katalogi z fiszkami i hOCR lub podkatalogami
 
 * postać indeksu struktury
   * przykładowy plik, białe znaki na początku wiersza ignorowane,
     // - komentarze, nie powinny się znaleźć w prawdziwym pliku:
+
 $alphabetic // element opcjonalny, oznacza, że fiszki są uporządkowane alfabetycznie według haseł,
 // wykaz haseł nie powinien np. działać dla fiszek nieuporządkowanych (ale to nie jest do końca przetestowane)
 $<SPACJA>Do<TAB>Do8 // odpowiada katalogowi Do8, Do to nazwa która wyświetli się w programie
