@@ -1,5 +1,5 @@
 * instalacja maleksa:
-  * trzeba zainstalować wxpython, python-djvu i python-icu (co najmniej wersja 1.0)
+  * trzeba zainstalować wxpython, python-djvu, python-mysqldb i python-icu (co najmniej wersja 1.0)
   * w katalogu maleks: ./update18n
   * W katalogu os.path.dirname(sys.argv[0]) powinien się znaleźć katalog 'locale' ze źródeł maleksa z tłumaczeniami komunikatów. U mnie jest to /usr/local/bin. Działa to z fragmentem:
   	  _ = gettext.translation('maleks', os.path.join(os.path.dirname(sys.argv[0]), 'locale'), languages=['pl']).ugettext
