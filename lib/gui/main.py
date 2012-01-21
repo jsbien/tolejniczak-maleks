@@ -537,6 +537,7 @@ class MainWindow(wx.Frame):
         ##self.splitter.Bind(wx.EVT_SPLITTER_SASH_POS_CHANGED, self.on_splitter_sash_changed)
         
         self.msg_panel = MessagePanel(self.super_splitter)
+        self.msg_panel.setParent(self)
         
         self.splitter = splitter.MultiSplitterWindow(self.super_splitter, style = wx.SP_LIVE_UPDATE)
         #self.splitter = splitter.MultiSplitterWindow(self, style = wx.SP_LIVE_UPDATE)

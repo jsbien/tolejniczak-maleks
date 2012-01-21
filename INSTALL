@@ -1,5 +1,5 @@
 * instalacja maleksa:
-  * trzeba zainstalować wxpython, python-djvu i python-icu (co najmniej wersja 1.0)
+  * trzeba zainstalować wxpython, python-djvu, python-mysqldb i python-icu (co najmniej wersja 1.0)
 
 [JSB, Debian wheezy: python-wxgtk2.8, python-djvu, python-pyicu, gettext]
 

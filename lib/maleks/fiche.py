@@ -249,7 +249,7 @@ class StructureIndex(object):
 
 	# tworzy indeks struktury na podstawie pliku z indeksem struktury o sciezce
 	# abspath
-	def __init__(self, abspath, dBController):
+	def __init__(self, abspath, dBController=None):
 		# TODO: C obsluga bledow w pliku
 		self.__ficheNo = 0
 		self.__alphabetic = False
