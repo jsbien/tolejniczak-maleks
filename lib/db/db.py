@@ -100,11 +100,11 @@ class DBController(DBWorkController):
 		if row == None and alphabetic:
 			cursor.execute("select position from fiches where fiche = %s", (ficheId))
 			pos = cursor.fetchone()
-			cursor.execute("select b.entry, c.entry from fiches a, actual_entries b, original_entries c where a.fiche = b.fiche and b.fiche = c.fiche and position < %s order by position desc", (pos[0]))
+			cursor.execute("select b.entry from fiches a, actual_entries b where a.fiche = b.fiche and position < %s and not exists (select f.position from entries f where a.position < f.position and b.entry > f.entry) order by position desc", (pos[0]))
 			prevEntry = cursor.fetchone()
-			cursor.execute("select b.entry, c.entry from fiches a, actual_entries b, original_entries c where a.fiche = b.fiche and b.fiche = c.fiche and position > %s order by position", (pos))
+			cursor.execute("select b.entry from fiches a, actual_entries b where a.fiche = b.fiche and position > %s and not exists (select f.position from entries f where a.position < f.position and b.entry > f.entry) order by position", (pos))
 			nextEntry = cursor.fetchone()
-			if nextEntry != None and prevEntry != None and nextEntry[0] == prevEntry[0] == nextEntry[1] == prevEntry[1]:
+			if nextEntry != None and prevEntry != None and nextEntry[0] == prevEntry[0]:
 				row = nextEntry
 		self._closeDBAndCursor(cursor)
 		if row == None:

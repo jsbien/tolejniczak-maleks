@@ -975,14 +975,16 @@ class MainWindow(wx.Frame):
         # TODO: C entryForMessage zostalo dodane o wiele pozniej na szybko, mozna to zrefaktoryzowac zeby
         # polaczyc je ze zmienna entry i tylko raz obliczac haslo
         entryForMessage = self.entry_for_message(binaryOK, target)
+        if not binaryOK:
+            self.acceptedFicheId = self.ficheId
         if entryForMessage != None and (not binaryOK):
-            self.msg_panel.submit(self.ficheId, entryForMessage)
+            self.msg_panel.submit(self.acceptedFicheId, entryForMessage)
         import time
         if self.top_panel.getEditPanelContent() == '':
             if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive() and (not binaryOK) and self.active_register.hasTarget():
                 self.on_automatic_binary_accept(emptyPanel=True)
                 if not binaryOK:
-                    self.msg_panel.accept(self.ficheId, entryForMessage)
+                    self.msg_panel.accept(self.acceptedFicheId, entryForMessage)
                 log.opr("on_edit_accept return", [], 1)
                 return
             elif binaryOK:
@@ -1011,7 +1013,7 @@ class MainWindow(wx.Frame):
                     self.on_automatic_binary_accept()
                     #print "D"
                     if not binaryOK:
-                        self.msg_panel.accept(self.ficheId, entryForMessage)
+                        self.msg_panel.accept(self.acceptedFicheId, entryForMessage)
                     log.opr("on_edit_accept return", [], 5)
                     return
                 #print "E"
@@ -1026,7 +1028,7 @@ class MainWindow(wx.Frame):
             if msg != None:
                 self.error_box(msg)
                 if not binaryOK:
-                    self.msg_panel.error(self.ficheId, entryForMessage)
+                    self.msg_panel.error(self.acceptedFicheId, entryForMessage)
                 log.opr("on_edit_accept return", [], 6)
                 return
             else:
@@ -1061,7 +1063,7 @@ class MainWindow(wx.Frame):
         #print "koncowka", c
         #pass
         if not binaryOK:
-            self.msg_panel.accept(self.ficheId, entryForMessage)
+            self.msg_panel.accept(self.acceptedFicheId, entryForMessage)
         log.opr("on_edit_accept return", [], 4)
 
     def on_edit_prefix_accept(self, event):
@@ -1100,13 +1102,15 @@ class MainWindow(wx.Frame):
         #    return
         log.op("on_hint_accept", [event, binaryOK, target, self.top_panel.getHint()], 0)
         entryForMessage = self.hint_for_message(binaryOK, target)
+        if not binaryOK:
+            self.acceptedFicheId = self.ficheId
         if entryForMessage != None and (not binaryOK):
-            self.msg_panel.submit(self.ficheId, entryForMessage)
+            self.msg_panel.submit(self.acceptedFicheId, entryForMessage)
         if self.top_panel.getHint() == '':
             if self.active_register == self.new_entryreg_browser and self.active_register.binarySearchActive() and (not binaryOK) and self.active_register.hasTarget():
                 self.on_automatic_binary_accept(hint=True, emptyPanel=True)
                 if not binaryOK:
-                    self.msg_panel.accept(self.ficheId, entryForMessage)
+                    self.msg_panel.accept(self.acceptedFicheId, entryForMessage)
                 log.opr("on_hint_accept return", [], 1)
                 return
             elif binaryOK:
@@ -1131,7 +1135,7 @@ class MainWindow(wx.Frame):
                     self.on_automatic_binary_accept(hint=True)
                     log.opr("on_hint_accept return", [], 4)
                     if not binaryOK:
-                        self.msg_panel.accept(self.ficheId, entryForMessage)
+                        self.msg_panel.accept(self.acceptedFicheId, entryForMessage)
                     return
                 self.active_register.prepareForActiveBinary()
         elif self.active_register == self.new_entryreg_browser and not self.active_register.binarySearchActive():
@@ -1141,7 +1145,7 @@ class MainWindow(wx.Frame):
             if msg != None:
                 self.error_box(msg)
                 if not binaryOK:
-                    self.msg_panel.error(self.ficheId, entryForMessage)
+                    self.msg_panel.error(self.acceptedFicheId, entryForMessage)
                 log.opr("on_hint_accept return", [], 5)
                 return
             else:
@@ -1164,7 +1168,7 @@ class MainWindow(wx.Frame):
             self.update_indices()
         self.ignore_entries = False
         if not binaryOK:
-            self.msg_panel.accept(self.ficheId, entryForMessage)
+            self.msg_panel.accept(self.acceptedFicheId, entryForMessage)
         log.opr("on_hint_accept return", [], 6)
 
     def on_up(self, event):
