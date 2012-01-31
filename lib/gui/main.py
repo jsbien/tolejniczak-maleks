@@ -1329,6 +1329,7 @@ class MainWindow(wx.Frame):
         self.sidebar.SetSelection(3)
         self.new_entryreg_browser.find(entry)
         if self.new_entryreg_browser.gapSelected(): # TODO: C czy potrzebne sprawdzanie czy wyszukiwanie juz wlaczone?
+            self.register_search.SetValue(entry)
             self.start_binary_search(target=entry)
         log.log("find_in_entry_register return", [], 1)
 

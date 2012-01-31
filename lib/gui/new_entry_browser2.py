@@ -500,7 +500,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 				self.__entry = self.__selectedElement
 				(elements, limitStart, self.__next) = self.__dBController.getFichesForEntry(self.__selectedElement, self.__limit)
 				(indexed, hypo) = self.__dBController.getEntryCount(self.__selectedElement)
-				self.__messagePanel.showMessage(_(u'Indexed fiches: ') + unicode(indexed) + _(u'Hypothetical fiches: ') + unicode(hypo))
+				self.__messagePanel.showMessage(ustr(self.__selectedElement) + u': ' + _(u'Indexed fiches: ') + unicode(indexed) + _(u'Hypothetical fiches: ') + unicode(hypo))
 			self.DeleteAllItems()
 			self.__fillRegister(elements)
 			self.__localVeto = True

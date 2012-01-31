@@ -635,7 +635,7 @@ class DBEntryController(DBCommon):
 		cursor = self._openDBWithCursor()
 		(first, last) = self.__entryLimits(cursor, entry)
 		indexed = int(self._single(cursor, "select count(*) from entries where entry = %s", (entry)))
-		hypothetical = int(self._single(cursor, "select count(*) from entries where position > %s and position < %s and not exists (select * from entries e where e.entry < %s and e.position > position", (entry, first, last, entry)))
+		hypothetical = int(self._single(cursor, "select count(*) from fiches f where position > %s and position < %s and not exists (select * from entries e where e.entry < %s and e.position > f.position) and not exists (select * from entries g where g.fiche = f.fiche and g.position = f.position)", (first, last, entry)))
 		self._closeDBAndCursor(cursor)
 		log.db("getEntryCount return", [], 1)
 		return (indexed, hypothetical)
