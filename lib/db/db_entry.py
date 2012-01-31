@@ -629,6 +629,16 @@ class DBEntryController(DBCommon):
 		self._closeDBAndCursor(cursor)
 		log.db("getFichesForGap return", [(res, limitStart, next)], 1)
 		return (res, limitStart, next)
+	
+	def getEntryCount(self, entry):
+		log.db("getEntryCount", [entry], 0)
+		cursor = self._openDBWithCursor()
+		(first, last) = self.__entryLimits(cursor, entry)
+		indexed = int(self._single(cursor, "select count(*) from entries where entry = %s", (entry)))
+		hypothetical = int(self._single(cursor, "select count(*) from entries where position > %s and position < %s and not exists (select * from entries e where e.entry < %s and e.position > position", (entry, first, last, entry)))
+		self._closeDBAndCursor(cursor)
+		log.db("getEntryCount return", [], 1)
+		return (indexed, hypothetical)
 
 	def getFichesForEntry(self, entry, limit, limitStart=0, atleast=None):
 		log.db("getFichesForEntry", [entry, limit, limitStart, atleast], 0)

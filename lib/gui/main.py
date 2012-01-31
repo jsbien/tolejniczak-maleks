@@ -585,6 +585,7 @@ class MainWindow(wx.Frame):
         self.new_entryreg_browser = NewEntryRegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER | wx.LC_REPORT)
         self.entryreg_browser.setDBController(self.dBController)
         self.new_entryreg_browser.setDBController(self.dBController)
+        self.new_entryreg_browser.setMessagePanel(self.msg_panel)
         self.hintreg_browser = HintRegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER | wx.LC_REPORT)
         self.bookreg_browser = RegisterBrowser(self.sidebar, style=wx.LC_SINGLE_SEL | wx.LC_NO_HEADER | wx.LC_REPORT)
         #self.sidebar.AddPage(self.outline_browser, _('Outline'))

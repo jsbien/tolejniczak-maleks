@@ -318,8 +318,14 @@ msgstr "Kolor i przezroczystość podświetlenia"
 msgid "Hint Register"
 msgstr "Wykaz podpowiedzi"
 
+msgid "Hypothetical fiches"
+msgstr "Fiszki hipotetyczne"
+
 msgid "Increase the magnification"
 msgstr "Zwiększ powiększenie"
+
+msgid "Indexed fiches"
+msgstr "Fiszki zaindeksowane"
 
 msgid "Jump to first document page"
 msgstr "Przejdź do pierwszej strony dokumentu"

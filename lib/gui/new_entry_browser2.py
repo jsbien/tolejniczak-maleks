@@ -22,6 +22,7 @@ from maleks.gui.window_reg_browser import WindowRegisterBrowser
 from maleks.gui.reg_browser import RegisterBrowser
 from maleks.maleks.useful import nvl, ustr, stru, Counter, copy
 from maleks.maleks import log
+from maleks.i18n import _
 
 class MockEvent:
 
@@ -42,6 +43,10 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		self.__binaryType = None
 		self.__collator = icu.Collator.createInstance(icu.Locale('pl_PL.UTF-8'))
 		self.__steps = 0
+		self.__messagePanel = None
+	
+	def setMessagePanel(self, msgPanel):
+		self.__messagePanel = msgPanel
 
 	def setLimit(self, limit):
 		self.__limit = limit
@@ -494,6 +499,8 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 				self.__level = "FICHE-ENTRY"
 				self.__entry = self.__selectedElement
 				(elements, limitStart, self.__next) = self.__dBController.getFichesForEntry(self.__selectedElement, self.__limit)
+				(indexed, hypo) = self.__dBController.getEntryCount(self.__selectedElement)
+				self.__messagePanel.showMessage(_(u'Indexed fiches: ') + unicode(indexed) + _(u'Hypothetical fiches: ') + unicode(hypo))
 			self.DeleteAllItems()
 			self.__fillRegister(elements)
 			self.__localVeto = True
