@@ -54,6 +54,7 @@ class StructureRegisterBrowser(RegisterBrowser):
 	def __fillRegister(self, elements):
 		log.log("StructureRegisterBrowser.__fillRegister", [elements], 0)
 		i = 0
+		self._itemsNo = 0
 		for element in elements:
 			if isinstance(element, Fiche):
 				self.__ficheLevel = True
@@ -63,6 +64,7 @@ class StructureRegisterBrowser(RegisterBrowser):
 			self._items.append(i)
 			self._item2element.setdefault(i, element.getId())
 			self._element2item.setdefault(element.getId(), i)
+			self._itemsNo += 1
 			i += 1
 		self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
 		log.log("StructureRegisterBrowser.__fillRegister return", [], 1)

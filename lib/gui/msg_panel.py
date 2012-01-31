@@ -80,6 +80,24 @@ class MessageList(wx.ListView):
 		self.InsertColumn(0, '', width=wx.LIST_AUTOSIZE)
 		self.__messages = []
 		self.SetColumnWidth(0, wx.LIST_AUTOSIZE)
+		self.Bind(wx.EVT_KEY_DOWN, self.onKey)
+	
+	def onKey(self, event):
+		log.op("onKey", [event.GetKeyCode()], 0)
+		if event.GetKeyCode() == 67 and event.ControlDown():
+			current = -1
+			while True:
+				next = self.GetNextItem(current, wx.LIST_NEXT_ALL, wx.LIST_STATE_SELECTED)
+				if next != -1:
+					item = self.GetItem(next).GetText()
+					if wx.TheClipboard.Open():
+						wx.TheClipboard.SetData(wx.TextDataObject(item))
+						wx.TheClipboard.Close()
+					break
+				else:
+					break
+				current = next
+		log.opr("onKey return", [], 1)
 
 	def showMessage(self, msg):
 		log.op("showMessage", [msg], 0)

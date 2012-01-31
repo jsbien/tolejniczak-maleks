@@ -371,6 +371,8 @@ class PreviewDialog(wx.Frame):
         try:
             self.__document = self.__context.new_document(djvu.decode.FileURI(url))
             self.updatePageWidget(newPage=True)
+            for i in range(0, 200):
+                self.updatePageWidget()
         except djvu.decode.JobFailed:
             pass # TODO: !A co tutaj?
 
@@ -820,7 +822,8 @@ class MainWindow(wx.Frame):
             #(_(u'&Reset database'), _(u'Remove entries from database'), self.on_reset_db, None),
             (_(u'&Dump log to file'), _(u'Dump current log to file'), self.on_dump_log, None),
             (_(u'Delete &logs'), _(u'Delete log files'), self.on_delete_logs, None),
-            (_(u'&Clone fiche'), _(u'Clones fiche'), self.on_clone_fiche, None)
+            (_(u'&Clone fiche'), _(u'Clones fiche'), self.on_clone_fiche, None),
+            (_(u'&Load task register'), _(u'Load task register from file'), self.on_choose_register, None)
         ]:
             self._menu_item(menu, caption, help, method, icon = icon)
         return menu
@@ -1284,6 +1287,7 @@ class MainWindow(wx.Frame):
             self.regbar.setPath(self.active_register.getElementPath())
             if (not user) and (not hasTarget):
                 self.msg_panel.binaryStopped(self.active_register.getSteps())
+        self.active_register.SetFocus()
         log.log("stop_binary_search return", [], 1)
     
     def start_binary_search(self, target=None, restarting=False):

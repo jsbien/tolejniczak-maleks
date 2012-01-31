@@ -38,10 +38,18 @@ Ostatnio wykonane:
 * Dokumentacja formatu kartoteki (katalogu z danymi, indeksu struktury), instrukcja i skrypt inicjowania
 * Podświetlanie panelu edycji jeżeli jest hipoteza tylko dla fiszek niezaindeksowanych
 * Zastąpienie wywołań poleceń linuksowych przez funkcje Pythona
+* Usuwanie zakładek przy zerowaniu bazy
+* Kopiowanie komunikatów
+* Ładowanie wykazu zadaniowego w menu
+* Fokus automatycznie do wykazu haseł po zakończeniu binarnego
 
 Nowa wersja:
 
 * Po zakończeniu wyszukiwania celowego powinna się wyświetlać ostatnia fiszka targetu a zaznaczenie powinno być ustawione gdzieś w pobliżu targetu, poza tym wyświetla się fiszka z nie tego hasła (błąd?)
+* Enter w wykazie podpowiedzi przenosi zaakceptowany napis do pola wyszukiwania
+* Wyświetlanie liczby haseł w wykazie fiszek
+* Hipoteza w wykazie fiszek brana z hasła / efektywne obliczanie hipotezy
+* Błąd w wykazie fiszek (przeskakujący kursor)
 
 Proste:
 

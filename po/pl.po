@@ -60,6 +60,9 @@ msgstr "O&braz"
 msgid "&Last page"
 msgstr "&Ostatnia strona"
 
+msgid "&Load task register"
+msgstr "Załaduj &wykaz zadaniowy"
+
 msgid "&New hyperlink…"
 msgstr "&Nowe hiperłącze…"
 
