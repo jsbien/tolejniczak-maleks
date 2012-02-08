@@ -500,7 +500,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 				self.__entry = self.__selectedElement
 				(elements, limitStart, self.__next) = self.__dBController.getFichesForEntry(self.__selectedElement, self.__limit)
 				(indexed, hypo) = self.__dBController.getEntryCount(self.__selectedElement)
-				self.__messagePanel.showMessage(ustr(self.__selectedElement) + u': ' + _(u'Indexed fiches: ') + unicode(indexed) + _(u'Hypothetical fiches: ') + unicode(hypo))
+				self.__messagePanel.showMessage(ustr(self.__selectedElement) + u': ' + _(u'Indexed fiches: ') + unicode(indexed) + u' ' + _(u'Hypothetical fiches: ') + unicode(hypo))
 			self.DeleteAllItems()
 			self.__fillRegister(elements)
 			self.__localVeto = True
@@ -537,6 +537,11 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		log.log("NewEntryRegisterBrowser.getLastFicheOfSelected", [self.__selectedElement], 0)
 		log.log("NewEntryRegisterBrowser.getLastFicheOfSelected return", [self.__dBController.getLastFicheOfElement(self.__selectedElement)], 1)
 		return self.__dBController.getLastFicheOfElement(self.__selectedElement)
+
+	def getFirstFicheOfSelected(self):
+		log.log("NewEntryRegisterBrowser.getFirstFicheOfSelected", [self.__selectedElement], 0)
+		log.log("NewEntryRegisterBrowser.getFirstFicheOfSelected return", [self.__dBController.getFirstFicheOfElement(self.__selectedElement)], 1)
+		return self.__dBController.getFirstFicheOfElement(self.__selectedElement)
 
 	def getElementPath(self):
 		if self.__selectedElement != None:
@@ -726,6 +731,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 				#print self._elements
 				if self._selected != None:
 					self._unselect(self._selected)
+				print "select:", itemId
 				self._select(itemId)
 		log.log("NewEntryRegisterBrowser.find return", [], 1)
 

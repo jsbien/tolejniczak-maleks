@@ -54,6 +54,8 @@ class TopPanel(wx.Panel, Notifier):
 		self.__hintRegister = None
 		self.__hint = None
 		self.__browsingHistory = False
+		self.__skipOneKeyUp = False
+		self.__keyEventFromTopPanel = False
 
 	def focus(self):
 		log.log("focus", [], 0)
@@ -76,12 +78,20 @@ class TopPanel(wx.Panel, Notifier):
 	
 	def __onKeyUp(self, event):
 		log.op("__onKeyUp", [event.GetKeyCode(), wx.WXK_UP, wx.WXK_DOWN], 0)
+		if self.__skipOneKeyUp:
+			self.__skipOneKeyUp = False
+			log.opr("__onKeyUp", [], 2)
+			return
 		if event.GetKeyCode() == wx.WXK_UP:
 			for l in self._listeners:
+				self.__keyEventFromTopPanel = True
 				l.on_toppanel_key_up(event)
+				self.__keyEventFromTopPanel = False
 		elif event.GetKeyCode() == wx.WXK_DOWN:
 			for l in self._listeners:
+				self.__keyEventFromTopPanel = True
 				l.on_toppanel_key_down(event)
+				self.__keyEventFromTopPanel = False
 		log.opr("__onKeyUp return", [], 1)
 
 	def __onEditAcceptEnter(self, event):
@@ -171,6 +181,9 @@ class TopPanel(wx.Panel, Notifier):
 		if (content != ""):
 			self.__hintPanel.SetFocus() # potrzebne ...
 			self.focusAndSelect() # ... zeby tu zaznaczylo
+			if not self.__keyEventFromTopPanel: # "przeskakiwanie" zdarza sie gdy focus nie byl wczesniej w top panelu
+				self.__skipOneKeyUp = True # zapobiega "przeskakiwaniu" o jeden element w wykazie fiszek przy przechodzeniu strzalkami
+			log.log("setHypothesis inspect", [self.__keyEventFromTopPanel], 2)
 		log.log("setHypothesis return", [self.__hypothesisPanel.GetValue()], 1)
 
 	def setEntry(self, entry, browsingHistory=False, unselect=False):

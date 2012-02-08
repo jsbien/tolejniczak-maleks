@@ -172,12 +172,45 @@ class DBEntryController(DBCommon):
 		self._closeDBAndCursor(cursor)
 		log.db("getFicheForEntryPosition return", [res], 1)
 		return res
+		
+	def getFirstFicheOfElement(self, el):
+		if isinstance(el, tuple):
+			return self.__getFirstFicheOfGap(el)
+		else:
+			return self.__getFirstFicheOfEntry(el)
 
 	def getLastFicheOfElement(self, el):
 		if isinstance(el, tuple):
 			return self.__getLastFicheOfGap(el)
 		else:
 			return self.__getLastFicheOfEntry(el)
+	
+	def __getFirstFicheOfEntry(self, entry):
+		log.db("__getFirstFicheOfEntry", [entry], 0)
+		cursor = self._openDBWithCursor()
+		res = self.__single(cursor, "select fiche from entries where entry = %s order by position asc limit 1", (entry))
+		self._closeDBAndCursor(cursor)
+		log.db("__getFirstFicheOfEntry return", [res], 1)
+		return res
+
+	def __getFirstFicheOfGap(self, (num, before, after)):
+		log.db("__getFirstFicheOfGap", [(num, before, after)], 0)
+		cursor = self._openDBWithCursor()
+		if before == None and after == None:
+			res = self.__single(cursor, "select fiche from fiches order by position asc limit 1", ())
+		elif before == None:
+			num = self.__firstEntry(cursor, after)
+			res = self.__single(cursor, "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position < %s order by position asc limit 1", (num))
+		elif after == None:
+			num = self.__lastEntry(cursor, before)
+			res = self.__single(cursor, "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s order by position asc limit 1", (num))
+		else:
+			numa = self.__firstEntry(cursor, after)
+			numb = self.__lastEntry(cursor, before)
+			res = self.__single(cursor, "select fiche from fiches f where not exists (select * from actual_entries e where f.fiche = e.fiche) and position > %s and position < %s order by position asc limit 1", (numb, numa))
+		self._closeDBAndCursor(cursor)
+		log.db("__getFirstFicheOfGap return", [res], 1)
+		return res
 
 	def __getLastFicheOfEntry(self, entry):
 		log.db("__getLastFicheOfEntry", [entry], 0)
@@ -635,7 +668,8 @@ class DBEntryController(DBCommon):
 		cursor = self._openDBWithCursor()
 		(first, last) = self.__entryLimits(cursor, entry)
 		indexed = int(self._single(cursor, "select count(*) from entries where entry = %s", (entry)))
-		hypothetical = int(self._single(cursor, "select count(*) from fiches f where position > %s and position < %s and not exists (select * from entries e where e.entry < %s and e.position > f.position) and not exists (select * from entries g where g.fiche = f.fiche and g.position = f.position)", (first, last, entry)))
+		#hypothetical = int(self._single(cursor, "select count(*) from fiches f where position > %s and position < %s and not exists (select * from entries g where g.fiche = f.fiche and g.position = f.position)", (first, last, entry)))
+		hypothetical = int(self._single(cursor, "select count(*) from fiches f where (position > %s and position < %s and not exists (select * from actual_entries e where f.fiche = e.fiche)) or ((position < %s or position > %s) and exists (select * from actual_entries e where e.fiche = f.fiche and entry = %s))", (first, last, first, last, entry)))
 		self._closeDBAndCursor(cursor)
 		log.db("getEntryCount return", [], 1)
 		return (indexed, hypothetical)

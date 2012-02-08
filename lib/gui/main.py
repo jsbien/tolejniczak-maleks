@@ -1836,7 +1836,8 @@ class MainWindow(wx.Frame):
                 else:
                     self.msg_panel.automaticBinaryStopped(target, self.active_register.getSteps())
                     self.active_register.find(target)
-                    self.page_no = self.index.getFicheNoById(self.active_register.getLastFicheOfSelected())
+                    #self.page_no = self.index.getFicheNoById(self.active_register.getLastFicheOfSelected())
+                    self.page_no = self.index.getFicheNoById(self.active_register.getFirstFicheOfSelected())
                 #print "j"
             else:
                 #print "prevBinaryAcceptPrepare", c
@@ -1874,7 +1875,8 @@ class MainWindow(wx.Frame):
                 else:
                     self.msg_panel.automaticBinaryStopped(target, self.active_register.getSteps())
                     self.active_register.find(target)
-                    self.page_no = self.index.getFicheNoById(self.active_register.getLastFicheOfSelected())
+                    #self.page_no = self.index.getFicheNoById(self.active_register.getLastFicheOfSelected())
+                    self.page_no = self.index.getFicheNoById(self.active_register.getFirstFicheOfSelected())
                 #print "z"
             else:
                 #print "stop_nextBinaryAcceptPrepare_search", c

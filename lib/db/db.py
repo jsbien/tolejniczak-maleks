@@ -28,7 +28,7 @@ class DBController(DBWorkController):
 		cursor = self._openDBWithCursor()
 		cursor.execute("truncate actual_entries")
 		cursor.execute("truncate original_entries")
-		cursor.execute("truncate bookmarks")
+		cursor.execute("update fiches set bookmark = null")
 		self._closeDBAndCursor(cursor)
 
 	def addFicheToFichesIndex(self, ficheId):
