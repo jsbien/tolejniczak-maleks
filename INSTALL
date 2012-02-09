@@ -4,25 +4,33 @@
 [JSB, Debian wheezy: python-wxgtk2.8, python-djvu, python-mysqldb, python-pyicu, gettext]
 
   * w katalogu maleks: sudo python setup.py install
+
   * w katalogu maleks: ./update-i18n
-[JSB:
-  * w katalogu maleks: python install_locale.py
-]
- * W katalogu os.path.dirname(sys.argv[0]) powinien się znaleźć katalog 'locale' ze źródeł maleksa z tłumaczeniami komunikatów. U mnie jest to /usr/local/bin. Działa to z fragmentem:
+
+  * W katalogu os.path.dirname(sys.argv[0]) powinien się znaleźć
+    katalog 'locale' ze źródeł maleksa z tłumaczeniami komunikatów. U
+    mnie jest to /usr/local/bin. Działa to z fragmentem:
   	  _ = gettext.translation('maleks', os.path.join(os.path.dirname(sys.argv[0]), 'locale'), languages=['pl']).ugettext
     z pliku i18n.py, który dodałem bo znajdująca się powyżej pętla for z djvusmooth mi z jakiegoś powodu nie działała.
     * os.path.dirname(sys.argv[0]) można uzyskać poleceniem 'whereis maleks'
-    * Powyższy krok można wykonać automatycznie skryptem: sudo python install_locale.py
-  * utworzyć plik konfiguracyjny $HOME/.config/maleks/maleks.conf:
+
+    UWAGA * Powyższy krok można wykonać automatycznie skryptem: sudo python install_locale.py
+ 
+ * utworzyć plik konfiguracyjny $HOME/.config/maleks/maleks.conf:
   
 db=<BAZA>
 dbpass=<HASLO>
 dbuser=<UZYTKOWNIK>
 loglevel=DEBUG
 
-		(podajemy domyślną konfigurację bazy danych której będą używać kartoteki jeżeli nie będzie wpisu w ich pliku config.cfg - ponieważ każda kartoteka musi mieć osobną bazę dobrze w config.cfg umieszczać wpis db, a użytkownika i hasło zdefiniować w maleks.conf)
+		(podajemy domyślną konfigurację bazy danych której
+		będą używać kartoteki jeżeli nie będzie wpisu w ich
+		pliku config.cfg - ponieważ każda kartoteka musi mieć
+		osobną bazę dobrze w config.cfg umieszczać wpis db, a
+		użytkownika i hasło zdefiniować w maleks.conf)
 
 * konfiguracja mysqla:
+
 	* w pliku konfiguracyjnym mysql (my.cnf, u mnie jest w /etc/mysql/my.cnf) do wpisów pod [mysqld] dodać:
 	
 character_set_server=utf8
@@ -32,62 +40,120 @@ character_set_client=utf8
 	* w katalogu maleks: maleks.sql - skrypt tworzący tabele (nie uruchamiać!)
 
 * postać katalogu z kartoteką niezainicjalizowaną:
+
   * katalogi z fiszkami i hOCR lub podkatalogami
+
   * fiszki (djvu) z fiszkami mogą się znajdować tylko w liściach, katalogi na wyższych poziomach mogą zawierać tylko podkatalogi
 
 * inicjalizacja kartoteki:
+
 	* wywołać skrypt init.py ze źródeł maleksa:
-		* python init.py [OPCJE] KATALOG_Z_KARTOTEKĄ NAZWA_BAZY_DANYCH NAZWA_UŻYTKOWNIKA HASŁO_UŻYTKOWNIKA NAZWA_ADMINISTRATORA HASŁO_ADMINISTRATORA
+
+		* python init.py 
+
+		[OPCJE] KATALOG_Z_KARTOTEKĄ
+                  NAZWA_BAZY_DANYCH NAZWA_UŻYTKOWNIKA HASŁO_UŻYTKOWNIKA NAZWA_ADMINISTRATORA HASŁO_ADMINISTRATORA
+
 		* mysql powinien być dostępny w $PATH
+
 		* baza NAZWA_BAZY_DANYCH nie powinna istnieć - zostanie przez skrypt utworzona
+
 		* każda karoteka powinna być w osobnej bazie danych
-		* użytkownik NAZWA_UŻYTKOWNIKA z hasłem HASŁO_UŻYTKOWNIKA to użytkownik jako który maleks będzie się łączył z bazą - pownien istnieć przed odpaleniem skryptu
-		* użytkownik NAZWA_ADMINISTRATORA z hasłem HASŁO_ADMINISTRATORA to użytkownik który ma uprawnienia do wykonywania poleceń "create database" i "grant all"
+
+		* użytkownik NAZWA_UŻYTKOWNIKA z hasłem
+                  HASŁO_UŻYTKOWNIKA to użytkownik jako który maleks
+                  będzie się łączył z bazą - pownien istnieć przed
+                  odpaleniem skryptu
+
+		* użytkownik NAZWA_ADMINISTRATORA z hasłem
+                  HASŁO_ADMINISTRATORA to użytkownik który ma
+                  uprawnienia do wykonywania poleceń "create database"
+                  i "grant all"
+
 	* OPCJE (wszystkie opcjonalne):
-		* -u - powoduje zapisanie użytkownika NAZWA_UŻYTKOWNIKA w konfiguracji karoteki - wpp maleks pobiera nazwę użytkownika z globalnej konfiguracji
-		* -c FLOAT - przy interpretacji plików hOCR hasło jest szukane w górnych (FLOAT * 100)% fiszki
-		* -a - oznacza, że fiszki są uporządkowane alfabetycznie (konieczne żeby działał wykaz haseł, maleks może nie działać prawidłowo dla kartotek utworzonych bez tej opcji)
+
+		* -u - powoduje zapisanie użytkownika
+                   NAZWA_UŻYTKOWNIKA w konfiguracji karoteki - wpp
+                   maleks pobiera nazwę użytkownika z globalnej
+                   konfiguracji
+
+		* -c FLOAT - przy interpretacji plików hOCR hasło jest
+                   szukane w górnych (FLOAT * 100)% fiszki
+
+		* -a - oznacza, że fiszki są uporządkowane
+                   alfabetycznie (konieczne żeby działał wykaz haseł,
+                   maleks może nie działać prawidłowo dla kartotek
+                   utworzonych bez tej opcji)
+
 		* -r ŚCIEŻKA_DO_WYKAZU_ZADANIOWEGO - użyj podanego wykazu jako domyślnego (zostanie przekopiowany do kartoteki)
+
 			* format wykazu - patrz niżej
-		* -m SKRYPT_MALEKS_SQL - ścieżka do skryptu maleks.sql tworzącego tabele w bazie (domyślnie w katalogu bieżącym)
-		* -i ŚCIEŻKA_DO_WYKAZU_PODPOWIEDZI - użyj podanego wykazu jako wykazu podpowiedzi (zostanie przekopiowany do kartoteki)
-			* format wykazu - patrz niżej
+
+		* -m SKRYPT_MALEKS_SQL - ścieżka do skryptu maleks.sql
+                   tworzącego tabele w bazie (domyślnie w katalogu
+                   bieżącym)
+
+		* -i ŚCIEŻKA_DO_WYKAZU_PODPOWIEDZI - użyj podanego
+			* wykazu jako wykazu podpowiedzi (zostanie
+			* przekopiowany do kartoteki) format wykazu -
+			* patrz niżej
+
 	(* w razie potrzeby ręcznej inicjalizacji:
+
 		* utworzyć bazę poleceniem:
 			create database BAZA character set = utf8 collate = utf8_polish_ci;
 			grant all on BAZA.* to NAZWA_UŻYTKOWNIKA;
-		* wywołać skrypt maleks.sql dla tej bazy (mysql -u NAZWA_UŻYTKOWNIKA -p BAZA < maleks.sql)
-		* ręcznie wyedytować katalog z kartoteką tak by spełniał format podany poniżej w punkcie "postać katalogu z kartoteką zainicjalizowaną")
+
+		* wywołać skrypt maleks.sql dla tej bazy 
+		(mysql -u NAZWA_UŻYTKOWNIKA -p BAZA < maleks.sql)
+
+		* ręcznie wyedytować katalog z kartoteką tak by
+                  spełniał format podany poniżej w punkcie "postać
+                  katalogu z kartoteką zainicjalizowaną")
 
 * inicjalizacja bazy danych:
+
 	* w katalogu maleks znaleźć i uruchomić następujący skrypt:
+
 		* dbprepare.py KATALOG_Z_KAROTEKĄ
 
 * postać katalogu z kartoteką zainicjalizowaną przez init.py:
+
   * plik config.cfg, może zawierać (wszystkie elementy opcjonalne):
   
 db<TAB>NAZWA_BAZY_DANYCH_KAROTEKI<NL>
+
 dbuser<TAB>UZYTKOWNIK_BAZY_DANYCH<NL>
+
 dbpass<TAB>HASLO_UZYTKOWNIKA<NL>
-hocr_cut<TAB>LICZBA<NL> (LICZBA - w jakiej części pliku hOCR jest hasło na fiszce - jeżeli wpisane jest 0.1 to znaczy, że hasło jest w górnych 10% pliku)
+
+hocr_cut<TAB>LICZBA<NL> (LICZBA - w jakiej części pliku hOCR jest
+hasło na fiszce - jeżeli wpisane jest 0.1 to znaczy, że hasło jest w
+górnych 10% pliku)
+
 default_task_register<TAB>DOMYSLNY_WYKAZ_ZADANIOWY<NL> (ten wykaz musi się znajdować w karotece)
 
   * domyślny wykaz zadaniowy (opcjonalnie), postaci:
   	INDENTYFIKATOR_FISZKI<NL>
+
   * indeks struktury (index.ind)
+
   * hint.reg - wykaz podpowiedzi, postaci:
   
 HASŁO_Z_SP17W,HASŁO_Z_LINDEGO,HASŁO_Z_DOROSZEWSKIEGO<NL>
 
   * user_hint.reg - wykaz podpowiedzi dodanych przez maleksa, tworzony automatycznie
+
   * katalogi z fiszkami i hOCR lub podkatalogami
 
 * postać indeksu struktury
+
   * przykładowy plik, białe znaki na początku wiersza ignorowane,
     // - komentarze, nie powinny się znaleźć w prawdziwym pliku:
 
 $alphabetic // element opcjonalny, oznacza, że fiszki są uporządkowane alfabetycznie według haseł,
 // wykaz haseł nie powinien np. działać dla fiszek nieuporządkowanych (ale to nie jest do końca przetestowane)
+
 $<SPACJA>Do<TAB>Do8 // odpowiada katalogowi Do8, Do to nazwa która wyświetli się w programie
 	$<SPACJA>Partia 1<TAB>Partia_01 // podkatalog Partia_01 katalogu Do8 itd.
 		$from_names_djvu<TAB>$all // nadaj wszystkim fiszkom z katalogu Partia_01 identyfikatory będące nazwami ich plików
@@ -114,6 +180,8 @@ $end
 
 * uwaga:
 	* żeby poniższe skrypty działały trzeba najpierw zainstalować maleksa:
+
   	* dbprepare.py KATALOG_Z_KAROTEKĄ - inicjalizuję bazę danych
+
 		* dbreset.py KATALOG_Z_KARTOTEKĄ - usuwa wszystkie zaindeksowane hasła z bazy danych
 	
