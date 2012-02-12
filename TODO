@@ -45,11 +45,11 @@ Ostatnio wykonane:
 * Enter w wykazie podpowiedzi przenosi zaakceptowany napis do pola wyszukiwania
 * Wyświetlanie liczby haseł w wykazie fiszek
 * Błąd w wykazie fiszek (przeskakujący kursor)
+* Hipoteza w wykazie fiszek brana z hasła / efektywne obliczanie hipotezy
 
 Nowa wersja:
 
 * Po zakończeniu wyszukiwania celowego powinna się wyświetlać pierwsza fiszka targetu a zaznaczenie powinno być ustawione gdzieś w pobliżu targetu, poza tym wyświetla się fiszka z nie tego hasła (błąd?)
-* Hipoteza w wykazie fiszek brana z hasła / efektywne obliczanie hipotezy
 * Dlaczego akceptacja fiszki zajmuje tyle czasu?
 
 Proste:
@@ -77,6 +77,7 @@ Błędy do usunięcia:
 
 Inne:
 
+* Komunikat, że wyszukiwanie binarne kończy się niepowodzeniem lub w ogóle jest niewykonalne (ten drugi przypadek jest mylący)
 * Czyszczenie pola edycji i podpowiedzi na czas odświeżania wykazu przy akceptacji fiszki
 * Uporządkowanie spraw związanych z kasztowością
 * Odświeżanie panelu indeksów po akceptacji fiszki w poziomie fiszek w wykazie haseł

@@ -2447,22 +2447,27 @@ class MainWindow(wx.Frame):
         #c = Counter()
         if self.ficheId != None: # TODO: NOTE jest otwarty jakis dokument
             if self.dBController != None:
-                hypothesis = self.dBController.getHypothesisForFiche(self.ficheId, self.active_register in [self.strucreg_browser, self.new_entryreg_browser] and self.index.isAlphabetic())
-                #print "hypo", c
-                if hypothesis == None:
-                    if self.lastEntry != None and self.index.isAlphabetic():
-                        hypothesis = self.lastEntry
+                entry = self.dBController.getOriginalEntryForFiche(self.ficheId)
+                if entry == None:
+                    if self.active_register == self.new_entryreg_browser and self.new_entryreg_browser.getHypothesis() != None:
+                        hypothesis = self.new_entryreg_browser.getHypothesis()
                     else:
-                        hypothesis = self.index.getFicheById(self.ficheId).getHOCREntry(float(self.config.get("hocr_cut", default="0.1")))
-                #print "hyponone", c
-                if hypothesis != None:
-                    self.top_panel.setHypothesis(hypothesis)
+                        hypothesis = self.dBController.getHypothesisForFiche(self.ficheId, self.active_register in [self.strucreg_browser, self.new_entryreg_browser] and self.index.isAlphabetic())
+                    #print "hypo", c
+                    if hypothesis == None:
+                        if self.lastEntry != None and self.index.isAlphabetic():
+                            hypothesis = self.lastEntry
+                        else:
+                            hypothesis = self.index.getFicheById(self.ficheId).getHOCREntry(float(self.config.get("hocr_cut", default="0.1")))
+                    #print "hyponone", c
+                    if hypothesis != None:
+                        self.top_panel.setHypothesis(hypothesis)
+                    else:
+                        self.top_panel.setHypothesis("")
+                    #print "set", c
+                    #print "entry", c
                 else:
                     self.top_panel.setHypothesis("")
-                #print "set", c
-                entry = self.dBController.getOriginalEntryForFiche(self.ficheId)
-                #print "entry", c
-                if entry != None:
                     self.top_panel.setEntry(entry, unselect=True)
         #print "finish", c
         #print
