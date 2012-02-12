@@ -99,19 +99,42 @@ class DBController(DBWorkController):
 		cursor.execute("select entry_hypothesis from hypotheses where fiche = %s", (ficheId))
 		row = cursor.fetchone()
 		if row == None and alphabetic:
-			cursor.execute("select position from fiches where fiche = %s", (ficheId))
-			pos = cursor.fetchone()
-			cursor.execute("select b.entry from fiches a, actual_entries b where a.fiche = b.fiche and position < %s  order by position desc", (pos[0]))
-			prevEntry = cursor.fetchone()
-			cursor.execute("select b.entry from fiches a, actual_entries b where a.fiche = b.fiche and position > %s  order by position", (pos))
-			nextEntry = cursor.fetchone()
-			if nextEntry != None and prevEntry != None and nextEntry[0] == prevEntry[0]:
+			prevPos = int(self._single(cursor, "select position from fiches where fiche = %s", (ficheId)))
+			nextPos = prevPos
+			while True:
+				cursor.execute("select b.entry, a.position from fiches a, actual_entries b where a.fiche = b.fiche and position < %s order by position desc", (prevPos))
+				row = cursor.fetchone()
+				if row == None:
+					prevEntry = None
+					break
+				else:
+					(prevEntry, prevPosition) = row
+				if int(self._single(cursor, "select count(*) from entries where entry < %s and position > %s", (prevEntry, prevPosition))) > 0:
+					prevPos = prevPosition
+					prevEntry = None
+				else:
+					break
+			while True:
+				cursor.execute("select b.entry, a.position from fiches a, actual_entries b where a.fiche = b.fiche and position > %s order by position", (nextPos))
+				row = cursor.fetchone()
+				if row == None:
+					nextEntry = None
+					break
+				else:
+					(nextEntry, nextPosition) = row
+				if int(self._single(cursor, "select count(*) from entries where entry < %s and position > %s", (nextEntry, nextPosition))) > 0:
+					nextPos = nextPosition
+					nextEntry = None
+				else:
+					break
+			if nextEntry != None and prevEntry != None and nextEntry == prevEntry:
 				row = nextEntry
-		self._closeDBAndCursor(cursor)
-		if row == None:
-			return None
+			else:
+				row = None
 		else:
-			return row[0]
+			row = row[0]
+		self._closeDBAndCursor(cursor)
+		return row
 
 	def getPositionOfFiche(self, ficheId):
 		cursor = self._openDBWithCursor()

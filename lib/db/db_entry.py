@@ -800,7 +800,7 @@ class DBEntryController(DBCommon):
 		return (res, rownum, next)
 
 	def hasFiche(self, element, ficheId):
-		log.db("hasFiche", [element, ficheId], 0)
+		log.log("hasFiche", [element, ficheId], 0)
 		cursor = self._openDBWithCursor()
 		if isinstance(element, tuple):
 			(num, before, after) = element
@@ -837,7 +837,7 @@ class DBEntryController(DBCommon):
 		#row2 = cursor.fetchone()
 		#print "---", row2
 		self._closeDBAndCursor(cursor)
-		log.db("hasFiche return", [row != None], 1)
+		log.log("hasFiche return", [row != None], 1)
 		return row != None
 
 	def dumpDatabase(self):

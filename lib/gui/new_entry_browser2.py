@@ -770,6 +770,11 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		self.__binarySelect(self._itemOf(self.__selectedElement))
 		log.log("NewEntryRegisterBrowser.selectElementContaining return", [self.__selectedElement], 1)
 
+	def getHypothesis(self):
+		if self.__level in ["FICHE-ENTRY"]:
+			return self.__selectedElement
+		else:
+			return None
 
 	# --- WYSZUKIWANIE BINARNE --- #
 
@@ -1071,8 +1076,10 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		#lc = Counter()
 		#::for (i, el) in self._item2element.iteritems():
 		#print self._itemsLen(), len(self._elements)
+		log.log("NewEntryRegisterBrowser.binaryAcceptFinalize inspect", [self._elements, self._itemsLen()], 3)
 		for i in range(0, self._itemsLen()):
 			el = self._elementOf(i)
+			log.log("NewEntryRegisterBrowser.binaryAcceptFinalize inspect", [el, i], 4)
 			#print "$$$", el, self.__centerFiche, self.__dBController.hasFiche(el, self.__centerFiche)
 			#print el
 			#c.reset()
