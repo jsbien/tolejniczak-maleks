@@ -243,9 +243,10 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		self.__formerEntryElement = None
 		if self.__level == "ENTRY":
 			for el in self._elements:
-				print el
+				#print el
 				if self.__dBController.hasFiche(el, ficheId):
 					self.__formerEntryElement = el
+					break
 		log.log("NewEntryRegisterBrowser.prepareForUpdateAfterAccept return", [self.__formerEntryElement], 1)
 
 	def updateAfterAccept(self, entry):

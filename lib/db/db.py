@@ -98,6 +98,7 @@ class DBController(DBWorkController):
 		cursor = self._openDBWithCursor()
 		cursor.execute("select entry_hypothesis from hypotheses where fiche = %s", (ficheId))
 		row = cursor.fetchone()
+		print "ALPHABETIC: " + str(alphabetic) + ", ROW: " + str(row)
 		if row == None and alphabetic:
 			prevPos = int(self._single(cursor, "select position from fiches where fiche = %s", (ficheId)))
 			nextPos = prevPos
@@ -131,7 +132,7 @@ class DBController(DBWorkController):
 				row = nextEntry
 			else:
 				row = None
-		else:
+		elif row != None:
 			row = row[0]
 		self._closeDBAndCursor(cursor)
 		return row

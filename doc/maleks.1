@@ -1,118 +1,93 @@
-'\" t
-.\"     Title: maleks
-.\"    Author: Tomasz Olejniczak <tomek.87@poczta.onet.pl>
-.\" Generator: DocBook XSL Stylesheets v1.76.0 <http://docbook.sf.net/>
-.\"      Date: 09/05/2011
-.\"    Manual: maleks manual
-.\"    Source: maleks 0.1.2
-.\"  Language: English
-.\"
-.TH "DJVUSMOOTH" "1" "09/05/2011" "maleks 0\&.1\&.2" "maleks manual"
-.\" -----------------------------------------------------------------
-.\" * Define some portability stuff
-.\" -----------------------------------------------------------------
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" http://bugs.debian.org/507673
-.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.ie \n(.g .ds Aq \(aq
-.el       .ds Aq '
-.\" -----------------------------------------------------------------
-.\" * set default formatting
-.\" -----------------------------------------------------------------
-.\" disable hyphenation
-.nh
-.\" disable justification (adjust text to left margin only)
+'\" -*- coding: us-ascii -*-
+.if \n(.g .ds T< \\FC
+.if \n(.g .ds T> \\F[\n[.fam]]
+.de URL
+\\$2 \(la\\$1\(ra\\$3
+..
+.if \n(.g .mso www.tmac
+.TH maleks 1 "10 March 2012" 0.1.6 ""
+.SH NAME
+maleks \- lexicographic data browser
+.SH SYNOPSIS
+'nh
+.fi
 .ad l
-.\" -----------------------------------------------------------------
-.\" * MAIN CONTENT STARTS HERE *
-.\" -----------------------------------------------------------------
-.SH "NAME"
-djvusmooth \- graphical editor for DjVu
-.SH "SYNOPSIS"
-.HP \w'\fBdjvusmooth\fR\ 'u
-\fBdjvusmooth\fR [\fIdjvu\-file\fR]
-.SH "DESCRIPTION"
+\fBmaleks\fR \kx
+.if (\nx>(\n(.l/2)) .nr x (\n(.l/5)
+'in \n(.iu+\nxu
+'in \n(.iu-\nxu
+.ad b
+'hy
+.SH Description
+maleks a graphical browser of dictionary fiches, which enables browsing
+and indexing fiches.
 .PP
-djvusmooth is a graphical editor for DjVu files, which allows to:
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-edit document metadata,
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-edit document outline (bookmarks),
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-correct occasional errors in the hidden text layer\&.
-.RE
-.sp
-.SH "ENVIRONMENT VARIABLES"
+CTRL-E: accept text in edition panel and go to next fiche 
 .PP
-\fIXDG_CONFIG_HOME\fR
-.RS 4
-Base directory for configuration files\&. The default is
-$HOME/\&.config\&.
-.sp
-See
-\m[blue]\fBXDG Base Directory Specification\fR\m[]\&\s-2\u[1]\d\s+2
-for details\&.
-.RE
-.SH "FILES"
+CTRL-P: accept text in edition panel as a prefix
 .PP
-\fI$XDG_CONFIG_HOME\fR/djvusmooth/djvusmooth\&.conf
-.RS 4
-djvusmooth configuration file
-.RE
-.SH "PORTABILITY"
+CTRL-H: accept text in hint panel and go to next fiche
 .PP
-djvusmooth allows to create hyperlinks with shadow borders as thin as 1 pixel, as specified by the
-\m[blue]\fBLizardtech DjVu Reference\fR\m[]\&\s-2\u[2]\d\s+2\&. However, some DjVu browsers do not accept shadow borders thinner than 3 pixels\&.
-.SH "SEE ALSO"
+CTRL-D: add next fiche to bookmarks
 .PP
+CTRL-R: open task register from file
+.PP
+CTRL-K: clone fiche
+.PP
+CTRL-V: show nearby fiches
+.PP
+CTRL-ENTER:
+.PP
+* if structure/entry/mulitlevel register is active: open selected element and go to lower level
+.PP
+* if focus is in edition panel: copy hint panel content into edition panel
+.PP
+* if hint register is active: go to entry register and optionally start targeted binary search for selected element of hint register
+.PP
+CTRL-\(ua: go to first fiche in selected element of entry register
+.PP
+CTRL-\(da: go to last fiche in selected element of entry register
+.PP
+CTRL-<: go left in binary search
+.PP
+CTRL->: go right in binary search
+.PP
+CTRL-[: go left in binary search and accept text in edition panel
+.PP
+CTRL-]: go right in binary search and accept text in edition panel
+.PP
+CTRL-B: switch on/off binary search - in hint register works as ENTER
+.PP
+CTRL-\(<-: navigation in entry history - previous element
+.PP
+CTRL-\(->: navigation in entry history - next element
+.PP
+CTRL-PgDn: scrolling of entry register on fiche level
+.PP
+CTRL-PgUp: scrolling of entry register on fiche level
+.PP
+ENTER:
+.PP
+* if hint register is active: go to entry register and optionally start targeted binary search for selected element of hint register
+.PP
+* if focus is in edition panel - accept fiche with text from edition panel as entry; if targeted binary search is active empty edition field is treated as target
+.PP
+* if focus is in search panel and entry register is active on entry level - works as CTRL-B
+.PP
+\(ua: go to previous fiche in register order if focus is in register and fiches are shown
+.PP
+\(da: go to next fiche in register order if focus is in register and fiches are shown
+.SH "Environment variables"
+.TP 
+\*(T<\fIXDG_CONFIG_HOME\fR\*(T>
+Base directory for configuration files. The default is \*(T<\fI$HOME/.config\fR\*(T>.
 
+See 
+.URL http://standards.freedesktop.org/basedir-spec/latest/ "XDG Base Directory Specification"
+for details.
+.SH Files
+.TP 
+\*(T<\fI$XDG_CONFIG_HOME/maleks/maleks.conf\fR\*(T>
+maleks configuration file
+.SH "See also"
 \fBdjvu\fR(1)
-.SH "AUTHOR"
-.PP
-\fBTomasz Olejniczak\fR <\&tomek\&.87@poczta\&.onet\&.pl\&>
-.RS 4
-Author.
-.RE
-.SH "COPYRIGHT"
-.br
-Copyright \(co 2009, 2010, 2011 Jakub Wilk
-Copyright \(co 2011 Tomasz Olejniczak
-.br
-.SH "NOTES"
-.IP " 1." 4
-XDG Base Directory Specification
-.RS 4
-\%http://standards.freedesktop.org/basedir-spec/latest/
-.RE
-.IP " 2." 4
-Lizardtech DjVu Reference
-.RS 4
-\%http://djvu.org/docs/DjVu3Spec.djvu
-.RE

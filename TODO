@@ -49,23 +49,13 @@ Ostatnio wykonane:
 
 Nowa wersja:
 
-* Po zakończeniu wyszukiwania celowego powinna się wyświetlać pierwsza fiszka targetu a zaznaczenie powinno być ustawione gdzieś w pobliżu targetu, poza tym wyświetla się fiszka z nie tego hasła (błąd?)
 * Dlaczego akceptacja fiszki zajmuje tyle czasu?
 
-Proste:
+Dopisać uwagi:
 
 * Dopisać gdzieś uwagę o unselect na wykazie o zmniejszonej liczbie elementów i Segmentation fault
 * Dopisać gdzieś uwagę o efektywnym i nieefektywnym odświeżaniu wykazu haseł
 * Indeks struktury bazuje na kolejności alfabetycznej plików - może inaczej się zachowywać pod Windowsem i Linuksem?
-
-Na później:
-
-* Komentarze w kodzie
-
-Nowa wersja (lista rezerwowa w zawieszeniu - do przemyślenia / omówienia):
-
-* Sprawdzenie dlaczego maleks zwalnia wraz z powiększaniem się ilości haseł w wykazie haseł
-* Komunikat że fiszka jest nie po kolei jeżeli kończymy wyszukiwanie binarne i przy akceptacji
 
 Błędy do usunięcia:
 
@@ -74,9 +64,13 @@ Błędy do usunięcia:
 * Błąd (5)
 * Błąd (6)
 * Błąd z /home/jsbien/epocj.log (register_search_key)
+* Po zakończeniu wyszukiwania celowego powinna się wyświetlać pierwsza fiszka targetu a zaznaczenie powinno być ustawione gdzieś w pobliżu targetu - czasem to nie działa, poza tym wyświetla się fiszka z nie tego hasła
 
 Inne:
 
+* Odświeżanie wykazu po zakończeniu wyszukiwania binarnego odbywa się w tej chwili tak jak po zaakceptowaniu fiszki poza wyszukiwaniem binarnym - przemyśleć czy to jest potrzebne (komentarz TODO: A (***) w main.py/on_edit_accept)
+* Sprawdzenie dlaczego maleks zwalnia wraz z powiększaniem się ilości haseł w wykazie haseł (do przemyślenia/omówienia - czy faktycznie tak się dzieje?)
+* Komunikat że fiszka jest nie po kolei jeżeli kończymy wyszukiwanie binarne i przy akceptacji
 * Komunikat, że wyszukiwanie binarne kończy się niepowodzeniem lub w ogóle jest niewykonalne (ten drugi przypadek jest mylący)
 * Czyszczenie pola edycji i podpowiedzi na czas odświeżania wykazu przy akceptacji fiszki
 * Uporządkowanie spraw związanych z kasztowością

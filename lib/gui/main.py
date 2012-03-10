@@ -1026,7 +1026,18 @@ class MainWindow(wx.Frame):
         #print "po"
         #print "poczatek", c
         elif self.active_register == self.new_entryreg_browser and not self.active_register.binarySearchActive():
-            self.active_register.prepareForUpdateAfterAccept(self.ficheId)
+            self.active_register.prepareForUpdateAfterAccept(self.ficheId) # TODO: A (***) to moze zajac troche czasu a
+                # czy jest konieczne jezeli on_edit_accept zostalo wywolane z on_automatic_binary_accept zaraz po
+                # zakonczeniu binarnego (jak w logu:
+                # OP: ON_AUTOMATIC_BINARY_ACCEPT (0) Sun Feb 12 16:20:51 2012: False: <type 'bool'>; False: <type 'bool'>; (1, 'dwojako\xc5\x9b\xc4\x87', 'dziub'): <type 'tuple'>; 
+                # ...
+                # stop_binary_search (0) Sun Feb 12 16:20:51 2012: False: <type 'bool'>; 
+                # ...
+                # stop_binary_search return (1) Sun Feb 12 16:20:51 2012: 
+                # OP: ON_EDIT_ACCEPT (0) Sun Feb 12 16:20:51 2012: None: <type 'NoneType'>; True: <type 'bool'>; dzielić: <type 'str'>; dwojdroże: <type 'unicode'>;
+                # ...
+                # NewEntryRegisterBrowser.prepareForUpdateAfterAccept ...
+                # ) - bo binarne chyba samo odswieza wczesniej wykaz w incremental_update
         if self.dBController != None:
             msg = self.dBController.addFicheToEntriesIndex(self.ficheId, entry)
             if msg != None:
@@ -1143,7 +1154,7 @@ class MainWindow(wx.Frame):
                     return
                 self.active_register.prepareForActiveBinary()
         elif self.active_register == self.new_entryreg_browser and not self.active_register.binarySearchActive():
-            self.active_register.prepareForUpdateAfterAccept(self.ficheId)
+            self.active_register.prepareForUpdateAfterAccept(self.ficheId) # TODO: A patrz komentarz do on_edit_accept
         if self.dBController != None:
             msg = self.dBController.addFicheToEntriesIndex(self.ficheId, entry)
             if msg != None:

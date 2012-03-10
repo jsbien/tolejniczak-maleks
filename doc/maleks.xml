@@ -2,7 +2,7 @@
 <!DOCTYPE refentry PUBLIC '-//OASIS//DTD DocBook XML V4.5//EN' 'http://www.docbook.org/xml/4.5/docbookx.dtd' 
 [
     <!ENTITY p 'maleks'>
-    <!ENTITY version '0.1.2'>
+    <!ENTITY version '0.1.6'>
 ]>
 
 <refentry>
@@ -26,6 +26,7 @@
     </copyright>
     <copyright>
         <year>2011</year>
+        <year>2012</year>
         <holder>Tomasz Olejniczak</holder>
     </copyright>
 </refentryinfo>
@@ -38,25 +39,50 @@
 
 <refnamediv>
     <refname>&p;</refname>
-    <refpurpose>graphical editor for DjVu</refpurpose>
+    <refpurpose>lexicographic data browser</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
     <cmdsynopsis>
         <command>&p;</command>
-        <arg choice='opt'><replaceable>djvu-file</replaceable></arg>
     </cmdsynopsis>
 </refsynopsisdiv>
 
 <refsection>
     <title>Description</title>
     <para>
-        &p; is a graphical editor for DjVu files, which allows to:
-        <itemizedlist>
-            <listitem><para>edit document metadata,</para></listitem>
-            <listitem><para>edit document outline (bookmarks),</para></listitem>
-            <listitem><para>correct occasional errors in the hidden text layer.</para></listitem>
-        </itemizedlist>
+        &p;  a graphical browser of dictionary fiches, which enables browsing
+and indexing fiches.
+    </para>
+    <title>Shortcuts</title>
+    <para>
+        CTRL-E: accept text in edition panel and go to next fiche </para><para>
+        CTRL-P: accept text in edition panel as a prefix</para><para>
+        CTRL-H: accept text in hint panel and go to next fiche</para><para>
+        CTRL-D: add next fiche to bookmarks</para><para>
+        CTRL-R: open task register from file</para><para>
+        CTRL-K: clone fiche</para><para>
+        CTRL-V: show nearby fiches</para><para>CTRL-ENTER:</para><para>
+          * if structure/entry/mulitlevel register is active: open selected element and go to lower level</para><para>
+          * if focus is in edition panel: copy hint panel content into edition panel</para><para>
+          * if hint register is active: go to entry register and optionally start targeted binary search for selected element of hint register</para><para>
+        CTRL-↑: go to first fiche in selected element of entry register</para><para>
+        CTRL-↓: go to last fiche in selected element of entry register</para><para>
+        CTRL-&lt;: go left in binary search</para><para>
+        CTRL-&gt;: go right in binary search</para><para>
+        CTRL-[: go left in binary search and accept text in edition panel</para><para>
+        CTRL-]: go right in binary search and accept text in edition panel</para><para>
+        CTRL-B: switch on/off binary search - in hint register works as ENTER</para><para>
+        CTRL-←: navigation in entry history - previous element</para><para>
+        CTRL-→: navigation in entry history - next element</para><para>
+        CTRL-PgDn: scrolling of entry register on fiche level</para><para>
+        CTRL-PgUp: scrolling of entry register on fiche level</para><para>
+        ENTER:</para><para>
+          * if hint register is active: go to entry register and optionally start targeted binary search for selected element of hint register</para><para>
+          * if focus is in edition panel - accept fiche with text from edition panel as entry; if targeted binary search is active empty edition field is treated as target</para><para>
+          * if focus is in search panel and entry register is active on entry level - works as CTRL-B</para><para>
+        ↑: go to previous fiche in register order if focus is in register and fiches are shown</para><para>
+        ↓: go to next fiche in register order if focus is in register and fiches are shown
     </para>
 </refsection>
 
@@ -70,9 +96,7 @@
                 Base directory for configuration files. The default is <filename>$HOME/.config</filename>.
             </para>
             <para>
-                See <ulink
-                url='http://standards.freedesktop.org/basedir-spec/latest/'>XDG Base Directory
-                Specification</ulink> for details.
+                See <ulink url='http://standards.freedesktop.org/basedir-spec/latest/'>XDG Base Directory Specification</ulink> for details.
             </para>
         </listitem>
     </varlistentry>
@@ -83,21 +107,12 @@
     <title>Files</title>
     <variablelist>
     <varlistentry>
-        <term><filename><varname>$XDG_CONFIG_HOME</varname>/djvusmooth/djvusmooth.conf</filename></term>
+        <term><filename><varname>$XDG_CONFIG_HOME</varname>/maleks/maleks.conf</filename></term>
         <listitem>
             <para>&p; configuration file</para>
         </listitem>
     </varlistentry>
     </variablelist>
-</refsection>
-
-<refsection>
-    <title>Portability</title>
-    <para>
-        &p; allows to create hyperlinks with shadow borders as thin as 1 pixel, as specified by the
-        <ulink url='http://djvu.org/docs/DjVu3Spec.djvu'>Lizardtech DjVu Reference</ulink>.
-        However, some DjVu browsers do not accept shadow borders thinner than 3 pixels.
-    </para>
 </refsection>
 
 <refsection>
