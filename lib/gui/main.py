@@ -2432,7 +2432,7 @@ class MainWindow(wx.Frame):
             #    self.left_control.stopSearch()
             log.log("update_indices inspect", [self.secind_panel.isDirty(), self.mainind_panel.isDirty()], 3)
             if self.secind_panel.isDirty():
-                assert(False)
+                #assert(False)
                 self.dBController.setSecondaryIndicesForFiche(self.secind_panel.getValues(), self.secind_panel.getFicheId())
             if self.mainind_panel.isDirty():
                 if not self.ignore_entries:
