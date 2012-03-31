@@ -529,6 +529,8 @@ class DBEntryController(DBCommon):
 					if i == fromm:
 						firstEntryNotInOrder = True
 					i += 1
+					if i >= too:
+						break
 					continue
 				newres = self.__fillGap(cursor, prev, el, newres, myEntries)
 				prev = el

@@ -297,6 +297,7 @@ class StructureIndex(object):
 					self.__ficheDict.setdefault(fq.getId(), (fq, self.__ficheNo))
 					self.__ficheNo += 1
 		f.close()
+		print self.__ficheDict
 	
 	def clone(self, ficheId):
 		(fiche, ficheNo) = self.__ficheDict[ficheId]

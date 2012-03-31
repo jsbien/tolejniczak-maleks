@@ -919,7 +919,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		return None
 
 	def nextBinaryAcceptPrepare(self, automatic=False):
-		log.log("NewEntryRegisterBrowser.nextBinaryAcceptPrepare", [automatic, self.__selectedElement, self.__binaryType], 0)
+		log.log("NewEntryRegisterBrowser.nextBinaryAcceptPrepare", [automatic, self.__selectedElement, self.__binaryType, self.__left, self.__center, self.__right], 0)
 		#print "!", self.__left, self.__center, self.__right
 		#
 		#print "::", self.__left, self.__right
@@ -955,7 +955,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		return res
 
 	def prevBinaryAcceptPrepare(self, automatic=False):
-		log.log("NewEntryRegisterBrowser.prevBinaryAcceptPrepare", [automatic, self.__selectedElement, self.__binaryType], 0)
+		log.log("NewEntryRegisterBrowser.prevBinaryAcceptPrepare", [automatic, self.__selectedElement, self.__binaryType, self.__left, self.__center, self.__right], 0)
 		#print "!", self.__left, self.__center, self.__right
 		#
 		#print ":", self.__left, self.__right
@@ -1060,7 +1060,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 
 	def binaryAcceptFinalize(self, entry, safe=False):
 		#gc = Counter()
-		log.log("NewEntryRegisterBrowser.binaryAcceptFinalize", [entry, safe, self.__selectedElement, self.__binaryType], 0)
+		log.log("NewEntryRegisterBrowser.binaryAcceptFinalize", [entry, safe, self.__selectedElement, self.__binaryType, self.__left, self.__center, self.__right], 0)
 		self._selected = None
 		#c = Counter()
 		if not self._incrementalUpdate([self.__entryOf(self.__selectedElement), entry]):
@@ -1131,7 +1131,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 				l.stop_binary_search()
 		#print "stop_binary_search2", c
 		#print "global", gc
-		log.log("NewEntryRegisterBrowser.binaryAcceptFinalize return", [], 2)
+		log.log("NewEntryRegisterBrowser.binaryAcceptFinalize return", [self.__left, self.__center, self.__right], 2)
 		
 	def nextBinary(self):
 		log.log("NewEntryRegisterBrowser.nextBinary", [self.__selectedElement, self.__binaryType], 0)
