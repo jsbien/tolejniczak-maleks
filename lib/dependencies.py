@@ -49,6 +49,7 @@ def _check_djvu():
     if tuple(python_djvu_decode_version) < PYTHON_DJVULIBRE_MIN_VERSION:
         raise ImportError('python-djvulibre >= %s is required' % ('.'.join(map(str, PYTHON_DJVULIBRE_MIN_VERSION))))
 
+
 def _check_wx():
     try:
         import wxversion
