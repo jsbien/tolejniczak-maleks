@@ -1,5 +1,5 @@
 # encoding=UTF-8
-# Copyright © 2011 Tomasz Olejniczak <tomek.87@poczta.onet.pl>
+# Copyright © 2011, 2012 Tomasz Olejniczak <tomek.87@poczta.onet.pl>
 #
 # This package is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -12,6 +12,8 @@
 
 import os
 import shutil
+import sys
+import time
 from maleks.maleks.registers import TaskRegister
 from maleks.maleks.useful import repeat, getElementsByClassName, getBbox, getTextContent
 from xml.dom import minidom
@@ -247,10 +249,17 @@ class Configuration(object):
 # indeks struktury
 class StructureIndex(object):
 
+	def diff(self):
+		res = str(time.time() - self.__snapshot)
+		self.__snapshot = time.time()
+		return res
+
 	# tworzy indeks struktury na podstawie pliku z indeksem struktury o sciezce
 	# abspath
-	def __init__(self, abspath, dBController):
+	def __init__(self, abspath, dBController=None):
 		# TODO: C obsluga bledow w pliku
+		self.__snapshot = time.time()
+		sys.stderr.write('Tworzenie indeksu struktry ' + self.diff() + '\n')
 		self.__ficheNo = 0
 		self.__alphabetic = False
 		self.__fiches = []
@@ -260,43 +269,57 @@ class StructureIndex(object):
 		curNode = self.__tree
 		self.__nodeDict.setdefault(curNode.getId(), curNode)
 		f = open(abspath + os.sep + "index.ind")
+		sys.stderr.write('Otwarto plik z indeksem ' + self.diff() + '\n')
 		for line in f:
+			sys.stderr.write(line + ' ' + self.diff() + '\n')
 			if line == "\n":
 				continue
 			line = line.strip()
+			sys.stderr.write('Stripped ' + self.diff() + '\n')
 			if line == "$alphabetic":
 				self.__alphabetic = True
 			elif line[0:2] == "$ ":
+				sys.stderr.write('Poczatek katalogu ' + self.diff() + '\n')
 				els = line[2:].split("\t")
 				sel = StructureNode(els[0], els[1])
 				curNode.add(sel)
 				curNode = sel
 				self.__nodeDict.setdefault(sel.getId(), sel)
+				sys.stderr.write('Poczatek katalogu - koniec ' + self.diff() + '\n')
 			elif line == "$end":
+				sys.stderr.write('Koniec katalogu ' + self.diff() + '\n')
 				curNode = curNode.getParent()
+				sys.stderr.write('Koniec katalogu - koniec ' + self.diff() + '\n')
 			else:
+				sys.stderr.write('Przetwarzanie plikow ' + self.diff() + '\n')
 				# TODO: C inne opcje
 				els = line.split("\t")
 				if els[0] == "$from_names_djvu":
+					sys.stderr.write('Przetwarzanie plikow from names ' + self.diff() + '\n')
 					if els[1] == "$all":
 						if dBController == None:
 							key = lambda x: x
 						else:
 							key = lambda x: dBController.getPositionOfFiche(x[:-5]) if (len(x) > 5 and x[-5:] == ".djvu") else 0
+						sys.stderr.write('Lambda ' + self.diff() + '\n')
 						for filee in sorted(os.listdir(curNode.getPath()), key=key):
+							#sys.stderr.write(filee + ' ' + self.diff() + '\n')
 							if len(filee) > 5 and filee[-5:] == ".djvu":
+								#sys.stderr.write('Len ok ' + self.diff() + '\n')
 								fq = Fiche(filee[:-5], filee[:-5])
 								curNode.add(fq)
 								self.__fiches.append(fq)
 								self.__ficheDict.setdefault(fq.getId(), (fq, self.__ficheNo)) # TODO: D wlaczyc numer do fiszki?
 								self.__ficheNo += 1
 				else:
+					sys.stderr.write('Shouldn\'t happen ' + self.diff() + '\n')
 					fq = Fiche(els[0], els[1])
 					curNode.add(fq)
 					self.__fiches.append(fq)
 					self.__ficheDict.setdefault(fq.getId(), (fq, self.__ficheNo))
 					self.__ficheNo += 1
 		f.close()
+		print self.__ficheDict
 	
 	def clone(self, ficheId):
 		(fiche, ficheNo) = self.__ficheDict[ficheId]
