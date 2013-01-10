@@ -57,7 +57,6 @@ and indexing fiches.
     <title>Shortcuts</title>
     <para>
         CTRL-E: accept text in edition panel and go to next fiche </para><para>
-        CTRL-P: accept text in edition panel as a prefix</para><para>
         CTRL-H: accept text in hint panel and go to next fiche</para><para>
         CTRL-D: add next fiche to bookmarks</para><para>
         CTRL-R: open task register from file</para><para>
