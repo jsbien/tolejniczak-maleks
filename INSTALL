@@ -21,13 +21,16 @@
 db=<BAZA>
 dbpass=<HASLO>
 dbuser=<UZYTKOWNIK>
+dbhost=<host>
+dbport=<port>
 loglevel=DEBUG
 
 		(podajemy domyślną konfigurację bazy danych której
 		będą używać kartoteki jeżeli nie będzie wpisu w ich
 		pliku config.cfg - ponieważ każda kartoteka musi mieć
 		osobną bazę dobrze w config.cfg umieszczać wpis db, a
-		użytkownika i hasło zdefiniować w maleks.conf)
+		użytkownika i hasło zdefiniować w maleks.conf;
+		dbhost i dbport są opcjonalne - domyślne wartości to localhost i 3306)
 
 * konfiguracja mysqla:
 
@@ -72,10 +75,14 @@ character_set_client=utf8
 
 	* OPCJE (wszystkie opcjonalne):
 
-		* -u - powoduje zapisanie użytkownika
-                   NAZWA_UŻYTKOWNIKA w konfiguracji karoteki - wpp
-                   maleks pobiera nazwę użytkownika z globalnej
-                   konfiguracji
+		* -u - powoduje zapisanie parametrów połączenia do bazy danych z kartoteką
+                   (użytkownik NAZWA_UŻYTKOWNIKA i hasło oraz - o ile zostały podane -
+				   - host i port) w konfiguracji karoteki - wpp maleks pobiera te
+				   parametry z globalnej konfiguracji
+
+		* -p PORT - port do bazy danych z kartoteką
+
+		* -h HOST - host bazy danych z karoteką
 
 		* -c FLOAT - przy interpretacji plików hOCR hasło jest
                    szukane w górnych (FLOAT * 100)% fiszki
@@ -126,6 +133,10 @@ db<TAB>NAZWA_BAZY_DANYCH_KAROTEKI<NL>
 dbuser<TAB>UZYTKOWNIK_BAZY_DANYCH<NL>
 
 dbpass<TAB>HASLO_UZYTKOWNIKA<NL>
+
+dbhost<TAB>HOST_BAZY_DANYCH<NL>
+
+dbport<TAB>PORT_BAZY_DANYCH<NL>
 
 hocr_cut<TAB>LICZBA<NL> (LICZBA - w jakiej części pliku hOCR jest
 hasło na fiszce - jeżeli wpisane jest 0.1 to znaczy, że hasło jest w

@@ -245,7 +245,10 @@ class Configuration(object):
 		db = self.__dict.get("db")
 		passwd = self.__dict.get("dbpass")
 		host = self.__dict.get("dbhost")
-		dBController.setPerDocumentConnection(db, user, passwd, host)
+		port = self.__dict.get("dbport")
+		if port != None:
+			port = int(port)
+		dBController.setPerDocumentConnection(db, user, passwd, host, port)
 
 # indeks struktury
 class StructureIndex(object):

@@ -35,11 +35,15 @@ class DBCommon(object):
 			self.__globalPasswd = self.__passwd
 			self.__db = config.read('db', '')
 			self.__globalDb = self.__db
-			self.__host = config.read('dbhost', '')
+			self.__host = config.read('dbhost', None)
 			self.__globalHost = self.__host
+			self.__port = config.read('dbport', None)
+			if self.__port != None:
+				self.__port = int(self.__port)
+			self.__globalPort = self.__port
 		self.__conn = None
 
-	def configure(self, user, passwd, db, host=None):
+	def configure(self, user, passwd, db, host=None, port=None):
 		self.__user = user
 		self.__globalUser = self.__user
 		self.__passwd = passwd
@@ -48,21 +52,30 @@ class DBCommon(object):
 		self.__globalDB = db
 		self.__host = host
 		self.__globalHost = host
+		self.__port = port
+		self.__globalPort = port
 
-	def setPerDocumentConnection(self, db, user, passwd, host):
+	def setPerDocumentConnection(self, db, user, passwd, host, port):
 		self.__user = user if user != None else self.__globalUser
 		self.__passwd = passwd if passwd != None else self.__globalPasswd
 		self.__db = db if db != None else self.__globalDb
 		self.__host = host if host != None else self.__globalHost
+		self.__port = port if port != None else self.__globalPort
 
 	def valid(self):
 		return self.__user != '' and self.__passwd != '' and self.__db != ''
 
 	def _openDBWithCursor(self):
 		if self.__host != None:
-			self.__conn = MySQLdb.connect(user=self.__user, passwd=self.__passwd, db=self.__db, use_unicode=False, host=self.__host, init_command="SET NAMES 'utf8'",charset='utf8')
+			if self.__port == None:
+				self.__conn = MySQLdb.connect(user=self.__user, passwd=self.__passwd, db=self.__db, use_unicode=False, host=self.__host, init_command="SET NAMES 'utf8'",charset='utf8')
+			else:
+				self.__conn = MySQLdb.connect(user=self.__user, passwd=self.__passwd, db=self.__db, use_unicode=False, host=self.__host, port=self.__port, init_command="SET NAMES 'utf8'",charset='utf8')
 		else:
-			self.__conn = MySQLdb.connect(user=self.__user, passwd=self.__passwd, db=self.__db, use_unicode=False, init_command="SET NAMES 'utf8'",charset='utf8')
+			if self.__port != None:				
+				self.__conn = MySQLdb.connect(user=self.__user, passwd=self.__passwd, db=self.__db, use_unicode=False, port=self.__port, init_command="SET NAMES 'utf8'",charset='utf8')
+			else:
+				self.__conn = MySQLdb.connect(user=self.__user, passwd=self.__passwd, db=self.__db, use_unicode=False, init_command="SET NAMES 'utf8'",charset='utf8')
 		#self._time = 0
 		return self.__conn.cursor()
 
