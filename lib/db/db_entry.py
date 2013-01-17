@@ -63,7 +63,8 @@ class DBCommon(object):
 		self.__port = port if port != None else self.__globalPort
 
 	def valid(self):
-		return self.__user != '' and self.__passwd != '' and self.__db != ''
+		return self.__user != '' and self.__passwd != ''
+		#and self.__db != ''
 
 	def _openDBWithCursor(self):
 		if self.__host != None:
