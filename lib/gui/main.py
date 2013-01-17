@@ -2251,7 +2251,7 @@ class MainWindow(wx.Frame):
         self.hintreg_browser.reset() # aktualnej fiszki (page_no) na 0)?
         self.bookreg_browser.reset()
         self.page_no = 0
-        self.dBController.setPerDocumentConnection(None, None, None) # resetuje
+        self.dBController.setPerDocumentConnection(None, None, None, None, None) # resetuje
             # kontroler bazy danych do ustawien z globalnego pliku konfiguracyjnego
         #def clear_models():
         #    self.metadata_model = self.text_model = self.outline_model = self.annotations_model = None
