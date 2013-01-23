@@ -2603,8 +2603,8 @@ class Application(wx.App):
         return True
 
     def start(self, argv):
-		print "SYSARGV[0]: " + sys.argv[0]
-		print "DIRNAME: " + os.path.dirname(sys.argv[0])
+        print "SYSARGV[0]: " + sys.argv[0]
+        print "DIRNAME: " + os.path.dirname(sys.argv[0])
         window = MainWindow()
         window.Show(True)
         if argv:
