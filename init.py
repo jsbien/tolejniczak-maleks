@@ -21,8 +21,12 @@ def superdir(node):
 		return True
 	elif hasFiles and not hasDirs:
 		return False
+	elif not hasFiles and not hasDirs:
+		print "pusty katalog: " + node
+		return True
 	else:
-		print "pliki w podkatalogu nie bedacym lisciem"
+		print "pliki w podkatalogu nie bedacym lisciem: " + node
+		return True
 
 def printStructureNode(fout, level, node, name, root=False):
 	if not root:
