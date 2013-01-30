@@ -17,10 +17,15 @@ if os.path.isdir(sys.argv[1]):
 	else:
 		legacy_path = None
 	config = config.Config('maleks', legacy_path)
+	print 'Zaladowana konfiguracja'
 	dbController = DBController(config)
+	print 'Zainicjalizowane DAO'
 	index = StructureIndex(path)
+	print 'Zaladowany indeks struktury' 
 	cfg = Configuration(path)
+	print 'Zaladowana konfiguracja karotetki'
 	cfg.configureDatabase(dbController)
+	print 'Baza skonfigurowana'
 	def __traverse(node):
 		if isinstance(node, Fiche):
 			dbController.addFicheToFichesIndex(node.getId())
@@ -28,6 +33,7 @@ if os.path.isdir(sys.argv[1]):
 			for c in node.getChildren():
 				__traverse(c)
 	__traverse(index.getRoot())
+	print 'Fiszka dodana'
 else:
 	print sys.argv[1], "nie jest katalogiem"
 

@@ -26,7 +26,10 @@ def superdir(node):
 		return True
 	else:
 		print "pliki w podkatalogu nie bedacym lisciem: " + node
+<<<<<<< local
+=======
 		return True
+>>>>>>> other
 
 def printStructureNode(fout, level, node, name, root=False):
 	if not root:
@@ -57,12 +60,12 @@ if len(args) != 7:
 
 if os.path.isdir(args[1]):
 	path = args[1]
-	f = open(path + os.sep + "index.ind", "w")
+	f = open("/home/tomek/index.ind", "w")
 	if options.alpha:
 		f.write("$alphabetic\n")
 	#printStructureNode(f, -1, path, None, root=True)
 	f.close()
-	f = open(path + os.sep + "config.cfg", "w")
+	'''f = open(path + os.sep + "config.cfg", "w")
 	f.write("db\t" + args[2] + "\n")
 	if options.user:
 		f.write("dbpass\t" + args[4] + "\n")
@@ -85,6 +88,11 @@ if os.path.isdir(args[1]):
 			shutil.copy(options.hint, args[1] + os.sep + "hint.reg")
 		else:
 			print options.hint, "nie ma takiego pliku"
+<<<<<<< local
+	os.system("mysql -u " + args[5] + " -p" + args[6] + " \"-e create database " + args[2] + " character set = utf8 collate = utf8_polish_ci\"")
+	os.system("mysql -u " + args[5] + " -p" + args[6] + " \"-e grant all on " + args[2] + ".* to " + args[3] + "\"")
+	os.system("mysql -u " + args[3] + " -p" + args[4] + " " + args[2] + " < " + options.maleks)'''
+=======
 	urlstr = ""
 	if options.host != None:
 		urlstr += " -h " + options.host + " "
@@ -93,6 +101,7 @@ if os.path.isdir(args[1]):
 	os.system("mysql " + urlstr + " -u " + args[5] + " -p" + args[6] + " \"-e create database " + args[2] + " character set = utf8 collate = utf8_polish_ci\"")
 	os.system("mysql " + urlstr + " -u " + args[5] + " -p" + args[6] + " \"-e grant all on " + args[2] + ".* to " + args[3] + "\"")
 	os.system("mysql " + urlstr + " -u " + args[3] + " -p" + args[4] + " " + args[2] + " < " + options.maleks)
+>>>>>>> other
 else:
 	print args[1], "nie jest katalogiem"
 

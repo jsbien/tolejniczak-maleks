@@ -181,7 +181,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 		#:for (k, v) in entryLens.iteritems():
 		#:	self.__entryLens[k] = v
 		log.log("NewEntryRegisterBrowser._incrementalUpdate", [entries], 0)
-		(neighbourhoods, ok, hasFirstNone, hasLastNone, self.__entryLens) = self.__dBController.getPartialEntriesRegisterWithGaps(entries)
+		(neighbourhoods, ok, hasFirstNone, hasLastNone, self.__entryLens, lastEntryNotInOrder) = self.__dBController.getPartialEntriesRegisterWithGaps(entries)
 		#print neighbourhoods
 		if not ok:
 			#print "blad"
@@ -196,7 +196,7 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 				indf = 0
 			else:
 				indf = self.__findForIncremental(elements[0])
-			if ((not hasLastNone) and isinstance(self.__elementObjects[-1], tuple) and self.__elementObjects[-1][2] == None) or (isinstance(elements[-1], tuple) and elements[-1][2] == None):
+			if ((not hasLastNone) and isinstance(self.__elementObjects[-1], tuple) and self.__elementObjects[-1][2] == None) or (isinstance(elements[-1], tuple) and elements[-1][2] == None) or lastEntryNotInOrder:
 				indt = len(self._elements) - 1
 			else:
 				indt = self.__findForIncremental(elements[-1])
@@ -643,19 +643,23 @@ class NewEntryRegisterBrowser(WindowRegisterBrowser):
 				return 0
 		elif isinstance(a, tuple):
 			(num, fromm, too) = a
-			if fromm != None and collator.compare(ustr(fromm), ustr(b)) >= 0:
-				return 1
-			elif too != None and collator.compare(ustr(too), ustr(b)) <= 0:
+			if too != None and collator.compare(ustr(too), ustr(b)) <= 0:
 				return -1
+			elif too != None and collator.compare(ustr(too), ustr(b)) >= 0:
+				return 1
+			elif too == None:
+				return 1
 			else:
 				log.log("NewEntryRegisterBrowser.__compareForIncremental assert", [a, b, self.__elementObjects], 1)
 				assert(False)
 		elif isinstance(b, tuple):
 			(num, fromm, too) = b
-			if fromm != None and collator.compare(ustr(fromm), ustr(a)) >= 0:
-				return -1
-			elif too != None and collator.compare(ustr(too), ustr(a)) <= 0:
+			if too != None and collator.compare(ustr(too), ustr(a)) <= 0:
 				return 1
+			elif too != None and collator.compare(ustr(too), ustr(a)) >= 0:
+				return -1
+			elif too != None:
+				return -1
 			else:
 				log.log("NewEntryRegisterBrowser.__compareForIncremental assert", [a, b, self.__elementObjects], 2)
 				assert(False)

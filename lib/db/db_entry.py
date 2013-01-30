@@ -63,8 +63,7 @@ class DBCommon(object):
 		self.__port = port if port != None else self.__globalPort
 
 	def valid(self):
-		return self.__user != '' and self.__passwd != ''
-		#and self.__db != ''
+		return self.__user != '' and self.__passwd != '' and self.__db != ''
 
 	def _openDBWithCursor(self):
 		if self.__host != None:
@@ -513,7 +512,7 @@ class DBEntryController(DBCommon):
 		#:	(first, last, num) = self.__getEntriesCount(cursor, entry)
 		#:	entryLens.setdefault(entry, num)
 		if len(myEntries) < DBEntryController.SMART_LIMIT:
-			return (None, False, None, None, None)
+			return (None, False, None, None, None, False)
 		hasFirstNone = int(self.__single(cursor, "select count(*) from entries where position = (select min(position) from fiches)", ())) == 0
 		hasLastNone = int(self.__single(cursor, "select count(*) from entries where position = (select max(position) from fiches)", ())) == 0
 		inds = []
@@ -524,6 +523,19 @@ class DBEntryController(DBCommon):
 			inds.append(self.__max(ind + DBEntryController.NEIGHBOURHOOD, len(myEntries)))
 		fromm  = min(inds)
 		too = max(inds)
+		lastEntryNotInOrder = True
+		if too <= len(myEntries):
+			i = 0
+			while True:
+				if self.__firstEntry(cursor, myEntries[too + i - 1]) == INF:
+					i += 1
+				else:
+					inds[-1] += i
+					too += i
+					lastEntryNotInOrder = False
+					break
+				if too + i - 1 == len(myEntries):
+					break
 		if True:
 		#for e in entries:
 			neighbours = []
@@ -592,8 +604,8 @@ class DBEntryController(DBCommon):
 			neighbourhoods.append((ustr(e), newres))
 		#neighbourhoods = self.__combine(neighbourhoods)
 		self._closeDBAndCursor(cursor)
-		log.db("getPartialEntriesRegisterWithGaps return", [(neighbourhoods, True, hasFirstNone, hasLastNone, entryLens)], 1)
-		return (neighbourhoods, True, hasFirstNone, hasLastNone, entryLens)
+		log.db("getPartialEntriesRegisterWithGaps return", [(neighbourhoods, True, hasFirstNone, hasLastNone, entryLens, lastEntryNotInOrder)], 1)
+		return (neighbourhoods, True, hasFirstNone, hasLastNone, entryLens, lastEntryNotInOrder)
 
 	#def __eq(self, a, b):
 	#	if isinstance(a, tuple) and isinstance(b, tuple):
