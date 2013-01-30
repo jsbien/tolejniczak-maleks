@@ -60,7 +60,7 @@ if os.path.isdir(args[1]):
 	f = open(path + os.sep + "index.ind", "w")
 	if options.alpha:
 		f.write("$alphabetic\n")
-	#printStructureNode(f, -1, path, None, root=True)
+	printStructureNode(f, -1, path, None, root=True)
 	f.close()
 	f = open(path + os.sep + "config.cfg", "w")
 	f.write("db\t" + args[2] + "\n")
