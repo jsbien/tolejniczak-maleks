@@ -33,7 +33,7 @@ if os.path.isdir(sys.argv[1]):
 			for c in node.getChildren():
 				__traverse(c)
 	__traverse(index.getRoot())
-	print 'Fiszka dodana'
+	print 'Utworzono indeks fiszek'
 else:
 	print sys.argv[1], "nie jest katalogiem"
 
