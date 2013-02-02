@@ -30,6 +30,7 @@ if os.path.isdir(sys.argv[1]):
 		if isinstance(node, Fiche):
 			dbController.addFicheToFichesIndex(node.getId())
 		else:
+			print 'Przetwarzanie: ' + str(node)
 			for c in node.getChildren():
 				__traverse(c)
 	__traverse(index.getRoot())
