@@ -119,6 +119,19 @@ class DBCommon(object):
 		#if stop - start >= 1.0:
 		#	print querystr
 		#	print stop - start
+	
+	def removeIdxPosition(self):
+		cursor = self._openDBWithCursor()
+		try:
+			self._execute(cursor, "alter table fiches drop index idx_position")
+		except Exception as e:
+			print e
+		self._closeDBAndCursor(cursor)
+	
+	def addIdxPosition(self):
+		cursor = self._openDBWithCursor()
+		self._execute(cursor, "alter table fiches add index idx_position (position)")
+		self._closeDBAndCursor(cursor)
 		
 INF = 10000000000
 

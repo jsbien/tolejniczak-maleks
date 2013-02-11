@@ -26,6 +26,8 @@ if os.path.isdir(sys.argv[1]):
 	print 'Zaladowana konfiguracja karotetki'
 	cfg.configureDatabase(dbController)
 	print 'Baza skonfigurowana'
+	dbController.removeIdxPosition()
+	print 'Indeks tabeli fiches usuniety'
 	def __traverse(node):
 		if isinstance(node, Fiche):
 			dbController.addFicheToFichesIndex(node.getId())
@@ -35,6 +37,8 @@ if os.path.isdir(sys.argv[1]):
 				__traverse(c)
 	__traverse(index.getRoot())
 	print 'Utworzono indeks fiszek'
+	dbController.addIdxPosition()
+	print 'Zaindeksowano tabele fiches'
 else:
 	print sys.argv[1], "nie jest katalogiem"
 

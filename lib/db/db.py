@@ -110,7 +110,7 @@ class DBController(DBWorkController):
 					break
 				else:
 					(prevEntry, prevPosition) = row
-				if int(self._single(cursor, "select count(*) from entries where entry < %s and position > %s", (prevEntry, prevPosition))) > 0:
+				if int(self._single(cursor, "select count(*) from fiches f, actual_entries e where e.fiche = f.fiche and e.entry < %s and f.position > %s", (prevEntry, prevPosition))) > 0:
 					prevPos = prevPosition
 					prevEntry = None
 				else:
@@ -123,7 +123,7 @@ class DBController(DBWorkController):
 					break
 				else:
 					(nextEntry, nextPosition) = row
-				if int(self._single(cursor, "select count(*) from entries where entry < %s and position > %s", (nextEntry, nextPosition))) > 0:
+				if int(self._single(cursor, "select count(*) from fiches f, actual_entries e where e.fiche = f.fiche and e.entry < %s and f.position > %s", (nextEntry, nextPosition))) > 0:
 					nextPos = nextPosition
 					nextEntry = None
 				else:
