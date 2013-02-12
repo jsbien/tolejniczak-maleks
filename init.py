@@ -53,6 +53,7 @@ parser.add_option("-o", "--host", help="host bazy danych", dest="host", default=
 
 if len(args) != 7:
 	print "Zla liczba argumentow"
+	print args
 	exit()
 
 if os.path.isdir(args[1]):

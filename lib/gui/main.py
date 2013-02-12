@@ -23,6 +23,7 @@ import locale
 import os.path
 import threading
 import tempfile
+import traceback
 from Queue import Queue, Empty as QueueEmpty
 
 import maleks.dependencies as __dependencies
@@ -2323,12 +2324,15 @@ class MainWindow(wx.Frame):
             self.lastEntry = None
         self.document = None
         try:
+            log.log("switch_document new_document", [self.index.getFiche(page_no).getDjVuPath()], 0)
             self.document = self.context.new_document(djvu.decode.FileURI(self.index.getFiche(page_no).getDjVuPath()))
             self.ficheId = self.index.getFiche(page_no).getId()
         except djvu.decode.JobFailed:
             # TODO: A to powinno powodowac blad!
             self.reset()
             self.page_no = 0
+        except Exception as e:
+            traceback.print_exc(file=sys.stdout)
         #print "  loaded", c
         self.update_title()
         #print "  title", c

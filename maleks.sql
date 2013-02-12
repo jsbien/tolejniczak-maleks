@@ -41,13 +41,15 @@ create table linesIndex (
 create table actual_entries (
 	fiche varchar(60) not null primary key,
 	entry varchar(40) not null,
-	comment varchar(50)
+	comment varchar(50),
+	index idx_entry(entry)
 );
 
 create table original_entries (
 	fiche varchar(60) not null primary key,
 	entry varchar(40) not null,
-	comment varchar(50)
+	comment varchar(50),
+	index idx_entry(entry)
 );
 
 create table hypotheses (
